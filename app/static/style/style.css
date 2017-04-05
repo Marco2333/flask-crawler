@@ -1,0 +1,98 @@
+/*common*/
+.w {
+     width: 100%
+}
+.h {
+    height: 100%;
+}
+.fl { 
+    float: left;
+}
+.fr { 
+    float: right;
+}
+.block { 
+    display: block;
+    zoom: 1;
+}
+.iblock{
+    display: inline-block;
+}
+.none { 
+    display: none;
+}
+.b{
+    font-weight: bold;
+}
+.cl{
+    clear: left;
+}
+.cr{
+    clear: right;
+}
+.cb{
+    clear: both;
+}
+.pr {
+    position: relative;
+}
+.pa {
+    position: absolute;
+}
+.pf {
+    position: fixed;
+}
+.one-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.center {
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    -webkit-transform: translate3D(-50%,-50%,0);
+    -ms-transform: translate3D(-50%,-50%,0);
+    -moz-transform: translate3D(-50%,-50%,0);
+    -o-transform: translate3D(-50%,-50%,0);
+    transform: translate3D(-50%,-50%,0);
+    z-index: 100;
+}
+.transparent {
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    -khtml-opacity: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+}
+
+
+/*login*/
+#login-wrap {
+    width: 380px;
+    margin: 0 auto;
+    margin-top: 130px;
+}
+.login-title {
+    color: #3c8dbc;
+    margin-bottom: 30px;
+    text-align: center;
+}
+.login-form {
+    padding: 18px 37px;
+    box-shadow: 0 0 20px #b4b4b4;
+    border-radius: 6px;
+    background-color: #f8f8f8; 
+}
+.login-form label {
+    color: #4f5d80;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 16px 0 3px;
+}
+.login-form .btn {
+    margin-top: 16px;
+    outline: none;
+}
