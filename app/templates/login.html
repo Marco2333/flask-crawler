@@ -1,5 +1,5 @@
-{% extends 'layout.html' %}
-{% block title %} 123 {% endblock %}
+{% extends 'common/layout.html' %}
+{% block title %} 請登錄 {% endblock %}
 {% block body %}
 <style>body{background: url('{{ url_for('static',filename='img/login_bgx.gif')}}')</style>
 <div id="login-wrap">
@@ -30,8 +30,13 @@ $(function () {
 			alert('密码不能为空');
 			return false;
 		}
-		$.post("{{ url_for('toLogin') }}",{username: username,password:password},function() {
-
+		$.post("{{ url_for('toLogin') }}",{username: username,password:password},function(data) {
+			if(data.status == 1) {
+				location.href = "{{ url_for('/') }}";
+			}
+			else {
+				alert("密码错误");
+			}
 		})
 	});
 })
