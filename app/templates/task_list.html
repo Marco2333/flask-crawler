@@ -3,7 +3,6 @@
 {% block title %} 任务列表 {% endblock %}
 {% block body %}
 
-{% include 'common/top.html' %}
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 
 <div class="content-wrap">
@@ -14,7 +13,10 @@
 				<th>任务名称</th>
 				<th>创建日期</th>
 				<th>创建用户</th>
+				<th>查询用户</th>
+				<th>任务类型</th>
 				<th>完成时间</th>
+				<th>备注</th>
 				<th>操作</th>
 			</tr>
 			<tbody>
@@ -22,10 +24,13 @@
 				{% for task in tasks %}
 					<tr>
 						<td>{{ task['id'] }}</td>
-						<td>{{ task['name'] }}</td>
+						<td>{{ task['task_name'] }}</td>
+						<td>{{ task['created_at'].date() }}</td>
 						<td>{{ task['userid'] }}</td>
-						<td>{{ task['created_at'] }}</td>
-						<td>{{ task['finished_at'] }}</td>
+						<td>{{ task['search_name'] }}</td>
+						<td>{{ task['search_type'] }}</td>
+						<td>{{ task['finished_at'] and task['finished_at'].date or ''}}</td>
+						<td>{{ task['remark'] }}</td>
 						<td><a class="task-delete" data-id={{task['id']}}>删除</a></td>
 					</tr>
 				{% endfor %}

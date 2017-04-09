@@ -18,31 +18,23 @@ class Admin(db.Model):
     # def __repr__(self):
     #     return '<User %r>' % (self.username)
 
-# class Entries(db.Model):
-#     __tablename__='entries'
-#     id = db.Column(Integer,primary_key=True)
-#     title = db.Column(String(100),unique=True)
-#     text = db.Column(String(200),unique=True)
-
-#     def __init__(self,title,text):
-#         self.title = title
-#         self.text = text
-
-#     def __repr__(self):
-#         return '<Entries %r>' % (self.title)
-
 
 class Task(db.Model):
     __tablename__ = 'task'
     id = Column(Integer, primary_key = True)
-    name = Column(String(100))
+    task_name = Column(String(100))
     userid = Column(String(30))
     created_at = Column(DateTime)
     finished_at = Column(DateTime)
+    search_name = Column(String(30))
+    search_type = Column(Integer)
+    remark = Column(String(300))
 
-    def __init__(self, id = None, name = None, userid = None, created_at = None, finished_at = None):
-        self.id = id
-        self.name = name
+    def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
+        self.task_name = task_name
         self.userid = userid
         self.created_at = created_at
         self.finished_at = finished_at
+        self.search_type = search_type
+        self.search_name = search_name
+        self.remark = remark

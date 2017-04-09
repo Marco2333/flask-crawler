@@ -32,7 +32,7 @@ $(function () {
 		}
 		$.post("{{ url_for('toLogin') }}",{username: username,password:password},function(data) {
 			if(data.status == 1) {
-				location.href = "{{ url_for('/') }}";
+				location.href = "{{ url_for('index') }}";
 			}
 			else {
 				alert("密码错误");

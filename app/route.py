@@ -6,7 +6,9 @@ from flask import request, render_template, redirect, session, url_for, jsonify
 
 
 app.add_url_rule('/task_list', 'task_list', Task.task_list)
+app.add_url_rule('/task_add', 'task_add', Task.task_add)
 app.add_url_rule('/task_delete', 'task_delete', Task.task_delete, methods = ['POST'])
+app.add_url_rule('/task_add_submit','task_add_submit', Task.task_add_submit, methods = ['POST'])
 
 @app.route('/')
 @app.route('/index')

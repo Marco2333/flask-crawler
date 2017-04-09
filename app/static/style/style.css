@@ -230,6 +230,9 @@ ul {
 .table-border tbody tr td:last-child {
     border-right: none;
 }
+.table a {
+    cursor: pointer;
+}
 .table tbody tr:hover {
     background-color: #f4f4f4;
 }

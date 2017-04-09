@@ -72,8 +72,6 @@ function openapp(url, appid, title, subTitle, refesh) {
 		}
 	}
 
-	console.log(flag);
-	console.log(url);
 	if (flag === 0) {
 		$("<iframe class='current'></iframe>").attr("data-id", appid).prop("src", url).appendTo($(".page-content"));
 	} else if (refesh) {
