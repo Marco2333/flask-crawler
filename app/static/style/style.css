@@ -254,3 +254,10 @@ ul {
     border-color: #66afe9;
     box-shadow: 0 0 15px #66afe9;
 }
+
+/*system_help*/
+.system-help li {
+    font-size: 15px;
+    margin: 5px 18px;
+    list-style-type: circle;
+}

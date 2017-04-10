@@ -1,0 +1,22 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 系统说明 {% endblock %}
+{% block body %}
+
+<div class="content-wrap">
+	<div class="panel panel-primary">
+	    <div class="panel-heading" style="padding: 14px">
+	        <h3 class="panel-title">系统说明</h3>
+	    </div>
+	    <div class="panel-body system-help">
+			<ul>
+				<li>任务添加：实验教师ID为选填选项，任课教师ID为必填选项，请输入正确的I教师ID。实验教师和任课教师均可为该课程添加作业并批阅</li>
+				<li>文件导入：请以Excel表格的方式上传课程列表，表格分为五列（ABCDE）分别对应：年级、专业、课程名称、任课教师姓名、实验教师姓名，其中实验教师姓名为可选项，其余为必选项，其中表格第一行为表头，从第二行开始，每一行对应一门课程</li>
+				<li>完成进度：包含了所有未归档项目的所有课程以及每门课程的详细信息</li>
+				<li>问题反馈：若您在使用该系统过程中发现了问题，请与管理员联系</li>
+			</ul>
+	    </div>
+	</div>
+</div>
+
+{% endblock %}
