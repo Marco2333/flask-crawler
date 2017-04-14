@@ -261,3 +261,9 @@ ul {
     margin: 5px 18px;
     list-style-type: circle;
 }
+.view-more {
+    padding: 8px 0;
+    text-align: center;
+    background: #f0f0f0;
+    cursor: pointer;
+}
