@@ -17,24 +17,28 @@ def user_search():
 def get_user_tweets():
 	screen_name = request.form['screen_name']
 	max_id = request.form['max_id']
+	count = 30
 
 	if max_id == '0':
-		max_id = None
+		max_id = 1
 
-	tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = 3)
+	max_id = long(max_id) - 1
+	# print max_id
+	tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = count)
 	res = []
 	for i in range(len(tweets)):
 		tweet = tweets[i]
-		res[i] = {
-			'text':tweet['text'],
-			'created_at':tweet['created_at'],
-			'favorite_count':tweet['favorite_count'],
-			'retweet_count':tweet['retweet_count'],
-			'lang':tweet['lang'],
-			'source':tweet['source'],
-		}
+		res.append({
+			'id': tweet.id,
+			'text':tweet.text,
+			'created_at':tweet.created_at,
+			'favorite_count':tweet.favorite_count,
+			'retweet_count':tweet.retweet_count,
+			'lang':tweet.lang,
+			'source':tweet.source
+		})
 
-	return jsonify({'tweets': res})
+	return jsonify(res)
 
 def user_profile(screen_name):
 	user = basicinfo_crawler.get_user(screen_name = screen_name)

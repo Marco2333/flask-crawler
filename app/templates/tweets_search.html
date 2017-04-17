@@ -16,15 +16,13 @@
 	<table class="table table-border" style="font-size:15px;margin-top: 14px;">
 		<thead>
 			<tr>
+				<th>ID</th>
 				<th>推文内容</th>
 				<th>创建日期</th>
 				<th>喜欢数</th>
 				<th>转推数</th>
 				<th>语言</th>
 				<th>来源</th>
-				<th>标签</th>
-				<th>坐标</th>
-				<th>操作</th>
 			</tr>
 			<tbody>
 			</tbody>
@@ -41,8 +39,20 @@
 				alert('人物名称不能为空');
 				return;
 			}
-
+			$("tbody").empty();
 			getUserTweets(val);
+		});
+
+		$(".view-more").click(function() {
+			if($(this).attr('data-maxid').trim() == '') {
+				return;
+			}
+			var val = $('input').val().trim();
+			if(val === '') {
+				alert('人物名称不能为空');
+				return;
+			}
+			getUserTweets(val, $(this).attr('data-maxid'));
 		})
 	})
 
@@ -54,13 +64,25 @@
 			max_id = 0
 		}
 		$.post("{{ url_for('get_user_tweets') }}", {screen_name: screen_name, max_id: max_id}, function(data) {
-			if(data.length < 25) {
+			$.each(data, function(i, val) {
+				dataToElement(val);
+			})
+			if(data.length < 28) {
 				$(".view-more").addClass('hidden');
 			}
-			for(var i = 0, len = data.length;i < len;i++) {
-				console.log(data[i])
+			else {
+				$(".view-more").attr('data-maxid', data[data.length - 1].id);
+				$(".view-more").removeClass('hidden');
 			}
 		})
+	}
+
+	function dataToElement(data) {
+		var tr = $("<tr>");
+		tr.append($('<td>').text(data['id'])).append($('<td>').text(data['text'])).append($('<td>').text(data['created_at'])).append($('<td>').text(data['favorite_count'])).append($('<td>').text(data['retweet_count'])).append($('<td>').text(data['lang'])).append($('<td>').text(data['source']));
+		
+		tr.appendTo($('tbody'));
+
 	}
 </script>
 {% endblock %}

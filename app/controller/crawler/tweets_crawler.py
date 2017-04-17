@@ -46,7 +46,7 @@ class TweetsCrawler:
 		sleep_count = 0
 		api_index = self.api_index
 		db = MongoDB().connect()
-		collect = db['tweets']
+		collect = db['tweets_task']
 
 		while len(tweets) > 0:
 			api_index = (api_index + 1) % ApiCount
