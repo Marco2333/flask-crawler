@@ -1,7 +1,6 @@
-from app.database import db
 from app.models import Task
 from twitter import error
-from flask import request, render_template, jsonify, session
+from flask import request, render_template, jsonify
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
 from crawler.relation_crawler import RelationCrawler
@@ -23,8 +22,8 @@ def get_user_tweets():
 		max_id = 1
 
 	max_id = long(max_id) - 1
-	# print max_id
 	tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = count)
+
 	res = []
 	for i in range(len(tweets)):
 		tweet = tweets[i]
@@ -60,7 +59,6 @@ def user_search_detail():
 	data = request.form['aoData']
 	term = request.form['term']
 
-	# print 1233
 	if term == '':
 		return jsonify({'data': []})
 

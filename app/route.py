@@ -44,16 +44,14 @@ def logout():
 
 @app.route('/toLogin',methods = ['POST'])
 def toLogin():
-    error = None
     userid = request.form['username']
     password = request.form['password']
    
-    # user = db.session.query(Admin).filter_by(userid = 123).one()
-    # user = Admin.query.filter(Admin.userid == '123').with_entities(Admin.password).one()
     user = Admin.query.filter(Admin.userid == userid).first()
     if not user or user.password != password:
         return jsonify({'status': 0})
 
     session['userid'] = userid
     session['username'] = user.username
+    
     return jsonify({'status': 1})

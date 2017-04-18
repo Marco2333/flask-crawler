@@ -2,9 +2,8 @@ import os
 
 class Config(object):
     DATABASE = 'sqlite:////tmp/app.db'
-    LOGGER_FILE = '/tmp/logger.log'
+    # LOGGER_FILE = '/tmp/logger.log'
     DEBUG = False
-    # TESTING = False
     SECRET_KEY = "z\xe5v\xf1'\xde\x99\xa3P|\xa8\xd25op\xdd\xe96\r\xd3\xb7o"
 
     MONGO_HOST = '127.0.0.1'
@@ -17,14 +16,9 @@ class Config(object):
     # MYSQL_DB = 'flask_crawler'
 
     SQLALCHEMY_DATABASE_URI = 'mysql://root:aliyunmysql@@127.0.0.1/flask_crawler'
-    # SQLALCHEMY_DATABASE_URI='sqlite:////tmp/app.db'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 
-    # SQLALCHEMY_BINDS={
-    #     'qeeniao_mysql':'mysql+mysqldb://root:''@127.0.0.1/qeeniao?charset=utf8'
-    # }
-
-    THREAD_NUM = 4
+    THREAD_NUM = 3
 
     APP_INFO = [{
             #========================50=======================================
@@ -320,17 +314,9 @@ class Config(object):
             'access_token_secret':'v4HeDHrPQgeWsLu1ZIkKP1HieObIO00uoJS6j802TFwQG'
         }
     ]
-    # file upload config
-    # UPLOAD_FOLDER= os.path.join(os.path.dirname(__file__),'static/uploads')
-    # ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 class ProductionConfig(Config):
-    
     pass
 
 class DevelopmentConfig(Config):
     DEBUG = True
-
-
-# class TestingConfig(Config):
-#     TESTING = True

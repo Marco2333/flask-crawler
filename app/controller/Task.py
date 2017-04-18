@@ -1,6 +1,5 @@
 import time
-import datetime
-import multiprocessing
+import threading
 
 from app.database import db
 from app.models import Task
@@ -36,8 +35,11 @@ def task_delete():
 def task_add():
 	return render_template('task_add.html')
 
-def task_process(screen_name):
-	print 123
+def tweet_process(screen_name):
+	tweets_crawler.get_user_all_timeline(screen_name = screen_name)
+
+def basicinfo_process(screen_name):
+	basicinfo_crawler.get_all_users([screen_name])
 
 def task_add_submit():
 	screen_name = request.form['search_name']
@@ -50,21 +52,12 @@ def task_add_submit():
 	db.session.add(task)
 	db.session.commit()
 
+	if search_type.find('1') != -1:
+		t = threading.Thread(target = tweets_crawler.get_user_all_timeline, args = (None, screen_name,))
+		t.start()
+	
+	if search_type.find('4') != -1:
+		t = threading.Thread(target = basicinfo_crawler.get_all_users, args = ([screen_name],))
+		t.start()
 
-	p1 = multiprocessing.Process(target = task_process, args = (screen_name,))
-	print p1
-	p1.start()
-
-	print 456
-	time.sleep(10)
 	return jsonify({'status': 1})
-
-
-	# tweets_crawler.get_user_all_timeline(screen_name)
-
-
-
-# if __name__ == '__main__':
-# 	p1 = multiprocessing.Process(target = task_process, args = ('mrmarcohan',))
-# 	print 7
-# 	p1.start()

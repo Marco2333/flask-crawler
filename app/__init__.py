@@ -1,20 +1,9 @@
 #-*- coding: euc-kr -*-
-# import os
+
 from flask import Flask
 from app import config
-# from flask.ext.sqlalchemy import SQLAlchemy
-# from config import basedir, DEBUG, USERNAME, PASSWORD
-# from momentjs import momentjs
-# from flask.ext.sqlalchemy import SQLAlchemy
-# from flaskext.markdown import Markdown
 
-# create our little application :)
 app = Flask(__name__)
 app.config.from_object(config.DevelopmentConfig)
-# db = SQLAlchemy(app)
-# Markdown(app)
 
 import route
-
-# from app import views, models
-# from jfilter import *

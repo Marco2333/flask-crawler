@@ -1,10 +1,8 @@
 # -*- coding:utf-8 -*-
-
 from sqlalchemy import Column, Integer, String, DateTime
 from app.database import db
 
 class Admin(db.Model):
-    # __bind_key__ = 'qeeniao_mysql'
     __tablename__ = 'admin'
     userid = Column(String(20), primary_key = True)
     username = Column(String(20))
@@ -14,9 +12,6 @@ class Admin(db.Model):
         self.userid = userid
         self.username = username
         self.password = password
-
-    # def __repr__(self):
-    #     return '<User %r>' % (self.username)
 
 
 class Task(db.Model):

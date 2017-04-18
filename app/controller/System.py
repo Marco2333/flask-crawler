@@ -1,12 +1,8 @@
-import time
-import datetime
-from app.database import db
 from app.models import Admin
-from flask import request, render_template, jsonify, session, jsonify
+from flask import request, render_template, jsonify, session
 
 def pass_change():
 	return render_template('pass_change.html')
-
 
 def pass_change_submit():
 	user = Admin.query.filter(Admin.userid == session['userid']).first()

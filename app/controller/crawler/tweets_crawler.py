@@ -4,11 +4,14 @@ import threading
 # from app.config import THREAD_NUM
 from twitter import error
 from app.api import ApiList, ApiCount
-# from database import MongoDB
+from pymongo import MongoClient
 
 class TweetsCrawler:
 	def __init__(self):
 		self.api_index = 0
+		client = MongoClient('127.0.0.1', 27017)
+		db_name = 'twitter'
+		self.db = client[db_name]
 		
 	def get_user_timeline(self,
 						  user_id = None,
@@ -33,25 +36,24 @@ class TweetsCrawler:
 
 		return tweets
 
-	def get_user_all_timeline(user_id = None,
+	def get_user_all_timeline(self, user_id = None,
 						  	  screen_name = None, 
 						  	  include_rts = True, 
 						  	  exclude_replies = False):
 
-		if users == None and screen_name == None:
+		if user_id == None and screen_name == None:
 			return
 
 		flag = True
 		tweets = [0]
 		sleep_count = 0
 		api_index = self.api_index
-		db = MongoDB().connect()
-		collect = db['tweets_task']
+
+		collect = self.db['tweet_task']
 
 		while len(tweets) > 0:
 			api_index = (api_index + 1) % ApiCount
 			api = ApiList[api_index]
-
 			try:
 				if flag:
 					tweets = api.GetUserTimeline(user_id = user_id, screen_name = screen_name, 
@@ -65,7 +67,8 @@ class TweetsCrawler:
 						 						trim_user = True, count = 200, max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
-				if te.message[0]['code'] == 88:
+				print te
+				if te.message['code'] == 88:
 					sleep_count += 1
 					if sleep_count == ApiCount:
 						print "sleeping..."
@@ -74,10 +77,10 @@ class TweetsCrawler:
 					continue
 				else:
 					break
-			except Exception as e:	
+			except Exception as e:
+				print e
 				break
-			
-				
+
 			for tt in tweets:
 				tweet = {
 					'coordinates': tt.coordinates,  # Coordinates
