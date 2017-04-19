@@ -1,27 +1,28 @@
 {% extends 'common/layout.html' %}
 {% block title %} 主頁 {% endblock %}
 {% block body %}
-    
-    <nav class="nav-top">
-        <div class="fl">
-            <span class="system-name">
-                <i class="glyphicon glyphicon-book"></i>
-                <span>Twitter Search</span>
-            </span>
-        </div>
-        <div class="fr one-line">
-            <i class="icon-user-md"></i>
-            {% if not session.username %}
-                <span class="user-name">{{ session.userid }}</span>
-            {% else %}
-                <span class="user-name">{{ session.username }}</span>
-            {% endif %}
-            <a href="{{ url_for('logout') }}">
-                <span>退出</span>
-            </a>
-        </div>
-    </nav>
 
+<nav class="nav-top">
+    <div class="fl">
+        <span class="system-name">
+            <i class="glyphicon glyphicon-book"></i>
+            <span>Twitter Search</span>
+        </span>
+    </div>
+    <div class="fr one-line">
+        <i class="icon-user-md"></i>
+        {% if not session.username %}
+            <span class="user-name">{{ session.userid }}</span>
+        {% else %}
+            <span class="user-name">{{ session.username }}</span>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+
+<div class="pr">
     <nav class="side-bar">
         <ul class="nav-list">
             <li class="nav-list-item">
@@ -32,14 +33,14 @@
                 </a>
                 <ul class="sub-list">
                     <li>
-                        <a href="javascript:openapp('{{ url_for('task_list') }}',1,'任务列表','进行中/已结束任务情况')">
+                        <a data-id="1" href="javascript:openapp('{{ url_for('task_list') }}',1,'任务列表','进行中/已结束任务情况')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>任务列表</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:openapp('{{ url_for('task_add') }}',2,'任务添加','新建任务后台运行')">
+                        <a data-id="2" href="javascript:openapp('{{ url_for('task_add') }}',2,'任务添加','新建任务后台运行')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>任务添加</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
@@ -55,21 +56,21 @@
                 </a>
                 <ul class="sub-list">
                     <li>
-                        <a href="javascript:openapp('{{ url_for('user_search') }}',3,'用户查询', '基于人物全名/部分名称显示相同/相关人物信息')">
+                        <a data-id="3" href="javascript:openapp('{{ url_for('user_search') }}',3,'用户查询', '基于人物全名/部分名称显示相同/相关人物信息')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>用户查询</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
                         </a>
                     </li>
                    <!--  <li>
-                        <a href="javascript:openapp('{{ url_for('relation_search') }}',4,'关系查询', '基于人物名称查询粉丝/关注的人物信息')">
+                        <a data-id="2" href="javascript:openapp('{{ url_for('relation_search') }}',4,'关系查询', '基于人物名称查询粉丝/关注的人物信息')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>关系查询</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
                         </a>
                     </li> -->
                     <li>
-                        <a href="javascript:openapp('{{ url_for('tweets_search') }}',5,'推文查询','基于人物名称查询推文信息')">
+                        <a data-id="4" href="javascript:openapp('{{ url_for('tweets_search') }}',5,'推文查询','基于人物名称查询推文信息')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>推文查询</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
@@ -85,14 +86,14 @@
                 </a>
                 <ul class="sub-list">
                     <li>
-                        <a href="javascript:openapp('{{ url_for('pass_change') }}',6,'密码修改','')">
+                        <a data-id="5" href="javascript:openapp('{{ url_for('pass_change') }}',6,'密码修改','')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>密码修改</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
                         </a>
                      </li>
                     <li>
-                        <a href="javascript:openapp('{{ url_for('system_help') }}',7,'系统说明','')">
+                        <a data-id="6" href="javascript:openapp('{{ url_for('system_help') }}',7,'系统说明','')">
                             <i class="glyphicon glyphicon-chevron-right"></i>
                             <span>系统说明</span>
                             <i class="glyphicon glyphicon-angle-right fr"></i>
@@ -105,16 +106,18 @@
 
     <div class="main-content">
         <div class="page-wrap">
-            <div class="page-top">
-                <span class="title">搜索推文</span>
-                <span class="sub-title">基于推文的名称显示发送推文的用户及相关信息</span>
+            <div class="page-top hidden">
+                <span class="title"></span>
+                <span class="sub-title"></span>
             </div>
             <div class="page-content">
-                <iframe data-id='0'  src="{{ url_for('task_list') }}" width="100%" height="100%" frameborder="0"></iframe>
+               
+                <iframe data-id='0'  src="{{ url_for('main') }}" width="100%" height="100%" frameborder="0"></iframe>
             </div>
         </div>
     </div>
-
+</div>
+   
     <script src="{{ url_for('static',filename='script/index.js')}}"></script>
 
 {% endblock %}

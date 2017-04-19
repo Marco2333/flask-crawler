@@ -2,13 +2,9 @@ import time
 import threading
 
 from app import app
-# from config import THREAD_NUM
 from twitter import error
 from app.api import ApiList, ApiCount
 from app.database import db
-# from app.database import Mysql
-
-
 
 class BasicinfoCrawler:
 	def __init__(self):
@@ -64,7 +60,6 @@ class BasicinfoCrawler:
 				screen_name = user_list.pop(0)
 				lock.release()
 
-			print screen_name
 			api = ApiList[api_index]
 			api_index = (api_index + 1) / ApiCount
 
@@ -87,7 +82,6 @@ class BasicinfoCrawler:
 				print e
 				continue
 
-			print 6
 			try:
 				is_translator = 0
 				if hasattr(user, "is_translator"):
@@ -116,8 +110,6 @@ class BasicinfoCrawler:
 				continue
 
 			try:
-				
-				# with app.app_context():
 				db.session.execute(sql)
 				db.session.commit()
 			except Exception as e:

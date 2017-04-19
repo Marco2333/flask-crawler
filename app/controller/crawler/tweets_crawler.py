@@ -111,7 +111,7 @@ class TweetsCrawler:
 					collect.insert_one(tweet)
 				except Exception as e:
 					continue
-	
+		
 
 	def get_all_users_timeline(user_list = None, 
 							   include_rts = True, 

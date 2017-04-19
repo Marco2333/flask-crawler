@@ -14,13 +14,6 @@ ul {
 .fr { 
     float: right;
 }
-.block { 
-    display: block;
-    zoom: 1;
-}
-.iblock{
-    display: inline-block;
-}
 .none { 
     display: none;
 }
@@ -39,38 +32,6 @@ ul {
 .pr {
     position: relative;
 }
-.pa {
-    position: absolute;
-}
-.pf {
-    position: fixed;
-}
-.one-line {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.center {
-    left: 50%;
-    top: 50%;
-    position: absolute;
-    -webkit-transform: translate3D(-50%,-50%,0);
-    -ms-transform: translate3D(-50%,-50%,0);
-    -moz-transform: translate3D(-50%,-50%,0);
-    -o-transform: translate3D(-50%,-50%,0);
-    transform: translate3D(-50%,-50%,0);
-    z-index: 100;
-}
-.transparent {
-    -webkit-opacity: 0;
-    -moz-opacity: 0;
-    -khtml-opacity: 0;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-}
-
 
 /*login*/
 #login-wrap {
@@ -184,7 +145,7 @@ ul {
     padding: 4px 0;
 }
 .page-top > .title {
-    font-size: 23px;
+    font-size: 22px;
     margin-right: 8px;
 }
 .page-top .sub-title {
@@ -197,12 +158,11 @@ ul {
 }
 .page-content {
     position: relative;
-    overflow: hidden;
+    overflow: auto;
 }
 .page-content iframe {
     position: absolute;
     left: 0;
-    top: 0;
     width: 100%;
     height: 100%;
     border: none;
@@ -210,25 +170,11 @@ ul {
 .page-content .current {
     z-index: 99;
 }
-.table-border {
-    border: 1px solid #bbb;
-}
-.table-border th {
-    border-right: 1px solid #ddd;
-    background-color: #f5fafe;
-    white-space: nowrap;
-}
-.table-border th:last-child {
-    border-right: none;
-}
-.table-border td {
-    border-right: 1px solid #ddd;
-}
-.table-border tr:last-child td {
-    border-bottom: none;
-}
-.table-border tbody tr td:last-child {
-    border-right: none;
+
+/*table*/
+.table-wrap {
+    font-size:15px;
+    margin-top: 28px;
 }
 .table a {
     cursor: pointer;
@@ -236,10 +182,24 @@ ul {
 .table tbody tr:hover {
     background-color: #f4f4f4;
 }
-.content-wrap {
-    padding: 22px 16px;
+.table-bordered {
+    border: 1px solid #f4f4f4;
 }
-
+.table-bordered>thead>tr>th, 
+.table-bordered>tbody>tr>th, 
+.table-bordered>tfoot>tr>th, 
+.table-bordered>thead>tr>td, 
+.table-bordered>tbody>tr>td, 
+.table-bordered>tfoot>tr>td {
+    border: 1px solid #f4f4f4;
+}
+.table-bordered > thead > tr > th {
+    color: #3c8dbc;
+    text-align: center;
+    border: none;
+    white-space: nowrap;
+    border-top: none;
+}
 /*task-list*/
 .dataTables_filter input {
     width: 150px;
@@ -254,7 +214,9 @@ ul {
     border-color: #66afe9;
     box-shadow: 0 0 15px #66afe9;
 }
-
+.content-wrap {
+    padding: 22px 16px;
+}
 /*system_help*/
 .system-help li {
     font-size: 15px;

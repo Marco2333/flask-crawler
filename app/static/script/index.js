@@ -1,6 +1,7 @@
 $(document).ready(function() {
-	var ph = $(window).height() - 80;
-	$(".page-content").css("height", ph);
+	var ph = $(window).height() - 46;
+	$(".page-wrap").css("height", ph);
+	$(".page-content").css("height", ph - 60);
 	$(".nav-list-item a").click(function() {
 		$(this).parent(".nav-list-item").toggleClass("active");
 		$(this).next(".sub-list").toggle(200);
@@ -18,44 +19,19 @@ $(document).ready(function() {
 		$(this).siblings().removeClass('active');
 	});
 
+	$(".sub-list a").dblclick(function() {
+		var href = $(this).attr('href').split(":")[1];
+		href = href.substring(0, href.length - 1) + ", true)";
+		eval(href);
+		// openapp('/tweets_search', $(this).attr('data-id'), '推文查询', '基于人物名称查询推文信息', true);
+	});
+
 	$(window).resize(function() {
-		var ph = $(window).height() - 80;
-		$(".page-content").css("height", ph);
+		var ph = $(window).height() - 46;
+		$(".page-wrap").css("height", ph);
+		$(".page-content").css("height", ph - 60);
 	});
 });
-
-$(document).ready(function() {
-	// $(".tab-nav").on('click', 'li', function() {
-	// 	$(".nav-list li").removeClass('active');
-	// });
-	// $(".tab-nav").on('dblclick', 'li', function() {
-	// 	closeApp($(this).attr('data-id'));
-	// });
-	// $(".tab-arrow-l").click(function() {
-	// 	var left = parseInt($('.tab-nav > ul').css('left'));
-	// 	left = left + 70 > 0 ? 0 : left + 70;
-	// 	$(".tab-nav > ul").animate({
-	// 		left: left + "px"
-	// 	}, 200);
-	// });
-	// $(".tab-arrow-r").click(function() {
-	// 	var left = parseInt($('.tab-nav > ul').css('left'));
-	// 	left = left - 70 > -$(".tab-nav").width() + 10 ? left - 70 : left;
-	// 	$(".tab-nav > ul").animate({
-	// 		left: left + "px"
-	// 	}, 100);
-	// });
-	// $(window).resize(function() {
-	// 	throttle(tabResponse, window);
-	// });
-});
-
-// function throttle(fn, context) {
-// 	clearTimeout(fn.tid);
-// 	fn.tid = setTimeout(function() {
-// 		fn.call(context);
-// 	}, 200);
-// }
 
 function openapp(url, appid, title, subTitle, refesh) {
 	var i, len, flag = 0;
@@ -77,4 +53,5 @@ function openapp(url, appid, title, subTitle, refesh) {
 	} else if (refesh) {
 		iframeList[i].contentWindow.location.reload(true);
 	}
+	$(".page-top").removeClass('hidden');
 }

@@ -17,6 +17,7 @@ app.add_url_rule('/relation_search', 'relation_search', Search.relation_search)
 app.add_url_rule('/tweets_search', 'tweets_search', Search.tweets_search)
 app.add_url_rule('/get_user_tweets', 'get_user_tweets', Search.get_user_tweets, methods = ['POST'])
 
+app.add_url_rule('/main', 'main', System.main)
 app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
 app.add_url_rule('/system_help', 'system_help', System.system_help)
 app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])
@@ -54,4 +55,5 @@ def toLogin():
     session['userid'] = userid
     session['username'] = user.username
     
+    # app.config['login'] = True
     return jsonify({'status': 1})

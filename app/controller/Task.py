@@ -1,9 +1,11 @@
 import time
 import threading
 
+from app import app
+from app.controller import verify
 from app.database import db
 from app.models import Task
-from flask import request, render_template, jsonify, session
+from flask import request, render_template, jsonify, session, url_for, redirect
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
 from crawler.relation_crawler import RelationCrawler
@@ -13,6 +15,7 @@ basicinfo_crawler = BasicinfoCrawler()
 relation_crawler = RelationCrawler()
 tweets_crawler = TweetsCrawler()
 
+@verify
 def task_list():
 	tasks = Task.query.filter().all()
 
@@ -23,6 +26,7 @@ def task_list():
 
 	return render_template('task_list.html', tasks = tasks)
 
+@verify
 def task_delete():
 	id = request.form['id']
 	res = Task.query.filter(Task.id == id).delete()
@@ -32,15 +36,21 @@ def task_delete():
 	else:
 		return jsonify({'status': 0})
 
+@verify
 def task_add():
 	return render_template('task_add.html')
 
-def tweet_process(screen_name):
+def tweet_process(screen_name, task_id):
 	tweets_crawler.get_user_all_timeline(screen_name = screen_name)
+	with app.app_context():
+		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
-def basicinfo_process(screen_name):
+def basicinfo_process(screen_name, task_id):
 	basicinfo_crawler.get_all_users([screen_name])
+	with app.app_context():
+		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
+@verify
 def task_add_submit():
 	screen_name = request.form['search_name']
 	search_type = request.form['type']
@@ -53,11 +63,11 @@ def task_add_submit():
 	db.session.commit()
 
 	if search_type.find('1') != -1:
-		t = threading.Thread(target = tweets_crawler.get_user_all_timeline, args = (None, screen_name,))
+		t = threading.Thread(target = tweet_process, args = (screen_name, task.id))
 		t.start()
 	
 	if search_type.find('4') != -1:
-		t = threading.Thread(target = basicinfo_crawler.get_all_users, args = ([screen_name],))
+		t = threading.Thread(target = basicinfo_process, args = (screen_name, task.id))
 		t.start()
 
 	return jsonify({'status': 1})

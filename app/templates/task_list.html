@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 
 <div class="content-wrap">
-	<table class="table table-border" style="font-size:15px">
+	<table class="table table-bordered table-striped" style="font-size:15px">
 		<thead>
 			<tr>
 				<th>任务ID</th>
@@ -19,24 +19,23 @@
 				<th>备注</th>
 				<th>操作</th>
 			</tr>
-			<tbody>
-
-				{% for task in tasks %}
-					<tr>
-						<td>{{ task['id'] }}</td>
-						<td>{{ task['task_name'] }}</td>
-						<td>{{ task['created_at'].date() }}</td>
-						<td>{{ task['userid'] }}</td>
-						<td>{{ task['search_name'] }}</td>
-						<td>{{ task['search_type'] }}</td>
-						<td>{{ task['finished_at'] and task['finished_at'].date or ''}}</td>
-						<td>{{ task['remark'] }}</td>
-						<td><a class="task-delete" data-id={{task['id']}}>删除</a></td>
-					</tr>
-				{% endfor %}
-
-			</tbody>
 		</thead>
+		<tbody>
+			{% for task in tasks %}
+				<tr>
+					<td>{{ task['id'] }}</td>
+					<td>{{ task['task_name'] }}</td>
+					<td>{{ task['created_at'].date() }}</td>
+					<td>{{ task['userid'] }}</td>
+					<td>{{ task['search_name'] }}</td>
+					<td>{{ task['search_type'] }}</td>
+					<td>{{ task['created_at'].date()}}</td>
+					<td>{{ task['remark'] }}</td>
+					<td><a class="task-delete" data-id={{task['id']}}>删除</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		
 	</table>
 </div>
 
@@ -75,12 +74,12 @@
 	        "bSort": false,
 	        "bPaginate": true, 
 	        "bProcessing": true,
-	        "iDisplayLength": 20, 
+	        "iDisplayLength": 10, 
 	        "bFilter": true,
 	        "bLengthChange": true, 
 	        "bStateSave": false, 
 	        "searching":true,
-	        "aLengthMenu":[ 20, 50, 75, 100 ]
+	        "aLengthMenu":[ 10, 25, 50, 100 ]
 	    });
 
 	    $(".task-delete").click(function(event) {
