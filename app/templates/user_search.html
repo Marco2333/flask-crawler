@@ -13,7 +13,7 @@
 	</div>
 	<div class="table-wrap">
 	    <table class="table table-bordered table-striped">
-	          <thead>
+	        <thead>
 	          	<tr>
 	          		<th>screen_name</th>
 	          		<th>name</th>
@@ -25,15 +25,17 @@
 	          		<th>语言</th>
 	          		<th>操作</th>
 	          	</tr>
-	           </thead>
+	        </thead>
 	     	<tbody>
 	     	</tbody>
 	     </table>
 	</div>
 </div>
 <style>
-	#DataTables_Table_0_filter {}
-	.dataTables_paginate {display: none;}
+	#DataTables_Table_0_filter {display: none}
+	.dataTables_paginate {display: none}
+	.dataTables_length {position: absolute; top: -45px; right: 0}
+	.dataTables_length select {outline: none;height: 26px}
 </style>
 <script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript">
@@ -56,7 +58,7 @@
 				alert('用户名称长度不能大于20！');
 				return;
 			}
-			$("#DataTables_Table_0_filter input").val($(this).val()).trigger('keyup');
+			$("#DataTables_Table_0_filter input").val(screen_name).trigger('keyup');
 		});
 		var dataTableOut = $('table').dataTable( {
 		       	language: {
@@ -87,11 +89,10 @@
 		        "searching":true,
 		        "bProcessing": true,
 		        "bServerSide": true,
-		        "iDisplayLength": 20, 
-		        // "bPaginate": false,
+		        "iDisplayLength": 10,
 		        // "sPaginationType": "two_button",
 		        "fnServerData": retrieveData,
-		        "aLengthMenu": [ 20, 50, 100, 200 ],
+		        "aLengthMenu": [ 10, 20, 40, 100 ],
 		        "sAjaxSource": "{{ url_for('user_search_detail') }}",
 		        "aoColumns": [
 		             {"mDataProp":"screen_name"},
@@ -101,8 +102,7 @@
 		             {"mDataProp":"followers_count"},
 		             {"mDataProp":"friends_count"},
 		             {"mDataProp":"statuses_count"},
-		             {"mDataProp":"lang"},
-		             {"mDataProp":""}
+		             {"mDataProp":"lang"}
 		        ]//$_GET['sColumns']将接收到aoColumns传递数据
 		   });  
 	})
@@ -116,6 +116,16 @@
 	        async : false,
 	        success : function(result) {
 	            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+	            var trList = $(".table tbody tr");
+                var employee_id, id;     
+          		if(result['aaData'].length == 0) {
+          			return;
+          		}
+                trList.each(function(){  
+                    var screen_name = $(this).children().eq(0).text();
+                    var a = $("<a>").attr('href', "user_profile/" + screen_name).text("详情");
+                    $("<td>").append(a).appendTo($(this))
+                });
 	        },
 	        error : function(msg) {
 	        }

@@ -229,3 +229,16 @@ ul {
     background: #f0f0f0;
     cursor: pointer;
 }
+
+/*user-profile*/
+.profile-img {
+    text-align: center;
+}
+.profile-img > img {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+}
+.profile-img + h3 {
+    margin-top: 10px;
+}

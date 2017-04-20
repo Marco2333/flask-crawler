@@ -115,3 +115,9 @@ class BasicinfoCrawler:
 			except Exception as e:
 				print e
 				continue
+
+	def get_user_search(self, term = None, page = 1, count = 20, include_entities = True):
+		api = ApiList[self.api_index]
+		self.api_index = (self.api_index + 1) / ApiCount
+
+		return api.GetUsersSearch(term = term, page = page, count = count, include_entities = include_entities)

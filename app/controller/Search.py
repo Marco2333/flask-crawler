@@ -1,6 +1,7 @@
 import time
 import urllib
 import json
+import re
 
 from app.controller import verify
 from app.models import Task
@@ -33,18 +34,17 @@ def get_user_tweets():
 	tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = count)
 
 	res = []
-	for i in range(len(tweets)):
-		tweet = tweets[i]
+	for tweet in tweets:
 		res.append({
 			'id': tweet.id,
-			'text':tweet.text,
-			'created_at':tweet.created_at,
+			'text':len(tweet.text) > 48 and tweet.text[0 : 48] + " ..." or tweet.text,
+			'created_at':time.strftime('%Y-%m-%d', time.strptime(tweet.created_at.replace('+0000 ',''))),
 			'favorite_count':tweet.favorite_count,
 			'retweet_count':tweet.retweet_count,
 			'lang':tweet.lang,
-			'source':tweet.source
+			'source':re.sub(r'^<a href.+?>','',tweet.source)[0 : -4]
 		})
-
+		
 	return jsonify(res)
 
 @verify
@@ -74,18 +74,32 @@ def user_profile(screen_name):
 	except error.TwitterError as te:
 		pass
 
-	# get_image(user.default_profile_image, screen_name)
-	# print user.created_at
-	# print time.strptime(user.created_at, '%a %b %d %H:%M:%S +0000 %Y')
-	# print time.strftime('%Y-%m-%d', time.strptime(user.created_at))
+	try:
+		tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, count = 30)
+
+		res = []
+		for tweet in tweets:
+			res.append({
+				'id': tweet.id,
+				'text':len(tweet.text) > 48 and tweet.text[0 : 48] + " ..." or tweet.text,
+				'created_at':time.strftime('%Y-%m-%d', time.strptime(tweet.created_at.replace('+0000 ',''))),
+				'favorite_count':tweet.favorite_count,
+				'retweet_count':tweet.retweet_count,
+				'lang':tweet.lang,
+				'source':re.sub(r'^<a href.+?>','',tweet.source)[0 : -4]
+			})
+
+	except error.TwitterError as te:
+		pass
+
 	user.created_at = time.strftime('%Y-%m-%d', time.strptime(user.created_at.replace('+0000 ','')))
 
-	# time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))}
-	return render_template('user_profile.html', user = user, followers = followers, friends = friends)
+	get_image(user.profile_image_url, screen_name)
 
-def getImage(url, screen_name):  
-    urllib.urlretrieve(url, url_for('static',filename='profile/%s.jpg' % screen_name))  
-     
+	return render_template('user_profile.html', user = user, followers = followers, friends = friends, tweets = res)
+
+def get_image(url, screen_name):
+	urllib.urlretrieve(url.replace('normal.','bigger.'), 'app/static/profile/%s.jpg' % screen_name)
 
 @verify
 def user_search_detail():
@@ -96,43 +110,54 @@ def user_search_detail():
 			s_search = item['value']
 			break
 
-		# if data[i]['name'] == 'iDisplayStart':
-		# 	data_start = data[i]['value']
+		if item['name'] == 'iDisplayLength':
+			data_length = item['value']
 
-		# if data[i]['name'] == 'iDisplayLength':
-		# 	data_length == data[i]['value']
+	if s_search == '':
+		return jsonify({'aaData': []})
 
-		# if data[i]['name'] == 'sEcho':
-		# 	s_echo = data[i]['value']
+	data_length  = int(data_length)
+	if data_length > 100:
+		data_length = 100
 
-	print s_search	
+	page = 1
+	flag = True
+	count = data_length / 20
+	user_list = []
 
+	while count > 0:
+		user_temp = basicinfo_crawler.get_user_search(term = s_search, count = 20, page = page)
+		user_list.extend(user_temp)
+		page += 1
 
-	return jsonify({'data': []})
-	# $data = json_decode(html_entity_decode(I('aoData')),true);
-	#     if( strlen(trim($sSearch)) == 0 ) {  
-	#         $count = $Model->query("select count(*) as ct from rt_teacher");
-	#         $infolist = $Model->query("select * from rt_teacher limit ".$dataStart.",".$dataLength);
-	#     }
-	#     else {
-	#         $field = array("employee_id","name","gender","nation","date_format(birth_date,'%Y-%c-%d')","date_format(work_date,'%Y-%c-%d')","date_format(submit_date,'%Y-%c-%d')","positional_title","education_background",
-	#             "politics_status","homephone","mobilephone","rank","identity_card_number","department",
-	#             "home_address","status","native_place","physical_condition","tips1", "tips2", "tips3" );
-	#         $sqlstring = "select * from rt_teacher where ";
-	#         for ($i=0; $i < count($field)-1; $i++) { 
-	#             $sqlstring = $sqlstring.$field[$i]." like "."'%".$sSearch."%' "."or "     ;
-	#         }
-	#         $sqlstring= $sqlstring."tips3"." like "."'%".$sSearch."%' ";
-	#         $count = $Model->query(str_replace("*","count(*) as ct",$sqlstring));
-	#         $infolist = $Model->query($sqlstring." limit ".$dataStart.",".$dataLength);
-	#     }
-	#     $res['sEcho'] = $sEcho;
-	#     $res['status'] = 1;
-	#     $res['iTotalRecords'] = $count[0]['ct'];
-	#     $res['iTotalDisplayRecords'] = $count[0]['ct'];
-	#     $res['aaData'] = $infolist;
-	#     $this->ajaxReturn($res);
-	# }
+		if len(user_temp) < 20:
+			flag = False
+			break
+
+		count -= 1
+
+	if data_length % 20 != 0 and flag:	
+		user_list.extend(basicinfo_crawler.get_user_search(term = s_search, page = page, count = data_length % 20))
+
+	res = []
+	for user in user_list:
+		if user.description != '':
+			description = len(user.description) < 28 and user.description or user.description[0 : 28] + " ..."
+		else :
+			description = ''
+
+		res.append({
+			'screen_name': user.screen_name,
+			'name': user.name,
+			'created_at': time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user.created_at.replace('+0000 ',''))),
+			'description': description,
+			'followers_count': user.followers_count,
+			'friends_count': user.friends_count,
+			'statuses_count': user.statuses_count,
+			'lang': user.lang
+		})
+
+	return jsonify({'aaData': res})
 
 @verify
 def relation_search():
