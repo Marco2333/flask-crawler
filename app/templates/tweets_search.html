@@ -6,6 +6,11 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 
 <div class="content-wrap">
+	<div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>推文查询：根据用户screen_name查询用户的所有推文信息</strong>
+    </div>
+
 	<div class="clearfix input-group">
 		<input class="form-control"  type="text" placeholder="请输入人物名称" style="width:200px">
 		<span class="input-group-btn fl">

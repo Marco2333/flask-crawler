@@ -5,7 +5,14 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 
+
 <div class="content-wrap">
+	
+	<div class="alert alert-success fade in">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    <strong>任务列表：查看已提交任务完成情况</strong>
+	</div>
+
 	<table class="table table-bordered table-striped" style="font-size:15px">
 		<thead>
 			<tr>
@@ -82,7 +89,7 @@
 	        "aLengthMenu":[ 10, 25, 50, 100 ]
 	    });
 
-	    $(".task-delete").click(function(event) {
+	    $("table").on('click', '.task-delete', function(event) {
 	    	if(!confirm("确认删除？删除后不可恢复")) {
 	    		event.preventDefault();
 	    		return;

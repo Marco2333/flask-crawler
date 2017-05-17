@@ -5,6 +5,11 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 <div class="content-wrap">
+	<div class="alert alert-info fade in">
+        <button class="close" data-dismiss="alert">&times;</button>
+        <strong>用户查询：根据用户screen_name查看相关用户的基本信息/部分朋友以及粉丝信息/部分推文信息</strong>
+    </div>
+
 	<div class="clearfix input-group">
 		<input id="search-input" class="form-control"  type="text" placeholder="请输入人物名称" style="width:200px">
 		<span class="input-group-btn fl">
@@ -102,6 +107,7 @@
 		             {"mDataProp":"followers_count"},
 		             {"mDataProp":"friends_count"},
 		             {"mDataProp":"statuses_count"},
+		             {"mDataProp":"lang"},
 		             {"mDataProp":"lang"}
 		        ]//$_GET['sColumns']将接收到aoColumns传递数据
 		   });  
@@ -124,7 +130,8 @@
                 trList.each(function(){  
                     var screen_name = $(this).children().eq(0).text();
                     var a = $("<a>").attr('href', "user_profile/" + screen_name).text("详情");
-                    $("<td>").append(a).appendTo($(this))
+                    // $("<td>").append(a).appendTo($(this))
+                    $(this).find('td').last().empty().append(a);
                 });
 	        },
 	        error : function(msg) {

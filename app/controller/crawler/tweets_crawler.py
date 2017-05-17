@@ -89,18 +89,14 @@ class TweetsCrawler:
 					'filter_level': tt.filter_level if hasattr(tt, 'filter_level') else '', # String
 					'hashtags': map(lambda x: x.text, tt.hashtags), # {'0': ,'1':}
 					'_id': tt.id_str, # String
-					# 'in_reply_to_screen_name': tt.in_reply_to_screen_name,
 					'in_reply_to_status_id': tt.in_reply_to_status_id,
 					'in_reply_to_user_id': tt.in_reply_to_user_id,
 					'lang': tt.lang, # String
-					# 'media': tt.media,
 					'place': tt.place, # Place
 					'possibly_sensitive': tt.possibly_sensitive, # Boolean
 					'retweet_count': tt.retweet_count, # int
 					'source': tt.source, # String
 					'text': tt.text, # String
-					# 'truncated': tt.truncated,
-					# 'urls': tt.urls, # []
 					'user_id': tt.user.id, # int
 					'user_mentions': map(lambda x: x.id, tt.user_mentions), # []
 					'withheld_copyright': tt.withheld_copyright, # Boolean
@@ -124,13 +120,10 @@ class TweetsCrawler:
 		thread_pool = []
 		self.lock = threading.Lock()
 
-		THREAD_NUM = app
-		while i < THREAD_NUM:
 
-			threads.append(threading.Thread(target = get_users_timeline_thread, 
+		while i < 6:
+			threads_pool.append(threading.Thread(target = get_users_timeline_thread, 
 											args = (user_list, include_rts, exclude_replies)))
-			craw_thread.start()
-			thread_pool.append(craw_thread)
 			i = i + 1
 
 		for thread in thread_pool:

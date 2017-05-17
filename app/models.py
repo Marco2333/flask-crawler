@@ -25,11 +25,20 @@ class Task(db.Model):
     search_type = Column(Integer)
     remark = Column(String(300))
 
-    def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
-        self.task_name = task_name
-        self.userid = userid
-        self.created_at = created_at
-        self.finished_at = finished_at
-        self.search_type = search_type
-        self.search_name = search_name
-        self.remark = remark
+    thread_num = Column(Integer)
+    deepth = Column(Integer)
+    style = Column(Integer)
+    extension = Column(Integer)
+    tweet_num = Column(Integer)
+    friends_num = Column(Integer)
+    followers_num = Column(Integer)
+    basicinfo_num = Column(Integer)
+
+    # def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
+    #     self.task_name = task_name
+    #     self.userid = userid
+    #     self.created_at = created_at
+    #     self.finished_at = finished_at
+    #     self.search_type = search_type
+    #     self.search_name = search_name
+    #     self.remark = remark
