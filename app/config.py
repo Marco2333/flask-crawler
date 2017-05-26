@@ -14,8 +14,8 @@ class Config(object):
     # MYSQL_USER = 'root'
     # MYSQL_PASS = '283319'
     # MYSQL_DB = 'flask_crawler'
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:283319@127.0.0.1/flask_crawler'
-    # SQLALCHEMY_DATABASE_URI = 'mysql://root:aliyunmysql@@127.0.0.1/flask_crawler'
+    # SQLALCHEMY_DATABASE_URI = 'mysql://root:283319@127.0.0.1/flask_crawler'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:aliyunmysql@@127.0.0.1/flask_crawler'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 
     THREAD_NUM = 3

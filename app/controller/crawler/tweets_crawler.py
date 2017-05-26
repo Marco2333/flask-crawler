@@ -37,6 +37,7 @@ class TweetsCrawler:
 		return tweets
 
 	def get_user_all_timeline(self, user_id = None,
+							   collect_name = "tweet_task",
 						  	  screen_name = None, 
 						  	  include_rts = True, 
 						  	  exclude_replies = False):
@@ -49,7 +50,7 @@ class TweetsCrawler:
 		sleep_count = 0
 		api_index = self.api_index
 
-		collect = self.db['tweet_task']
+		collect = self.db[collect_name]
 
 		while len(tweets) > 0:
 			api_index = (api_index + 1) % ApiCount
@@ -119,7 +120,6 @@ class TweetsCrawler:
 		i = 0
 		thread_pool = []
 		self.lock = threading.Lock()
-
 
 		while i < 6:
 			threads_pool.append(threading.Thread(target = get_users_timeline_thread, 

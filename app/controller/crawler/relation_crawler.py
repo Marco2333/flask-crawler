@@ -34,7 +34,7 @@ class RelationCrawler:
 			                      include_user_entities = include_user_entities)
 
 		return friends
-
+		
 	def get_friendids_paged(self,
 	                        user_id = None,
 	                        screen_name = None,
@@ -47,12 +47,28 @@ class RelationCrawler:
 		api = ApiList[self.api_index]
 		self.api_index = (self.api_index + 1) / ApiCount
 
-		friends = api.GetFriendIDsPaged(user_id = user_id,
-					                    screen_name = screen_name,
-					                    cursor = cursor,
-					                    count = count,
-					                    stringify_ids = stringify_ids)
+		try:
+			friends = api.GetFriendIDsPaged(user_id = user_id,
+						                    screen_name = screen_name,
+						                    cursor = cursor,
+						                    count = count,
+						                    stringify_ids = stringify_ids)
 
+		except error.TwitterError as te:
+			print te
+			if te.message['code'] == 88:
+				sleep_count += 1
+				if sleep_count == ApiCount:
+					print "sleeping..."
+					sleep_count = 0
+					time.sleep(700)
+				return
+			else:
+				return
+		except Exception as e:
+			print e
+			return
+				
 		return friends
 
 	def get_friends(self,
@@ -154,7 +170,7 @@ class RelationCrawler:
 
 		return followers
 
-	def get_followersids_paged(self,
+	def get_followerids_paged(self,
 		                       user_id = None,
 		                       screen_name = None,
 		                       cursor = -1,
@@ -167,7 +183,7 @@ class RelationCrawler:
 		api = ApiList[self.api_index]
 		self.api_index = (self.api_index + 1) / ApiCount
 
-		followers = api.GetFollowersIDsPaged(user_id = user_id,
+		followers = api.GetFollowerIDsPaged(user_id = user_id,
 						                 	 screen_name = screen_name,
 						                 	 cursor = cursor,
 						                 	 count = count,

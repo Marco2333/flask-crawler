@@ -27,7 +27,7 @@ class Task(db.Model):
 
     thread_num = Column(Integer)
     deepth = Column(Integer)
-    style = Column(Integer)
+    # style = Column(Integer)
     extension = Column(Integer)
     tweet_num = Column(Integer)
     friends_num = Column(Integer)
