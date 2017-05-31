@@ -1,4 +1,5 @@
 import socket
+import hashlib
 
 from app.controller import verify
 from app.models import Admin
@@ -11,13 +12,13 @@ def pass_change():
 @verify
 def pass_change_submit():
 	user = Admin.query.filter(Admin.userid == session['userid']).first()
-	if user.password != request.form['password']:
+	if user.password != md5(request.form['password']):
 		return jsonify({'status': 0})
 
 	if request.form['new_password'] != request.form['confirm_password']:
 		return jsonify({'status': 1})
 
-	res = Admin.query.filter(Admin.userid == session['userid']).update({Admin.password: request.form['new_password'] })
+	res = Admin.query.filter(Admin.userid == session['userid']).update({Admin.password: md5(request.form['new_password']) })
 	
 	if res == None:
 		return jsonify({'status': 2})
@@ -35,3 +36,7 @@ def main():
 
 	return render_template('main.html', user_agent = request.user_agent, remote_addr = request.remote_addr, server_name = server_name, server_addr = server_addr)
 
+def md5(str):
+    m = hashlib.md5()   
+    m.update(str)
+    return m.hexdigest()

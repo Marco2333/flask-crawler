@@ -1,3 +1,4 @@
+import hashlib
 from app import app
 from database import db
 from models import Admin
@@ -16,6 +17,8 @@ app.add_url_rule('/user_search_detail', 'user_search_detail', Search.user_search
 app.add_url_rule('/relation_search', 'relation_search', Search.relation_search)
 app.add_url_rule('/tweets_search', 'tweets_search', Search.tweets_search)
 app.add_url_rule('/get_user_tweets', 'get_user_tweets', Search.get_user_tweets, methods = ['POST'])
+app.add_url_rule('/get_user_friends', 'get_user_friends', Search.get_user_friends, methods = ['POST'])
+app.add_url_rule('/get_user_followers', 'get_user_followers', Search.get_user_followers, methods = ['POST'])
 
 app.add_url_rule('/main', 'main', System.main)
 app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
@@ -47,9 +50,12 @@ def logout():
 def toLogin():
     userid = request.form['username']
     password = request.form['password']
-   
+
+    m = hashlib.md5()
+    m.update(password)
+
     user = Admin.query.filter(Admin.userid == userid).first()
-    if not user or user.password != password:
+    if not user or user.password != m.hexdigest():
         return jsonify({'status': 0})
 
     session['userid'] = userid

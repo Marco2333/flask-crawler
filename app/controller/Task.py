@@ -147,15 +147,23 @@ def thread_extension(user_list, user_id, tweet_num, deepth, extension):
 	bloom_filter = None
 
 
-# def basicinfo_process(args):
-# 	basicinfo_crawler.get_all_users([screen_name])
-# 	with app.app_context():
-# 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+def friends_process(args):
+	user_list = []
+	collect_name = "task_" + str(args['id'])
+	tweets_crawler.get_user_all_timeline(screen_name = args['screen_name'], collect_name = collect_name)
 
-# def friends_process(args):
-# 	tweets_crawler.get_user_all_timeline(screen_name = screen_name)
-# 	with app.app_context():
-# 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+	thread_num = int(args['thread_num'])
+	tweet_num = int(args['tweet_num'])
+	deepth = int(args['deepth'])
+	extension = int(args['extension'])
+
+	user = basicinfo_crawler.get_user(screen_name = args['screen_name'])
+
+
+	 
+	tweets_crawler.get_user_all_timeline(screen_name = screen_name)
+	with app.app_context():
+		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 # def followers_process(args):
 # 	basicinfo_crawler.get_all_users([screen_name])
@@ -218,8 +226,8 @@ def task_add_submit():
 	# args['style'] = style
 	args['extension'] = extension
 
-	args['tweet_num'] = tweet_num
 	if st.find('1') != -1:
+		args['tweet_num'] = tweet_num
 		t = threading.Thread(target = tweet_process, args = (args, ))
 		t.start()
 	
@@ -233,9 +241,9 @@ def task_add_submit():
 	# 	t = threading.Thread(target = followers_process, args = args)
 	# 	t.start()
 
-	# args['basicinfo_num'] = basicinfo_num
-	# if st.find('4') != -1:
-	# 	t = threading.Thread(target = basicinfo_process, args = args)
-	# 	t.start()
+	if st.find('4') != -1:
+		args['basicinfo_num'] = basicinfo_num
+		t = threading.Thread(target = basicinfo_process, args = args)
+		t.start()
 
 	return render_template('task_add.html', status = 1)
