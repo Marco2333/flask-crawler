@@ -4,27 +4,37 @@
 {% block body %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
-
+<style>.input-group .width-200{width:200px}.input-group .width-150{width:150px}</style>
 <div class="content-wrap">
+
+	<div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>推文查询：根据用户screen_name查询用户的人物关系信息</strong>
+    </div>
+
 	<div class="clearfix input-group">
-		<input class="form-control"  type="text" placeholder="请输入人物名称" style="width:200px">
+		<input id="input-one" class="form-control width-200" placeholder="请输入人物名称">
+		<input id="input-two" class="form-control width-150 hidden" placeholder="请输入人物名称" style="border-left:none">
 		<span class="input-group-btn fl">
             <button id="search-button" class="btn btn-primary" type="button">查询</button>
         </span>
 	</div>
 	
-	<ul id="realtion-tab" class="nav nav-tabs" style="font-size:15px;"> 
+	<ul id="realtion-tab" class="nav nav-tabs" style="margin-top: 20px"> 
 	    <li class="active">
-	        <a href="#follower" data-toggle="tab">他的粉丝</a>
+	        <a href="#friends" data-toggle="tab">他的朋友</a>
 	    </li>
 	    <li>
-	    	<a href="#friends" data-toggle="tab">他的朋友</a>
+	    	<a href="#followers" data-toggle="tab">他的粉丝</a>
+	    </li>
+	    <li>
+	    	<a href="#relation-confirm" data-toggle="tab">关系确认</a>
 	    </li>
 	</ul>
-	<div id="tab-content" class="tab-content" style="margin-top: 20px;">
-	    <div class="tab-pane fade" id="friends">
+	<div class="tab-content">
+	    <div class="tab-pane active in fade" id="friends">
 	       <div class="table-wrap">
-   		        <table class="table table-border">
+   		        <table class="table table-bordered table-striped">
    	        		<thead>
    	        			<tr>
    	        				<th>screen_name</th>
@@ -42,11 +52,11 @@
    	        		</thead>
    	        	</table>
    	    	</div>
-   			<div class="view-more hidden"><a>查看更多推文</a></div>
+   			<div class="view-more hidden"><a>查看更多朋友</a></div>
 	    </div>
-	    <div class="tab-pane fade active in" id="followers">
+	    <div class="tab-pane fade" id="followers">
 	    	<div class="table-wrap">
-		        <table class="table table-border">
+		        <table class="table table-bordered table-striped">
 	        		<thead>
 	        			<tr>
 	        				<th>screen_name</th>
@@ -64,35 +74,107 @@
 	        		</thead>
 	        	</table>
 	    	</div>
-			<div class="view-more hidden"><a>查看更多推文</a></div>
+			<div class="view-more hidden"><a>查看更多粉丝</a></div>
 	    </div>
+        <div class="tab-pane fade" id="relation-confirm">
+        	<div class="table-wrap">
+    	        <table class="table table-bordered table-striped">
+    	        	<thead>
+    	        		<tr>
+    	        			<th colspan=2>source</th>
+    	        			<th colspan=2>target</th>
+    	        		</tr>
+    	        	</thead>
+            		<tbody>
+            			<tr>
+            				<td>ID</td>
+            				<td data-key="id_str"></td>
+            				<td>ID</td>
+            				<td data-key="id_str"></td>
+            			</tr>
+            			<tr>
+            				<td>screen_name</td>
+            				<td data-key="screen_name"></td>
+            				<td>screen_name</td>
+            				<td data-key="screen_name"></td>
+            			</tr>
+            			<tr>
+            				<td>followed_by</td>
+            				<td data-key="followed_by"></td>
+            				<td>followed_by</td>
+            				<td data-key="followed_by"></td>
+            			</tr>
+            			<tr>
+            				<td>following</td>
+            				<td data-key="following"></td>
+            				<td>following</td>
+            				<td data-key="following"></td>
+            			</tr>
+            		</tbody>
+            	</table>
+        	</div>
+    		<div class="view-more hidden"><a>查看更多粉丝</a></div>
+        </div>
 	</div>
 </div>
 
 <script type="text/javascript">
 	$(function() {
 		$("#search-button").click(function () {
-			var val = $('input').val().trim();
+			var val = $('#input-one').val().trim();
 			if(val === '') {
 				alert('人物名称不能为空');
 				return;
 			}
-			$("tbody").empty();
-			getUserFriends(val);
-			getUserFollowers(val)
+			if($("#relation-confirm").hasClass('active')) {
+				var val1 = $("#input-two").val().trim();
+				if(val1 === '') {
+					alert('人物名称不能为空');
+					return;
+				}
+				getRelation(val, val1);
+			} else {
+				$("tbody").empty();
+				$(".view-more").attr("data-value", val);
+				getUserFriends(val);
+				getUserFollowers(val)
+			}
 		});
 
-		// $(".view-more").click(function() {
-		// 	if($(this).attr('data-cursor').trim() == '') {
-		// 		return;
-		// 	}
-		// 	var val = $('input').val().trim();
-		// 	if(val === '') {
-		// 		alert('人物名称不能为空');
-		// 		return;
-		// 	}
-		// 	getUserRelation(val, $(this).attr('data-cursor'));
-		// })
+		$("#friends .view-more").click(function() {
+			if($(this).attr('data-cursor').trim() == '') {
+				return;
+			}
+			var val = $(this).attr('data-value');
+			if(val === '') {
+				$(this).addClass('hidden');
+				return;
+			}
+			getUserFriends(val, $(this).attr('data-cursor'));
+		});
+
+		$("#followers .view-more").click(function() {
+			if($(this).attr('data-cursor').trim() == '') {
+				return;
+			}
+			var val = $(this).attr('data-value');
+			if(val === '') {
+				$(this).addClass('hidden');
+				return;
+			}
+			getUserFollowers(val, $(this).attr('data-cursor'));
+		});
+
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			if($("#relation-confirm").hasClass('active')) {
+				$("#input-one").addClass('width-150');
+				$("#input-two").removeClass('hidden');
+			}
+			else {
+				$("#input-one").removeClass('width-150');
+				$("#input-two").addClass('hidden');
+			}
+		})
 	})
 
 	function getUserFriends(screen_name, cursor) {
@@ -103,16 +185,40 @@
 			cursor = -1
 		}
 		$.post("{{ url_for('get_user_friends') }}", {screen_name: screen_name, cursor: cursor}, function(data) {
-			$.each(data, function(i, val) {
+			$.each(data[1], function(i, val) {
 				dataToElement(val, 0);
 			})
-			// if(data.length < 28) {
-			// 	$(".view-more").addClass('hidden');
-			// }
-			// else {
-			// 	$(".view-more").attr('data-cursor', data[data.length - 1].id);
-			// 	$(".view-more").removeClass('hidden');
-			// }
+			if(data[1].length < 30) {
+				$("#friends .view-more").addClass('hidden');
+			}
+			else {
+				$("#friends .view-more").attr('data-cursor', data[0]);
+				$("#friends .view-more").removeClass('hidden');
+			}
+		})
+	}
+
+	function getRelation(screen_name1, screen_name2) {
+		if(screen_name1 === '' || screen_name2 === '') {
+			return;
+		}
+		$.post("{{ url_for('get_user_relation') }}", {screen_name1: screen_name1, screen_name2: screen_name2}, function(data) {
+			var tdList = $("#relation-confirm td");
+			console.log(tdList);
+			for(var i = 0,len = tdList.length;i < len;i++){
+				if((i + 1) % 2 == 0) {
+					if((i + 1) % 4 == 0) {
+						td = $(tdList[i]);
+						console.log(td);
+						console.log(td.attr('data-key'));
+						console.log(data['target'][td.attr('data-key')]);
+						td.text(data['target'][td.attr('data-key')]);
+					} else {
+						td = $(tdList[i])
+						td.text(data['source'][td.attr('data-key')]);
+					}
+				}
+			}
 		})
 	}
 
@@ -124,22 +230,22 @@
 			cursor = -1
 		}
 		$.post("{{ url_for('get_user_followers') }}", {screen_name: screen_name, cursor: cursor}, function(data) {
-			$.each(data, function(i, val) {
+			$.each(data[1], function(i, val) {
 				dataToElement(val, 1);
 			})
-			// if(data.length < 28) {
-			// 	$(".view-more").addClass('hidden');
-			// }
-			// else {
-			// 	$(".view-more").attr('data-cursor', data[data.length - 1].id);
-			// 	$(".view-more").removeClass('hidden');
-			// }
+			if(data.length < 30) {
+				$("#followers .view-more").addClass('hidden');
+			}
+			else {
+				$("#followers .view-more").attr('data-cursor', data[0]);
+				$("#followers .view-more").removeClass('hidden');
+			}
 		})
 	}
 
 	function dataToElement(data, tab) {
 		var tr = $("<tr>");
-		tr.append($('<td>').text(data['screen_name'])).append($('<td>').text(data['name'])).append($('<td>').text(data['created_at'])).append($('<td>').text(data['description'])).append($('<td>').text(data['followers_count'])).append($('<td>').text(data['friends_count'])).append($('<td>').text(data['status_count'])).append($('<td>').text(data['lang'])).append($('<a>').attr("href", "/user_profile/"+data['screen_name']));
+		tr.append($('<td>').text(data['screen_name'])).append($('<td>').text(data['name'])).append($('<td>').text(data['created_at'])).append($('<td>').text(data['description'])).append($('<td>').text(data['followers_count'])).append($('<td>').text(data['friends_count'])).append($('<td>').text(data['status_count'])).append($('<td>').text(data['lang'])).append($("<td>").append($('<a>').attr("href", "/user_profile/"+data['screen_name']).text("详情")));
 		
 		if(tab == 0) {
 			tr.appendTo($('#friends tbody'));

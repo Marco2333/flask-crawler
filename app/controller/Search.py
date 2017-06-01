@@ -21,6 +21,27 @@ tweets_crawler = TweetsCrawler()
 def user_search():
 	return render_template('user_search.html')
 
+def get_user_relation():
+	screen_name1 = request.form['screen_name1']
+	screen_name2 = request.form['screen_name2']
+	rel = relation_crawler.show_friendship(source_screen_name = screen_name1, target_screen_name = screen_name2)
+	res = {
+		'source': {
+			"id_str": rel['relationship']['source']['id_str'],
+			"screen_name": rel['relationship']['source']['screen_name'],
+			"followed_by": rel['relationship']['source']['followed_by'],
+			"following": rel['relationship']['source']['following']
+		},
+		'target': {
+			"id_str": rel['relationship']['target']['id_str'],
+			"screen_name": rel['relationship']['target']['screen_name'],
+			"followed_by": rel['relationship']['target']['followed_by'],
+			"following": rel['relationship']['target']['following']
+		}
+	}
+	
+	return jsonify(res)
+
 @verify
 def get_user_tweets():
 	screen_name = request.form['screen_name']
@@ -60,19 +81,19 @@ def get_user_friends():
 	friends = relation_crawler.get_friends_paged(screen_name = screen_name, cursor = cursor, count = count)
 
 	res = []
-	for friend in friends:
+	for friend in friends[2]:
 		res.append({
 			'screen_name':friend.screen_name,
 			'name':friend.name,
 			'created_at':time.strftime('%Y-%m-%d', time.strptime(friend.created_at.replace('+0000 ',''))),
 			'friends_count':friend.friends_count,
 			'followers_count':friend.followers_count,
-			'status_count':friend.status_count,
+			'status_count':friend.statuses_count,
 			'lang':friend.lang,
 			'description':len(friend.description) > 48 and friend.description[0 : 48] + " ..." or friend.description,
 		})
 		
-	return jsonify(res)
+	return jsonify([friends[0], res])
 
 @verify
 def get_user_followers():
@@ -87,19 +108,20 @@ def get_user_followers():
 	followers = relation_crawler.get_followers_paged(screen_name = screen_name, cursor = cursor, count = count)
 
 	res = []
-	for follower in followers:
+
+	for follower in followers[2]:
 		res.append({
 			'screen_name':follower.screen_name,
 			'name':follower.name,
 			'created_at':time.strftime('%Y-%m-%d', time.strptime(follower.created_at.replace('+0000 ',''))),
 			'friends_count':follower.friends_count,
 			'followers_count':follower.followers_count,
-			'status_count':follower.status_count,
+			'status_count':follower.statuses_count,
 			'lang':follower.lang,
 			'description':len(follower.description) > 48 and follower.description[0 : 48] + " ..." or follower.description,
 		})
 		
-	return jsonify(res)
+	return jsonify([followers[0], res])
 
 @verify
 def user_profile(screen_name):

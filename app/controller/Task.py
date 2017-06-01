@@ -241,9 +241,9 @@ def task_add_submit():
 	# 	t = threading.Thread(target = followers_process, args = args)
 	# 	t.start()
 
-	if st.find('4') != -1:
-		args['basicinfo_num'] = basicinfo_num
-		t = threading.Thread(target = basicinfo_process, args = args)
-		t.start()
+	# if st.find('4') != -1:
+	# 	args['basicinfo_num'] = basicinfo_num
+	# 	t = threading.Thread(target = basicinfo_process, args = args)
+	# 	t.start()
 
 	return render_template('task_add.html', status = 1)

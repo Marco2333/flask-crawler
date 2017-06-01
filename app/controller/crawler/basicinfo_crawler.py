@@ -19,7 +19,7 @@ class BasicinfoCrawler:
 			return None
 			
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		user = api.GetUser(user_id = user_id,	
 						   screen_name = screen_name, 
@@ -61,7 +61,7 @@ class BasicinfoCrawler:
 				lock.release()
 
 			api = ApiList[api_index]
-			api_index = (api_index + 1) / ApiCount
+			api_index = (api_index + 1) % ApiCount
 
 			try:
 				user = api.GetUser(screen_name = screen_name, 
@@ -118,6 +118,6 @@ class BasicinfoCrawler:
 
 	def get_user_search(self, term = None, page = 1, count = 20, include_entities = True):
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		return api.GetUsersSearch(term = term, page = page, count = count, include_entities = include_entities)

@@ -9,7 +9,25 @@ from app.api import ApiList, ApiCount
 class RelationCrawler:
 	def __init__(self):
 		self.api_index = 0
-		
+	
+	def show_friendship(self, 
+						source_user_id = None, 
+						source_screen_name = None, 
+						target_user_id = None, 
+						target_screen_name = None):
+		if not source_user_id and not source_screen_name:
+			return None
+
+		if not target_user_id and not target_screen_name:
+			return None
+
+		api = ApiList[self.api_index]
+		self.api_index = (self.api_index + 1) % ApiCount
+
+		relation = api.ShowFriendship(source_user_id, source_screen_name, target_user_id, target_screen_name)
+
+		return relation
+
 	def get_friendids(self,
                       user_id = None,
                       screen_name = None,
@@ -23,7 +41,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		friends = api.GetFriendIDs(user_id = user_id,
 			                      screen_name = screen_name,
@@ -45,7 +63,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		try:
 			friends = api.GetFriendIDsPaged(user_id = user_id,
@@ -81,7 +99,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		friends = self.get_friends_paged(user_id = user_id, 
 										 screen_name = screen_name, 
@@ -102,7 +120,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		friends = api.GetFriendsPaged(user_id = user_id,
 				                      screen_name = screen_name,
@@ -125,7 +143,7 @@ class RelationCrawler:
 
 		while cursor != 0:
 			api = ApiList[api_index]
-			api_index = (api_index + 1) / ApiCount
+			api_index = (api_index + 1) % ApiCount
 
 			try:
 				out = api.GetFriendIDsPaged(user_id = user_id, cursor = cursor, count = 5000)
@@ -158,7 +176,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		followers = api.GetFollowersIDs(user_id = user_id,
 					                     screen_name = screen_name,
@@ -181,7 +199,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		followers = api.GetFollowerIDsPaged(user_id = user_id,
 						                 	 screen_name = screen_name,
@@ -201,7 +219,7 @@ class RelationCrawler:
 			return []
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		followers = self.get_followers_paged(user_id = user_id, 
 											 screen_name = screen_name, 
@@ -222,7 +240,7 @@ class RelationCrawler:
 			return
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		followers = api.GetFollowersPaged(user_id = user_id,
 					                        screen_name = screen_name,
@@ -244,7 +262,7 @@ class RelationCrawler:
 
 		while cursor != 0:
 			api = ApiList[api_index]
-			api_index = (api_index + 1) / ApiCount
+			api_index = (api_index + 1) % ApiCount
 
 			try:
 				out = api.GetFollowersIDsPaged(user_id = user_id, cursor = cursor, count = 5000)

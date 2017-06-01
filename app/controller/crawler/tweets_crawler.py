@@ -27,7 +27,7 @@ class TweetsCrawler:
 			return []
 
 		api = ApiList[self.api_index]
-		self.api_index = (self.api_index + 1) / ApiCount
+		self.api_index = (self.api_index + 1) % ApiCount
 
 		tweets = api.GetUserTimeline(user_id = user_id,	screen_name = screen_name, 
 									 since_id = since_id, max_id = max_id, count = count,

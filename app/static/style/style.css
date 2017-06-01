@@ -38,6 +38,9 @@ ul {
 .label {
     padding: 0.3em .6em .3em;
 }
+thead {
+    font-size: 15px;
+}
 /*login*/
 #login-wrap {
     width: 380px;
@@ -171,9 +174,12 @@ ul {
 }
 
 /*table*/
+.table-fixed {
+    table-layout: fixed;
+}
 .table-wrap {
     font-size:15px;
-    margin-top: 28px;
+    margin-top: 23px;
 }
 .table a {
     cursor: pointer;
@@ -181,7 +187,7 @@ ul {
 .table tbody tr:hover {
     background-color: #f4f4f4;
 }
-.table-bordered {
+.table-bordered {    
     border: 1px solid #f4f4f4;
 }
 .table-bordered>thead>tr>th, 
@@ -190,6 +196,7 @@ ul {
 .table-bordered>thead>tr>td, 
 .table-bordered>tbody>tr>td, 
 .table-bordered>tfoot>tr>td {
+    word-wrap: break-word;
     border: 1px solid #f4f4f4;
 }
 .table-bordered > thead > tr > th {
@@ -268,6 +275,15 @@ input[type='checkbox']:checked + label + .num_input {
 }
 .profile-img + h3 {
     margin-top: 10px;
+}
+
+/*user-profile*/
+.tab-content {
+    margin-top: 20px;
+    overflow: auto;
+}
+.nav-tabs {
+    font-size: 15px;
 }
 
 /*response*/

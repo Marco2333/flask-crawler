@@ -96,7 +96,7 @@
 		        "bServerSide": true,
 		        "iDisplayLength": 10,
 		        // "sPaginationType": "two_button",
-		        "fnServerData": retrieveData,
+		        "fnServerData":  retrieveData,
 		        "aLengthMenu": [ 10, 20, 40, 100 ],
 		        "sAjaxSource": "{{ url_for('user_search_detail') }}",
 		        "aoColumns": [
@@ -114,29 +114,38 @@
 	})
 
 	function retrieveData( sSource111,aoData111, fnCallback111) {
-	    $.ajax({
-	        url : sSource111,//这个就是请求地址对应sAjaxSource
-	        data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
-	        type : 'post',
-	        dataType : 'json',
-	        async : false,
-	        success : function(result) {
-	            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
-	            var trList = $(".table tbody tr");
-                var employee_id, id;     
-          		if(result['aaData'].length == 0) {
-          			return;
-          		}
-                trList.each(function(){  
-                    var screen_name = $(this).children().eq(0).text();
-                    var a = $("<a>").attr('href', "user_profile/" + screen_name).text("详情");
-                    // $("<td>").append(a).appendTo($(this))
-                    $(this).find('td').last().empty().append(a);
-                });
-	        },
-	        error : function(msg) {
-	        }
-	    });
+		function fn(){
+		    $.ajax({
+		        url : sSource111,//这个就是请求地址对应sAjaxSource
+		        data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+		        type : 'post',
+		        dataType : 'json',
+		        async : false,
+		        success : function(result) {
+		            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+		            var trList = $(".table tbody tr");
+	                var employee_id, id;     
+	          		if(result['aaData'].length == 0) {
+	          			return;
+	          		}
+	                trList.each(function(){  
+	                    var screen_name = $(this).children().eq(0).text();
+	                    var a = $("<a>").attr('href', "user_profile/" + screen_name).text("详情");
+	                    $(this).find('td').last().empty().append(a);
+	                });
+		        },
+		        error : function(msg) {
+		        }
+		    });
+		}
+		throttle(fn)
+	}
+
+	function throttle(fn,context) {
+	   clearTimeout(fn.tid);
+	   fn.tid = setTimeout(function() {
+	       fn.call(context);
+	   },200);
 	}
 </script>
 
