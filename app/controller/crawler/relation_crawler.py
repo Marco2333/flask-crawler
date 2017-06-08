@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import time
 import threading
 
@@ -90,7 +91,7 @@ class RelationCrawler:
 				                       	  include_user_entities = include_user_entities)
 
 
-	def get_all_friendids(user_id = None, screen_name = None)
+	def get_all_friendids(user_id = None, screen_name = None):
 
 		if user_id == None and screen_name == None:
 			return None
@@ -190,7 +191,7 @@ class RelationCrawler:
 					                        include_user_entities = include_user_entities)
 
 
-	def get_all_followersids(user_id = None, screen_name = None)
+	def get_all_followersids(user_id = None, screen_name = None):
 
 		if user_id == None and screen_name == None:
 			return None

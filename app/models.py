@@ -30,8 +30,8 @@ class Task(db.Model):
     # style = Column(Integer)
     extension = Column(Integer)
     tweet_num = Column(Integer)
-    friends_num = Column(Integer)
-    followers_num = Column(Integer)
+    # friends_num = Column(Integer)
+    # followers_num = Column(Integer)
     basicinfo_num = Column(Integer)
 
     # def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
