@@ -4,13 +4,11 @@ import threading
 
 from app import app
 from twitter import error
-from api import Api, API_COUNT
-# from app.api import ApiList, API_COUNT
+from api import API_COUNT, GET_API
 from app.database import db
 
 
 class BasicinfoCrawler:
-	api = Api().get_api
 
 	'''
 	获取单个用户的信息
@@ -23,9 +21,9 @@ class BasicinfoCrawler:
 		if user_id == None and screen_name == None:
 			return None
 
-		return self.api().GetUser(user_id = user_id,	
-						   		  screen_name = screen_name, 
-						   		  include_entities = include_entities)
+		return GET_API().GetUser(user_id = user_id,	
+						   		 screen_name = screen_name, 
+						   		 include_entities = include_entities)
 
 
 	def get_user_save(self,
@@ -37,9 +35,9 @@ class BasicinfoCrawler:
 		if user_id == None and screen_name == None:
 			return None
 
-		user = self.api().GetUser(user_id = user_id,	
-						   		  screen_name = screen_name, 
-						   		  include_entities = include_entities)
+		user = GET_API().GetUser(user_id = user_id,	
+						   		 screen_name = screen_name, 
+						   		 include_entities = include_entities)
 
 		save_user(user, table_name)
 
@@ -72,7 +70,6 @@ class BasicinfoCrawler:
 
 	def get_users_thread(self, user_list = [], table_name = "user_task"):
 		sleep_count = 0
-		api = self.api
 
 		ctx = app.app_context()
 		ctx.push()
@@ -81,7 +78,7 @@ class BasicinfoCrawler:
 			user_id = user_list.pop[0]
 
 			try:
-				user = api().GetUser(user_id = user_id)
+				user = GET_API().GetUser(user_id = user_id)
 			except error.TwitterError as te:
 				print te
 				if te.message[0]['code'] == 88:
@@ -130,26 +127,26 @@ class BasicinfoCrawler:
 
 		except Exception as e:
 			print e
-			continue
+			return
 
 		try:
 			db.session.execute(sql)
 			db.session.commit()
 		except Exception as e:
 			print e
-			continue
+			return
 
 
 	def get_user_search(self, 
-							term = None, 
-							page = 1, 
-							count = 20, 
-							include_entities = True):
+						term = None, 
+						page = 1, 
+						count = 20, 
+						include_entities = True):
 		
 			if term == None:
 				return None
 
-			return self.api().GetUsersSearch(term = term, 
-											 page = page, 
-											 count = count, 
-											 include_entities = include_entities)
+			return GET_API().GetUsersSearch(term = term, 
+											page = page, 
+											count = count, 
+											include_entities = include_entities)

@@ -3,13 +3,11 @@ import time
 import threading
 
 from twitter import error
-from api import Api, API_COUNT
-# from pymongo import MongoClient
+from api import API_COUNT, GET_API
 from db import MongoDB
 
 
 class TweetsCrawler:
-	api = Api().get_api
 		
 	def get_user_timeline(self,
 						  user_id = None,
@@ -24,7 +22,7 @@ class TweetsCrawler:
 		if user_id == None and screen_name == None:
 			return []
 
-		return  self.api().GetUserTimeline(user_id = user_id,	screen_name = screen_name, 
+		return  GET_API().GetUserTimeline(user_id = user_id,	screen_name = screen_name, 
 										   since_id = since_id, max_id = max_id, count = count,
 										   include_rts = include_rts, trim_user = trim_user,
 										   exclude_replies = exclude_replies)
@@ -45,18 +43,17 @@ class TweetsCrawler:
 		
 		db = MongoDB().connect()
 		collect = db[collect_name]
-		api = self.api
 
 		while len(tweets) > 0:
 			try:
 				if flag:
-					tweets = api().GetUserTimeline(user_id = user_id, screen_name = screen_name, 
+					tweets = GET_API().GetUserTimeline(user_id = user_id, screen_name = screen_name, 
 												   include_rts = include_rts, exclude_replies = exclude_replies,
 							  	  				   trim_user = True, count = 200)
 					flag = False
 
 				else:
-					tweets = api().GetUserTimeline(user_id = user_id, screen_name = screen_name,
+					tweets = GET_API().GetUserTimeline(user_id = user_id, screen_name = screen_name,
 												   include_rts = include_rts, exclude_replies = exclude_replies,
 							 					   trim_user = True, count = 200, max_id = tweets[-1].id - 1)
 
