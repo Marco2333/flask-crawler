@@ -39,7 +39,7 @@ class BasicinfoCrawler:
 						   		 screen_name = screen_name, 
 						   		 include_entities = include_entities)
 
-		save_user(user, table_name)
+		self.save_user(user, table_name)
 
 	'''
 	获取多个用户的信息，并存入数据库中
@@ -101,7 +101,7 @@ class BasicinfoCrawler:
 			self.save_user(user, table_name)
 			
 
-	def save_user(user, table_name = "user_task"):
+	def save_user(self, user, table_name = "user_task"):
 		try:
 			is_translator = 0
 			if hasattr(user, "is_translator"):
@@ -125,9 +125,13 @@ class BasicinfoCrawler:
 					user.utc_offset, geo_enabled, listed_count, is_translator, default_profile_image, user.profile_background_color, \
 					user.profile_sidebar_fill_color, user.profile_image_url, time.strftime('%Y-%m-%d',time.localtime(time.time()))) 
 
+			sql = sql.encode("utf-8").decode("latin1")
 		except Exception as e:
 			print e
 			return
+
+		ctx = app.app_context()
+		ctx.push()
 
 		try:
 			db.session.execute(sql)

@@ -26,13 +26,13 @@
 				<div class="form-group">
 				    <label class="col-sm-2 control-label">任务名称</label>
 				    <div class="col-sm-10 max-width">
-				    	<input value="1" name="task_name" type="text" class="form-control" placeholder="任务名称">
+				    	<input name="task_name" type="text" class="form-control" placeholder="任务名称">
 				    </div>
 				</div>
 				<div class="form-group">
 				    <label class="col-sm-2 control-label">抓取用户</label>
 				    <div class="col-sm-10 max-width">
-				        <input name="search_name" value="mrmarcohan" type="text" class="form-control" placeholder="用户screen_name">
+				        <input name="search_name" type="text" class="form-control" placeholder="用户screen_name">
 				    </div>
 				    <div>
 				        <a id="user-help" title="查询:不确定用户screen_name时可提供关键字查询相关用户"><i
@@ -54,16 +54,6 @@
                             <label>推文信息</label>
                             <input class="num_input" name="tweet_num" data-min="1" data-max="100000" type="number" placeholder="数量上限十万" value='1'>
                         </div>
-                      <!--   <div class="radio">
-                        	<input type="checkbox" name="type" value="2">
-                        	<label>朋友信息</label>
-                        	<input class="num_input" name="friends_num" data-min="1" data-max="10000" type="number" placeholder="数量上限一万" value='1'>
-                        </div>
-                        <div class="radio">
-                        	<input type="checkbox" name="type" value="3">
-                        	<label>粉丝信息</label>
-                        	<input class="num_input" name="followers_num" data-min="1" data-max="10000" type="number" placeholder="数量上限一万" value='1'>
-                        </div> -->
                         <div class="radio">
                             <input type="checkbox" name="type" value="4">
                             <label>基础信息</label>
@@ -94,18 +84,10 @@
 							<option value="4">4</option>
 							<option value="5">5</option>
 							<option value="6">6</option>
+							<option value="7">7</option>
                         </select>
                     </div>
                 </div>
-              <!--   <div class="form-group">
-                    <label class="col-sm-2 control-label">抓取方式</label>
-                    <div class="col-sm-10">
-                        <select name="style" class="form-control width-260">
-                            <option value="1">广度优先</option>
-                            <option value="2">深度优先</option>
-                        </select>
-                    </div>
-                </div> -->
                 <div class="form-group">
                     <label class="col-sm-2 control-label">扩展方式</label>
                     <div class="col-sm-10">
@@ -199,6 +181,8 @@
 			}
 			$(this).val(val);
 		});
+
+		
 	});
 
 	function onSubmit() {
@@ -219,6 +203,9 @@
 		    return false;
 		}
 
+		$("#submitBtn").click(function() {
+			$(this).attr('disabled', true);
+		})
 	}
 </script>
 {% endblock %}

@@ -35,8 +35,16 @@
 					<td>{{ task['created_at'].date() }}</td>
 					<td>{{ task['userid'] }}</td>
 					<td>{{ task['search_name'] }}</td>
-					<td>{{ task['search_type'] }}</td>
-					<td>{{ task['created_at'].date()}}</td>
+					<td>
+						{% if task['search_type'] == '1' %}
+						   推文
+						{% elif task['search_type'] == '4' %}
+						   基础信息
+						{% else %}
+						    推文 | 基础信息
+						{% endif %}
+					</td>
+					<td>{{ task['finished_at'].date() if task['finished_at'] else '' }}</td>
 					<td>{{ task['remark'] }}</td>
 					<td><a class="task-delete" data-id={{task['id']}}>删除</a></td>
 				</tr>

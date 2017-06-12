@@ -1,4 +1,6 @@
+# -*- coding:utf-8 -*-
 import time
+import warnings
 import threading
 
 from app import app
@@ -27,7 +29,17 @@ def task_list():
 			task.remark = task.remark[0:8]
 			task.remark += ' ...'
 
+		# if task.search_type == '1':
+		# 	task.search_type = "推文"
+
+		# elif task.search_type == '4':
+		# 	task.search_type = "基础信息"
+
+		# else:
+		# 	task.search_type = "推文 基础信息"
+
 	return render_template('task_list.html', tasks = tasks)
+
 
 @verify
 def task_delete():
@@ -38,6 +50,7 @@ def task_delete():
 		return jsonify({'status': 1})
 	else:
 		return jsonify({'status': 0})
+
 
 @verify
 def task_add():
@@ -60,8 +73,8 @@ def tweet_process(args):
 									args = (user_list, user.id, tweet_num, deepth, extension))
 	relation_thread.start()
 	
-	while (tweet_num < 6 and relation_thread.is_alive) or (tweet_num > 6 and len(user_list) < 5):
-		pass
+	while (tweet_num < 6 and relation_thread.is_alive()) or (tweet_num > 6 and len(user_list) < 5):
+		time.sleep(1)
 
 	while len(user_list) != 0:
 		i = 0
@@ -96,7 +109,6 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 	count = 1	
 
 	while count < person_num:
-		cursor = -1
 		user_if = user_list_temp.pop(0)
 		user_id = user_if[0]
 		user_deepth = user_if[1]
@@ -105,12 +117,15 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 			return
 
 		if extension == 1 or extension == 3:
+			cursor = -1
 			while cursor != 0:
 				users_info = relation_crawler.get_friendids_paged(user_id = user_id, cursor = cursor)
 				cursor = users_info[0]
 				friend_list = users_info[2]
+				
 				for u in friend_list:
 					u = str(u)
+					
 					if u not in bloom_filter:
 						user_list_temp.append((u, user_deepth + 1))
 						bloom_filter.add(u)
@@ -118,7 +133,7 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 						if LOCK.acquire():
 							user_list.append(u)
 							LOCK.release()
-
+						
 		 				count += 1
 						if count >= person_num:
 							return
@@ -129,8 +144,10 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 				users_info = relation_crawler.get_followerids_paged(user_id = user_id, cursor = cursor)
 				cursor = users_info[0]
 				friend_list = users_info[2]
+
 				for u in friend_list:
 					u = str(u)
+
 					if u not in bloom_filter:
 						user_list_temp.append((u, user_deepth + 1))
 						bloom_filter.add(u)
@@ -164,10 +181,34 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 # 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
-@verify
+def create_table(table_name):
+	ctx = app.app_context()
+	ctx.push()
+
+	sql = "DROP TABLE IF EXISTS `%s`" % table_name
+	
+	with warnings.catch_warnings():
+		warnings.simplefilter('ignore')
+		try:
+			db.session.execute(sql)
+			db.session.commit()
+		except Exception as e:
+			print e
+
+	sql = "create table %s like user_task" % table_name
+	try:
+		db.session.execute(sql)
+		db.session.commit()
+	except Exception as e:
+		print e
+
+
 def basicinfo_process(args):
 	user_list = []
 	table_name = "task_" + str(args['id'])
+	
+	create_table(table_name)
+
 	basicinfo_crawler.get_user_save(screen_name = args['screen_name'], table_name = table_name)
 
 	thread_num = int(args['thread_num'])
@@ -181,14 +222,13 @@ def basicinfo_process(args):
 									args = (user_list, user.id, basicinfo_num, deepth, extension))
 	relation_thread.start()
 	
-	while (basicinfo_num < 6 and relation_thread.is_alive) or (basicinfo_num > 6 and len(user_list) < 5):
-		pass
+	while (basicinfo_num < 6 and relation_thread.is_alive()) or (basicinfo_num > 6 and len(user_list) < 5):
+		time.sleep(1)
 
-	while len(user_list) != 0 or relation_thread.is_alive:
-
+	while len(user_list) != 0 or relation_thread.is_alive():
 		if len(user_list) == 0:
 			print "sleeping, relation crawler is slow!"
-			time.sleep(100)
+			time.sleep(10)
 			continue
 
 		i = 0
@@ -202,7 +242,7 @@ def basicinfo_process(args):
 				user_id = user_list.pop(0)
 				LOCK.release()
 
-			thread = threading.Thread(target = get_user_save, args = (user_id, table_name, ))
+			thread = threading.Thread(target = basicinfo_crawler.get_user_save, args = (user_id, table_name, ))
 			thread.start()
 			threads_pool.append(thread)
 			i = i + 1
@@ -214,51 +254,53 @@ def basicinfo_process(args):
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
-@verify
 def tweet_basicinfo_process(args):
 	tweet_user_list = []
 	basicinfo_user_list = []
 
 	table_name = "task_" + str(args['id'])
+
+	create_table(table_name)
+
 	basicinfo_crawler.get_user_save(screen_name = args['screen_name'], table_name = table_name)
 
 	collect_name = "task_" + str(args['id'])
 	tweets_crawler.get_user_all_timeline(screen_name = args['screen_name'], collect_name = collect_name)
 
 	thread_num = int(args['thread_num'])
-	tweet_num = int(args['basicinfo_num'])
+	tweet_num = int(args['tweet_num'])
 	basicinfo_num = int(args['basicinfo_num'])
 	deepth = int(args['deepth'])
 	extension = int(args['extension'])
 
-	relation_thread = threading.Thread(target = thread_extension_tweet_basicinfo, 
-									args = (tweet_user_list, basicinfo_user_list, user.id, tweet_person_num, basicinfo_num, deepth, extension))
-	relation_thread.start()
+	user = basicinfo_crawler.get_user(screen_name = args['screen_name'])
 
-	tweet_thread = threading.Thread(target = tweet_thread, 
-									args = (basicinfo_num, basicinfo_user_list, thread_num, table_name))
-	tweet_thread.start()
+	rt = threading.Thread(target = thread_extension_tweet_basicinfo, 
+									args = (tweet_user_list, basicinfo_user_list, user.id, tweet_num, basicinfo_num, deepth, extension,))
+	rt.start()
 
-	basicinfo_thread = threading.Thread(target = basicinfo_thread, 
-									args = (tweet_num, tweet_user_list, thread_num, collect_name))
-	basicinfo_thread.start()
+	tt = threading.Thread(target = tweet_thread, 
+									args = (tweet_num, tweet_user_list, thread_num, collect_name,))
+	tt.start()
 
-	relation_thread.join()
-	tweet_thread.join()
-	basicinfo_thread.join()
+	bt = threading.Thread(target = basicinfo_thread, 
+									args = (basicinfo_num, basicinfo_user_list, thread_num, table_name,))
+	bt.start()
+
+	rt.join()
+	tt.join()
+	bt.join()
 	
 	with app.app_context():
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
 def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name):
-
 	n = 1
 	while n < basicinfo_num:
-
 		if len(basicinfo_user_list) == 0:
 			print "(basicinfo_thread)sleeping, relation crawler is slow!"
-			time.sleep(100)
+			time.sleep(3)
 			continue
 
 		i = 0
@@ -285,13 +327,12 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name)
 
 
 def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
-
 	n = 1
 	while n < tweet_num:
 
 		if len(tweet_user_list) == 0:
 			print "(tweet_thread)sleeping, relation crawler is slow!"
-			time.sleep(100)
+			time.sleep(3)
 			continue
 
 		i = 0
@@ -308,7 +349,7 @@ def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
 				LOCK.release()
 
 			n += 1
-			thread = threading.Thread(target = tweets_crawler.get_user_all_timeline, args = (user_id, table_name, ))
+			thread = threading.Thread(target = tweets_crawler.get_user_all_timeline, args = (user_id, collect_name, ))
 			thread.start()
 			threads_pool.append(thread)
 			i = i + 1
@@ -325,7 +366,7 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 									 deepth, 
 									 extension):
 
-	person_num = max(tweet_num, basicinfo_num)
+	person_num = max(tweet_person_num, basicinfo_person_num)
 	bloom_filter = BloomFilter(capacity = int(person_num), error_rate = 0.001)
 	bloom_filter.add(str(user_id))
 	user_list_temp = [(user_id, 0)]
@@ -405,7 +446,6 @@ def task_add_submit():
 
 	thread_num = int(request.form['thread'])
 	deepth = int(request.form['deepth'])
-	# style = int(request.form['style'])
 	extension = request.form['extension']
 
 	if thread_num < 1 or thread_num > 6:
@@ -449,12 +489,11 @@ def task_add_submit():
 	args['id'] = task.id
 	args['thread_num'] = thread_num
 	args['deepth'] = deepth
-	# args['style'] = style
 	args['extension'] = extension
 
 	if st == '1':
 		args['tweet_num'] = tweet_num
-		t = threading.Thread(target = tweet_process, args = (args, ))
+		t = threading.Thread(target = tweet_process, args = (args,))
 		t.start()
 	
 	# args['friends_num'] = friends_num
@@ -467,15 +506,15 @@ def task_add_submit():
 	# 	t = threading.Thread(target = followers_process, args = args)
 	# 	t.start()
 
-	if st == '1':
+	if st == '4':
 		args['basicinfo_num'] = basicinfo_num
-		t = threading.Thread(target = basicinfo_process, args = args)
+		t = threading.Thread(target = basicinfo_process, args = (args,))
 		t.start()
 
 	if st == '14':
 		args['tweet_num'] = tweet_num
 		args['basicinfo_num'] = basicinfo_num
-		t = threading.Thread(target = basicinfo_process, args = args)
+		t = threading.Thread(target = tweet_basicinfo_process, args = (args,))
 		t.start()
 
 	return render_template('task_add.html', status = 1)
