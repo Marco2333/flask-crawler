@@ -33,7 +33,7 @@ class Task(db.Model):
     # friends_num = Column(Integer)
     # followers_num = Column(Integer)
     basicinfo_num = Column(Integer)
-
+    is_file = Column(Integer)
     # def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
     #     self.task_name = task_name
     #     self.userid = userid

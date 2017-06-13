@@ -20,6 +20,9 @@ class Config(object):
 
     THREAD_NUM = 3
 
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024
+    UPLOAD_FOLDER = 'app/static/uploads'
+
     APP_INFO = [{
             #========================50=======================================
             'consumer_key':'bRJ4nxfQ1lQpc0b9OiGyznwTP',

@@ -9,7 +9,7 @@ from api import API_COUNT, GET_API
 
 class RelationCrawler:
 	
-	def show_friendship(source_user_id, source_screen_name, target_user_id, target_screen_name):
+	def show_friendship(self, source_user_id, source_screen_name, target_user_id, target_screen_name):
 		if not source_user_id and not source_screen_name:
 			return None
 
@@ -89,7 +89,7 @@ class RelationCrawler:
 										 include_user_entities = include_user_entities)
 
 
-	def get_all_friendids(user_id = None, screen_name = None):
+	def get_all_friendids(self, user_id = None, screen_name = None):
 
 		if user_id == None and screen_name == None:
 			return None
@@ -187,7 +187,7 @@ class RelationCrawler:
 					                       include_user_entities = include_user_entities)
 
 
-	def get_all_followersids(user_id = None, screen_name = None):
+	def get_all_followersids(self, user_id = None, screen_name = None):
 
 		if user_id == None and screen_name == None:
 			return None

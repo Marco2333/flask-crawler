@@ -34,7 +34,7 @@
 					<td>{{ task['task_name'] }}</td>
 					<td>{{ task['created_at'].date() }}</td>
 					<td>{{ task['userid'] }}</td>
-					<td>{{ task['search_name'] }}</td>
+					<td>{{ task['search_name'] if task['search_name'] else '文件导入'}}</td>
 					<td>
 						{% if task['search_type'] == '1' %}
 						   推文

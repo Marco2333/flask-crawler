@@ -174,8 +174,10 @@ def user_profile(screen_name):
 
 	return render_template('user_profile.html', user = user, followers = followers, friends = friends, tweets = res)
 
+
 def get_image(url, screen_name):
 	urllib.urlretrieve(url.replace('normal.','bigger.'), 'app/static/profile/%s.jpg' % screen_name)
+
 
 @verify
 def user_search_detail():

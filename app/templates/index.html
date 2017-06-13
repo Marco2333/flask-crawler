@@ -28,6 +28,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="javascript:openapp('{{ url_for('task_list') }}',1)">任务列表</a></li>
                         <li><a href="javascript:openapp('{{ url_for('task_add') }}',2)">任务添加</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('file_upload') }}',8)">文件上传</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -85,6 +86,13 @@
                     <a data-id="2" href="javascript:openapp('{{ url_for('task_add') }}',2)">
                         <i class="glyphicon glyphicon-chevron-right"></i>
                         <span>任务添加</span>
+                        <i class="glyphicon glyphicon-angle-right fr"></i>
+                    </a>
+                </li>
+                <li>
+                    <a data-id="8" href="javascript:openapp('{{ url_for('file_upload') }}',8)">
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                        <span>文件上传</span>
                         <i class="glyphicon glyphicon-angle-right fr"></i>
                     </a>
                 </li>

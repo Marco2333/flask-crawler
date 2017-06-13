@@ -2,6 +2,7 @@
 import time
 import threading
 
+from app import app
 from twitter import error
 from api import API_COUNT, GET_API
 from db import MongoDB
@@ -37,6 +38,8 @@ class TweetsCrawler:
 		if user_id == None and screen_name == None:
 			return None
 
+		user_id = long(user_id)
+
 		flag = True
 		tweets = [0]
 		sleep_count = 0
@@ -58,7 +61,6 @@ class TweetsCrawler:
 							 					   trim_user = True, count = 200, max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
-				print te
 				if te.message['code'] == 88:
 					sleep_count += 1
 					if sleep_count == ApiCount:
@@ -100,7 +102,7 @@ class TweetsCrawler:
 					continue
 		
 
-	def get_all_users_timeline(user_list = None,
+	def get_all_users_timeline(self, user_list = None,
 							   collect_name = "tweets",
 							   include_rts = True, 
 							   exclude_replies = False):		
@@ -110,22 +112,26 @@ class TweetsCrawler:
 
 		i = 0
 		thread_pool = []
+		length = len(user_list)
+
+		THREAD_NUM = app.config['THREAD_NUM']
 		per_thread = length / THREAD_NUM
 
-		while i < threadNum:
-			if i + 1 == threadNum:
-				craw_thread = threading.Thread(target = get_users_timeline_thread, args = (user_list[i * per_thread : ], collect_name, include_rts, exclude_replies,))
+		while i < THREAD_NUM:
+			if i + 1 == THREAD_NUM:
+				craw_thread = threading.Thread(target = self.get_users_timeline_thread, args = (user_list[i * per_thread : ], collect_name, include_rts, exclude_replies,))
 			else:
-				craw_thread = threading.Thread(target = get_users_timeline_thread, args = (user_list[i * per_thread : (i + 1) * per_thread], collect_name, include_rts, exclude_replies,))
+				craw_thread = threading.Thread(target = self.get_users_timeline_thread, args = (user_list[i * per_thread : (i + 1) * per_thread], collect_name, include_rts, exclude_replies,))
 			
 			craw_thread.start()
 			thread_pool.append(craw_thread)
+			i += 1
 
 		for thread in thread_pool:
 			thread.join()
 
 
-	def get_users_timeline_thread(user_list = [], 
+	def get_users_timeline_thread(self, user_list = [], 
 								  collect_name = "tweets", 
 								  include_rts = True, 
 								  exclude_replies = False):

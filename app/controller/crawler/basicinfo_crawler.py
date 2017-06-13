@@ -57,12 +57,14 @@ class BasicinfoCrawler:
 
 		while i < THREAD_NUM:
 			if i + 1 == THREAD_NUM:
-				craw_thread = threading.Thread(target = get_users_thread, args = (user_list[i * per_thread : ], table_name,))
+				craw_thread = threading.Thread(target = self.get_users_thread, args = (user_list[i * per_thread : ], table_name,))
 			else:
-				craw_thread = threading.Thread(target = get_users_thread, args = (user_list[i * per_thread : (i + 1) * per_thread], table_name,))
+				craw_thread = threading.Thread(target = self.get_users_thread, args = (user_list[i * per_thread : (i + 1) * per_thread], table_name,))
 			
 			craw_thread.start()
-			threadPool.append(craw_thread)
+			thread_pool.append(craw_thread)
+
+			i += 1
 
 		for thread in thread_pool:
 			thread.join()
@@ -75,7 +77,7 @@ class BasicinfoCrawler:
 		ctx.push()
 
 		while len(user_list) > 0:
-			user_id = user_list.pop[0]
+			user_id = user_list[0]
 
 			try:
 				user = GET_API().GetUser(user_id = user_id)

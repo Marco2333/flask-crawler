@@ -7,9 +7,14 @@ from flask import request, render_template, redirect, session, url_for, jsonify
 
 
 app.add_url_rule('/task_list', 'task_list', Task.task_list)
+
 app.add_url_rule('/task_add', 'task_add', Task.task_add)
-app.add_url_rule('/task_delete', 'task_delete', Task.task_delete, methods = ['POST'])
 app.add_url_rule('/task_add_submit','task_add_submit', Task.task_add_submit, methods = ['POST'])
+
+app.add_url_rule('/file_upload', 'file_upload', Task.file_upload)
+app.add_url_rule('/file_upload_submit', 'file_upload_submit', Task.file_upload_submit, methods = ['POST'])
+
+app.add_url_rule('/task_delete', 'task_delete', Task.task_delete, methods = ['POST'])
 
 app.add_url_rule('/user_profile/<screen_name>', 'user_profile', Search.user_profile)
 app.add_url_rule('/user_search', 'user_search', Search.user_search)
@@ -61,6 +66,5 @@ def toLogin():
 
     session['userid'] = userid
     session['username'] = user.username
-    
-    # app.config['login'] = True
+
     return jsonify({'status': 1})
