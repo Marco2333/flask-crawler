@@ -2,8 +2,10 @@
 
 {% block title %} 任务列表 {% endblock %}
 {% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 <style>
-	.max-width {max-width: 580px} .width-260 {width: 260px;} .box-footer > button {padding: 8px 23px}
+	.max-width {max-width: 580px} .width-260 {width: 260px;} .box-footer > button {padding: 8px 23px} #DataTables_Table_0_filter {display: none}
+	.dataTables_paginate {display: none;}
 </style>
 <div class="content-wrap">
 	<div class="alert alert-warning fade in">
@@ -37,7 +39,7 @@
 				    <div>
 				        <a id="user-help" title="查询:不确定用户screen_name时可提供关键字查询相关用户"><i
 				                class="glyphicon glyphicon-question-sign"></i></a>&nbsp;&nbsp;&nbsp;
-				        <a type="button" data-toggle="modal" data-target="#searchModal" class="btn btn-danger">查询</a>
+				        <a id="search-button" type="button" data-toggle="modal" data-target="#searchModal" class="btn btn-danger">查询</a>
 				    </div>
 				</div>
 				<div class="form-group" style="margin-top: 25px">
@@ -61,7 +63,7 @@
                         <select name="thread" class="form-control width-260">
                             <option value="1">1</option>
                             <option value="2">2</option>
-                            <option value="3">3</option>
+                            <option value="3" selected>3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
@@ -121,23 +123,23 @@
 	                        <div class="form-group">
 	                            <label class="col-sm-2 control-label">关键词</label>
 	                            <div class="col-sm-8">
-	                                <input name="keywords" type="text" class="form-control" placeholder="查询关键词">
+	                                <input id="keywords" name="keywords" type="text" class="form-control" placeholder="查询关键词">
 	                            </div>
 	                            <div class="col-sm-2">
-	                                <a class="btn btn-primary">查询</a>
+	                                <a id="search-buttontp" class="btn btn-primary">查询</a>
 	                            </div>
 	                        </div>
 	                        <hr/>
-	                        <div class="table-wrap">
+	                        <div class="table-wrap" style="max-height: 300px;overflow: auto">
 	                            <table class="table table-bordered table-striped">
 	                                <thead>
-	                                <tr>
-	                                    <th>screen_name</th>
-	                                    <th>name</th>
-	                                    <th>加入日期</th>
-	                                    <th>简介</th>
-	                                    <th>粉丝数</th>
-	                                </tr>
+		                                <tr>
+		                                    <th>screen_name</th>
+		                                    <th>加入日期</th>
+		                                    <th>朋友数</th>
+		                                    <th>粉丝数</th>
+		                                    <th>推文数</th>
+		                                </tr>
 	                                </thead>
 	                                <tbody>
 	                                </tbody>
@@ -153,6 +155,7 @@
 	    </div>
 	</div>
 </div>
+<script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
 <script>
 	$(function () {
 		var status = {{ 1 if status else 0 }};
@@ -176,8 +179,69 @@
 			$(this).val(val);
 		});
 
-		
+		$("#search-button").click(function() {
+			$("#keywords").val($("input[name='search_name']").val().trim());
+			$("#DataTables_Table_0_filter input").val($("#keywords").val());
+			$("#DataTables_Table_0_filter input").trigger('keyup');
+		});
+
+		$("#search-buttontp").click(function() {
+			$("#DataTables_Table_0_filter input").val($("#keywords").val());
+			$("#DataTables_Table_0_filter input").trigger('keyup');
+		});
+
+		$('table').dataTable({
+			"bInfo":false,
+	        "searching":true,
+	        "bServerSide": true,
+	        "iDisplayLength": 10,
+	        "bLengthChange":false,
+	        "bPaginage":false,
+	        "fnServerData":  retrieveData,
+	        "sAjaxSource": "{{ url_for('user_search_keyword') }}",
+	        "aoColumns": [
+	             {"mDataProp":"screen_name"},
+	             {"mDataProp":"created_at"},
+	             {"mDataProp":"followers_count"},
+	             {"mDataProp":"friends_count"},
+	             {"mDataProp":"statuses_count"}
+	        ]
+	    });
+
+		$(".table").on('dblclick', 'tr', function() {
+			$("input[name='search_name']").val($(this).find('td').first().text().trim());
+			$(".modal-footer button").trigger('click');
+		})
 	});
+
+	function retrieveData( sSource111,aoData111, fnCallback111) {
+		function fn(){
+		    $.ajax({
+		        url : sSource111,
+		        data : {"aoData":JSON.stringify(aoData111)},
+		        type : 'post',
+		        dataType : 'json',
+		        async : false,
+		        success : function(result) {
+		            fnCallback111(result);
+	                var employee_id, id;     
+	          		if(result['aaData'].length == 0) {
+	          			return;
+	          		}
+		        },
+		        error : function(msg) {
+		        }
+		    });
+		}
+		throttle(fn)
+	}
+
+	function throttle(fn,context) {
+	   clearTimeout(fn.tid);
+	   fn.tid = setTimeout(function() {
+	       fn.call(context);
+	   },200);
+	}
 
 	function onSubmit() {
 		var task_name = $("input[name='task_name']").val(),

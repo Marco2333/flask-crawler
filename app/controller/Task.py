@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 import time
+import json
 import warnings
 import threading
 
@@ -567,3 +568,31 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 
 	user_list_temp = []
 	bloom_filter = None
+
+
+def user_search_keyword():
+	data = json.loads(request.form['aoData'])
+
+	for item in data:
+		if item['name'] == 'sSearch':
+			s_search = item['value']
+			break
+
+	if s_search == '':
+		return jsonify({'aaData': []})
+
+	user_list = []
+	user_list = basicinfo_crawler.get_user_search(term = s_search, count = 20)
+
+	res = []
+	for user in user_list:
+		res.append({
+			'screen_name': user.screen_name,
+			# 'name': user.name,
+			'created_at': time.strftime('%Y-%m-%d', time.strptime(user.created_at.replace('+0000 ',''))),
+			'followers_count': user.followers_count,
+			'friends_count': user.friends_count,
+			'statuses_count': user.statuses_count,
+		})
+
+	return jsonify({'aaData': res})

@@ -15,6 +15,7 @@ app.add_url_rule('/file_upload', 'file_upload', Task.file_upload)
 app.add_url_rule('/file_upload_submit', 'file_upload_submit', Task.file_upload_submit, methods = ['POST'])
 
 app.add_url_rule('/task_delete', 'task_delete', Task.task_delete, methods = ['POST'])
+app.add_url_rule('/user_search_keyword', 'user_search_keyword', Task.user_search_keyword, methods = ['POST'])
 
 app.add_url_rule('/user_profile/<screen_name>', 'user_profile', Search.user_profile)
 app.add_url_rule('/user_search', 'user_search', Search.user_search)
