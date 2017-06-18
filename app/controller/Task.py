@@ -311,6 +311,7 @@ def tweet_basicinfo_process(args):
 	basicinfo_crawler.get_user_save(screen_name = args['screen_name'], table_name = table_name)
 
 	collect_name = "task_" + str(args['id'])
+
 	tweets_crawler.get_user_all_timeline(screen_name = args['screen_name'], collect_name = collect_name)
 
 	thread_num = int(args['thread_num'])

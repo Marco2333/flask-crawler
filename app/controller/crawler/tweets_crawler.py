@@ -29,7 +29,8 @@ class TweetsCrawler:
 										   exclude_replies = exclude_replies)
 
 
-	def get_user_all_timeline(self, user_id = None,
+	def get_user_all_timeline(self, 
+							  user_id = None,
 							  collect_name = "tweet_task",
 						  	  screen_name = None, 
 						  	  include_rts = True, 
@@ -38,7 +39,8 @@ class TweetsCrawler:
 		if user_id == None and screen_name == None:
 			return None
 
-		user_id = long(user_id)
+		if user_id:
+			user_id = long(user_id)
 
 		flag = True
 		tweets = [0]

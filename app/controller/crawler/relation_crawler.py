@@ -9,7 +9,12 @@ from api import API_COUNT, GET_API
 
 class RelationCrawler:
 	
-	def show_friendship(self, source_user_id, source_screen_name, target_user_id, target_screen_name):
+	def show_friendship(self, 
+						source_user_id = None, 
+						source_screen_name = None, 
+						target_user_id = None, 
+						target_screen_name = None):
+	
 		if not source_user_id and not source_screen_name:
 			return None
 

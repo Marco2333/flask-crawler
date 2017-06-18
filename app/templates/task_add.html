@@ -8,15 +8,12 @@
 	.dataTables_paginate {display: none;}
 </style>
 <div class="content-wrap">
-	<div class="alert alert-warning fade in">
+	<div class="alert alert-warning fade in" style="line-height: 23px">
 	    <button type="button" class="close" data-dismiss="alert">&times;</button>
-	    <strong>任务添加：提交任务后台执行，抓取信息保存在数据库中。</strong><br/>
-	    必填信息分为三部分：<strong>任务名称、抓取信息、抓取设置。</strong><br/>
-	    其中需要抓取的用户通过
-	    <span class="label label-success">抓取用户</span> ( 单个用户screen_name，不确定时可<strong>查询</strong> )
-	    或
-	    <span class="label label-success">上传用户列表</span> (多个用户screen_name)
-	    来获取。<br/>
+	    <strong>任务添加：提交任务后台执行，抓取的信息保存在数据库中。</strong><br/>
+	    <span>通过 <span class="label label-success">初始用户</span> <strong>广度优先</strong>抓取用户信息，如果初始用户不确定，可根据指定字符串<strong>查询</strong>相关用户</span>
+	    <br>
+	    <span>抓取内容可以选择 <span class="label label-success">推文信息</span> 和 <span class="label label-success">基础信息</span> ，并且需要输入抓取用户的数量</span>
 	</div>
 
 	<div class="panel panel-info">
@@ -32,7 +29,7 @@
 				    </div>
 				</div>
 				<div class="form-group">
-				    <label class="col-sm-2 control-label">抓取用户</label>
+				    <label class="col-sm-2 control-label">初始用户</label>
 				    <div class="col-sm-10 max-width">
 				        <input name="search_name" type="text" class="form-control" placeholder="用户screen_name">
 				    </div>

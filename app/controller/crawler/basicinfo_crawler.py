@@ -35,9 +35,34 @@ class BasicinfoCrawler:
 		if user_id == None and screen_name == None:
 			return None
 
-		user = GET_API().GetUser(user_id = user_id,	
-						   		 screen_name = screen_name, 
-						   		 include_entities = include_entities)
+		sleep_count = 0
+
+		while True:
+			try:
+				user = GET_API().GetUser(user_id = user_id,	
+								   		 screen_name = screen_name, 
+								   		 include_entities = include_entities)
+
+			except error.TwitterError as te:
+				print te
+				if te.message[0]['code'] == 88:
+					sleep_count += 1
+
+					if sleep_count == API_COUNT:
+						print "sleeping..."
+						sleep_count = 0
+						time.sleep(500)						
+					continue
+
+				else:
+					print te
+					return None
+
+			except Exception as e:
+				print e
+				return None
+
+			break
 
 		self.save_user(user, table_name)
 

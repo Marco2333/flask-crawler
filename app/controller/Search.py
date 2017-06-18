@@ -125,11 +125,27 @@ def get_user_followers():
 
 @verify
 def user_profile(screen_name):
-	user = basicinfo_crawler.get_user(screen_name = screen_name)
+	try:
+		user = basicinfo_crawler.get_user(screen_name = screen_name)
+	except error.TwitterError as te:
+		if te.message[0]['code'] == 88:
+			status = "ratelimit"
+
+		elif te.message[0]['code'] == 63:
+			status = "suspend"
+
+		elif te.message[0]['code'] == 50:
+			status = "notfound"
+
+		return render_template('user_profile.html', status = status, user = None, followers = [], friends = [], tweets = [])
+	except:
+		status = 0
+		return render_template('user_profile.html', status = status, user = None, followers = [], friends = [], tweets = [])
+
 	friends = []
 	followers = []
 	try:
-		friends = relation_crawler.get_friends(screen_name = screen_name, count = 30)
+		friends = relation_crawler.get_friends(screen_name = screen_name, total_count = 30)
 		for friend in friends:
 			friend.created_at = time.strftime('%Y-%m-%d', time.strptime(friend.created_at.replace('+0000 ','')))
 			if len(friend.description) > 28:
@@ -140,7 +156,7 @@ def user_profile(screen_name):
 		pass
 
 	try:
-		followers = relation_crawler.get_followers(screen_name = screen_name, count = 30)
+		followers = relation_crawler.get_followers(screen_name = screen_name, total_count = 30)
 		for follower in followers:
 			follower.created_at = time.strftime('%Y-%m-%d', time.strptime(follower.created_at.replace('+0000 ','')))
 			if len(follower.description) > 8:
@@ -156,7 +172,7 @@ def user_profile(screen_name):
 		res = []
 		for tweet in tweets:
 			res.append({
-				'id': tweet.id,
+				# 'id': tweet.id,
 				'text':len(tweet.text) > 48 and tweet.text[0 : 48] + " ..." or tweet.text,
 				'created_at':time.strftime('%Y-%m-%d', time.strptime(tweet.created_at.replace('+0000 ',''))),
 				'favorite_count':tweet.favorite_count,
@@ -172,7 +188,7 @@ def user_profile(screen_name):
 
 	get_image(user.profile_image_url, screen_name)
 
-	return render_template('user_profile.html', user = user, followers = followers, friends = friends, tweets = res)
+	return render_template('user_profile.html', status = 1, user = user, followers = followers, friends = friends, tweets = res)
 
 
 def get_image(url, screen_name):
@@ -203,19 +219,23 @@ def user_search_detail():
 	count = data_length / 20
 	user_list = []
 
-	while count > 0:
-		user_temp = basicinfo_crawler.get_user_search(term = s_search, count = 20, page = page)
-		user_list.extend(user_temp)
-		page += 1
+	try:
+		while count > 0:
+			user_temp = basicinfo_crawler.get_user_search(term = s_search, count = 20, page = page)
+			user_list.extend(user_temp)
+			page += 1
 
-		if len(user_temp) < 20:
-			flag = False
-			break
+			if len(user_temp) < 20:
+				flag = False
+				break
 
-		count -= 1
+			count -= 1
 
-	if data_length % 20 != 0 and flag:	
-		user_list.extend(basicinfo_crawler.get_user_search(term = s_search, page = page, count = data_length % 20))
+		if data_length % 20 != 0 and flag:	
+			user_list.extend(basicinfo_crawler.get_user_search(term = s_search, page = page, count = data_length % 20))
+
+	except:
+		return jsonify({'aaData': []})
 
 	res = []
 	for user in user_list:
