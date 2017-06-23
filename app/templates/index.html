@@ -42,6 +42,16 @@
                         <li><a href="javascript:openapp('{{ url_for('tweets_search') }}',5)">推文查询</a></li>
                     </ul>
                 </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        人物画像
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="javascript:openapp('{{ url_for('typical_character_list') }}',9)">典型人物</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('relation_search') }}',10)">新增样本</a></li>
+                    </ul>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -128,6 +138,29 @@
                 </li>
             </ul>
         </li>
+         <li class="nav-list-item">
+            <a>
+                <i class="glyphicon glyphicon-camera"></i>
+                <span>人物画像</span>
+                <i class="glyphicon glyphicon-chevron-right fr"></i>
+            </a>
+            <ul class="sub-list">
+                <li>
+                    <a data-id="9" href="javascript:openapp('{{ url_for('typical_character_list') }}',9)">
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                        <span>典型人物</span>
+                        <i class="glyphicon glyphicon-angle-right fr"></i>
+                    </a>
+                 </li>
+                <li>
+                    <a data-id="10" href="javascript:openapp('{{ url_for('system_help') }}',10)">
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                        <span>新增样本</span>
+                        <i class="glyphicon glyphicon-angle-right fr"></i>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-list-item">
             <a>
                 <i class="glyphicon glyphicon-user"></i>
@@ -153,6 +186,18 @@
         </li>
     </ul>
 </nav>
+
+
+  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        人物画像
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="javascript:openapp('{{ url_for('user_search') }}',9)">典型人物</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('relation_search') }}',10)">新增样本</a></li>
+                    </ul>
+                </li>
 
 <div class="main-content">
     <div class="page-content">

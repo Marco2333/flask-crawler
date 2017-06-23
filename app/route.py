@@ -2,7 +2,7 @@ import hashlib
 from app import app
 from database import db
 from models import Admin
-from controller import Task, Search, System
+from controller import Task, Search, System, Portrayal
 from flask import request, render_template, redirect, session, url_for, jsonify
 
 
@@ -26,6 +26,14 @@ app.add_url_rule('/get_user_tweets', 'get_user_tweets', Search.get_user_tweets, 
 app.add_url_rule('/get_user_friends', 'get_user_friends', Search.get_user_friends, methods = ['POST'])
 app.add_url_rule('/get_user_followers', 'get_user_followers', Search.get_user_followers, methods = ['POST'])
 app.add_url_rule('/get_user_relation', 'get_user_relation', Search.get_user_relation, methods = ['POST'])
+
+app.add_url_rule('/typical_character_list', 'typical_character_list', Portrayal.typical_character_list)
+app.add_url_rule('/typical_character_list_detail', 'typical_character_list_detail', Portrayal.typical_character_list_detail, methods = ['POST'])
+# app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
+# app.add_url_rule('/system_help', 'system_help', System.system_help)
+# app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])
+
+
 
 app.add_url_rule('/main', 'main', System.main)
 app.add_url_rule('/pass_change', 'pass_change', System.pass_change)

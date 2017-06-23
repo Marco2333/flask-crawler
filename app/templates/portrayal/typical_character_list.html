@@ -1,0 +1,122 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 任务列表 {% endblock %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+
+
+<div class="content-wrap">
+	
+	<div class="alert alert-success fade in">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    <strong>典型人物：典型人物列表</strong>
+	</div>
+
+	<table class="table table-bordered table-striped" >
+		<thead>
+			<tr>
+				<th>screen_name</th>
+				<th>name</th>
+				<th>朋友数</th>
+				<th>粉丝数</th>
+				<th>推文数</th>
+				<th>类别</th>
+				<th>影响力</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+		
+	</table>
+</div>
+
+<script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
+<script>
+	$(document).ready(function() {
+	   var dataTableOut = $('table').dataTable( {
+	       	language: {
+	       	   "sProcessing" : "正在获取数据，请稍后...", 
+	       	    "sProcessing": "处理中...",
+	       	    "sLengthMenu": "显示 _MENU_ 项结果",
+	       	    "sZeroRecords": "没有匹配结果",
+	       	    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+	            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+	            "sInfoFiltered": "",
+	       	    "sInfoPostFix": "",
+	       	    "sSearch": "搜索:",
+	       	    "sUrl": "",
+	       	    "sEmptyTable": "表中数据为空",
+	       	    "sLoadingRecords": "载入中...",
+	       	    "sInfoThousands": ",",
+	       	    "oPaginate": {
+	       	        "sFirst": "首页",
+	       	        "sPrevious": "上页",
+	       	        "sNext": "下页",
+	       	        "sLast": "末页"
+	            },
+	            "oAria": {
+	                "sSortAscending": ": 以升序排列此列",
+	                "sSortDescending": ": 以降序排列此列"
+	            }
+	        },
+	        "bSort": false,
+	        "bPaginate": true, 
+	        "bLengthChange": true, 
+	        "searching":true,
+	        "bProcessing": true,
+	        "bServerSide": true,
+	        "iDisplayLength": 20,
+	        "fnServerData":  retrieveData,
+	        "aLengthMenu": [ 10, 20, 40, 100 ],
+	        "sAjaxSource": "{{ url_for('typical_character_list_detail') }}",
+	        "aoColumns": [
+	             {"mDataProp":"screen_name"},
+	             {"mDataProp":"name"},
+	             {"mDataProp":"friends_count"},
+	             {"mDataProp":"followers_count"},
+	             {"mDataProp":"statuses_count"},
+	             {"mDataProp":"category"},
+	             {"mDataProp":"influence_score"},
+	             {"mDataProp":"influence_score"}
+	        ]//$_GET['sColumns']将接收到aoColumns传递数据
+	   });  
+	});
+
+	function retrieveData( sSource111,aoData111, fnCallback111) {
+		function fn(){
+		    $.ajax({
+		        url : sSource111,//这个就是请求地址对应sAjaxSource
+		        data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+		        type : 'post',
+		        dataType : 'json',
+		        async : false,
+		        success : function(result) {
+		        	console.log(result)
+		            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+		            var trList = $(".table tbody tr");
+	                var employee_id, id;     
+	          		if(result['aaData'].length == 0) {
+	          			return;
+	          		}
+	          		var data = result['aaData'];
+	                trList.each(function(i){  
+	                    var a = $("<a>").attr('href', "user_profile/" + data[i]).text("详情");
+	                    $(this).find('td').last().empty().append(a);
+	                });
+		        },
+		        error : function(msg) {
+		        }
+		    });
+		}
+		throttle(fn)
+	}
+
+	function throttle(fn,context) {
+	   clearTimeout(fn.tid);
+	   fn.tid = setTimeout(function() {
+	       fn.call(context);
+	   },200);
+	}
+</script>
+{% endblock %}
