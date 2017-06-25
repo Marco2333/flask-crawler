@@ -41,6 +41,9 @@ ul {
 thead {
     font-size: 15px;
 }
+li {
+    list-style: none;
+}
 /*login*/
 #login-wrap {
     width: 380px;
@@ -284,6 +287,18 @@ input[type='checkbox']:checked + label + .num_input {
 }
 .nav-tabs {
     font-size: 15px;
+}
+
+/*typical_character_detail*/
+.profile-header {
+    height: 200px;
+}
+.profile-header-top {
+    height: 50%;
+    background-color: #5dc9e4;
+}
+.profile-header-bottom {
+    height: 50%;
 }
 
 /*response*/

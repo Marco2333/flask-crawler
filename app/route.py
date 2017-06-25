@@ -29,7 +29,7 @@ app.add_url_rule('/get_user_relation', 'get_user_relation', Search.get_user_rela
 
 app.add_url_rule('/typical_character_list', 'typical_character_list', Portrayal.typical_character_list)
 app.add_url_rule('/typical_character_list_detail', 'typical_character_list_detail', Portrayal.typical_character_list_detail, methods = ['POST'])
-# app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
+app.add_url_rule('/typical_character_detail/<user_id>', 'typical_character_detail', Portrayal.typical_character_detail)
 # app.add_url_rule('/system_help', 'system_help', System.system_help)
 # app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])
 

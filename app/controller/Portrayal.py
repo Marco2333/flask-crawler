@@ -53,3 +53,6 @@ def typical_character_list_detail():
 		})
 
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
+
+def typical_character_detail(user_id):
+	return render_template('portrayal/typical_character_detail.html')

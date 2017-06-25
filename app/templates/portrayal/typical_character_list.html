@@ -92,7 +92,6 @@
 		        dataType : 'json',
 		        async : false,
 		        success : function(result) {
-		        	console.log(result)
 		            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
 		            var trList = $(".table tbody tr");
 	                var employee_id, id;     
@@ -101,7 +100,7 @@
 	          		}
 	          		var data = result['aaData'];
 	                trList.each(function(i){  
-	                    var a = $("<a>").attr('href', "user_profile/" + data[i]).text("详情");
+	                    var a = $("<a>").attr('href', "typical_character_detail/" + data[i]['_id']).text("详情");
 	                    $(this).find('td').last().empty().append(a);
 	                });
 		        },
