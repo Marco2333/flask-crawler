@@ -115,6 +115,9 @@
      width: 33.3%;
      margin: 6px 0 4px;
      text-align: center;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
 }
 .profile-basicinfo li > span {
      color: #666;
@@ -123,7 +126,7 @@
 }
 .profile-basicinfo li > p {
      margin-top: 1px;
-     font-size: 22px;
+     font-size: 21px;
      font-weight: bold;
 }
 .profile-table {
@@ -146,35 +149,62 @@
 .psy-sequence {
      height: 340px;
 }
+.suggested-user-wrap {
+     padding: 10px 0;
+}
+.suggested-user-item {
+     margin-bottom: 22px;
+}
+.suggested-user-item img {
+     width: 50px;
+     height: 50px;
+     float: left;
+     border-radius: 100%;
+}
+.suggested-user-item > div {
+     float: left;
+     margin-top: 3px;
+     margin-left: 8px;
+}
+.suggested-user-item p {
+     margin-bottom: 1px;
+}
+.suggested-user-title {
+     margin-bottom: 15px;
+     padding-left: 15px;
+     color: #333;
+     font-size: 15px;
+     font-weight: bold;
+}
 </style>
 <div class="content-wrap">
      <!-- Main content -->
      <section class="content">
           <div class="row">
-               <div class="shadow col-md-9 col-lg-7">
+               <div class="shadow col-md-9 col-lg-8" style="max-width: 980px">
                     <div class="profile-header">
                          <div class="profile-header-top">
                               <div class="profile-header-portrait">
-                                   <img src="{{ url_for('static', filename='profile/DuncanZYM.jpg')}}">
+                                   <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}">
                                    <i class="glyphicon glyphicon-ok"></i>
                               </div>
-                              <span>Donald J. Trump</span>
+                              <span>{{ user['name'] }}</span>
                          </div>
                          <div class="profile-header-bottom">
-                              <p><a href="">@realDonaldTrump</a> - joined at October 29, 2009</p>
-                              <p>45th President of the United States of America</p>
-                              <p><i class="glyphicon glyphicon-map-marker"></i> Washington, DC</p>
+                              <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{ user['created_at'] }}</p>
+                              <p>{{ user['description'] }}</p>
+                              <p><i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }}</p>
                          </div>
                          <div class="profile-header-rank">
                               <div class="rank-top">
                                    <span class="glyphicon glyphicon-tags"></span>
                               </div>
                               <ul>
-                                   <li><span>Status</span><span class="label label-primary">1233</span></li>
-                                   <li><span>Friends</span><span class="label label-info">1233</span></li>
-                                   <li><span>Followers</span><span class="label label-warning">1233</span></li>
-                                   <li><span>Favorites</span><span class="label label-danger">1233</span></li>
-                                   <li><span>Follower/Following</span><span class="label label-success">1233</span></li>
+                                   <li><span>Status</span><span class="label label-primary">{{ user['statuses_count'] }}</span></li>
+                                   <li><span>Friends</span><span class="label label-info">{{ user['friends_count'] }}</span></li>
+                                   <li><span>Followers</span><span class="label label-warning">{{ user['followers_count'] }}</span></li>
+                                   <li><span>Follower/Following</span><span class="label label-success">{{ user['ratio'] }}</span></li>
+                                   <li><span>Favorites</span><span class="label label-danger">{{ user['favourites_count'] }}</span></li>
                               </ul>
                          </div>
                     </div>
@@ -188,39 +218,39 @@
                                    <ul class="clearfix">
                                         <li>
                                              <span>Join Date</span>
-                                             <p>2012-3-4 12:3:43</p>
+                                             <p>{{ user['created_at'] }}</p>
                                         </li>
                                         <li>
                                              <span>Lang</span>
-                                             <p>en</p>
+                                             <p>{{ user['lang'] }}</p>
                                         </li>
                                         <li>
                                              <span>Protected</span>
-                                             <p>False</p>
+                                             <p>{{ True if user['protected'] else False }}</p>
                                         </li>
                                         <li>
                                              <span>Time Zone</span>
-                                             <p>Alaska</p>
+                                             <p>{{ user['time_zone' ]}}</p>
                                         </li>
                                         <li>
                                              <span>Verified</span>
-                                             <p>True</p>
+                                             <p>{{ True if user['verified'] else Flase }}</p>
                                         </li>
                                         <li>
                                              <span>Utc Offset</span>
-                                             <p>-36000</p>
+                                             <p>{{ user['utc_offset'] }}</p>
                                         </li>
                                         <li>
                                              <span>Geo Enabled</span>
-                                             <p>True</p>
+                                             <p>{{ True if user['geo_enabled'] else False }}</p>
                                         </li>
                                         <li>
                                              <span>Crawler Date</span>
-                                             <p>2015-4-12</p>
+                                             <p>{{ user['crawler_date'] }}</p>
                                         </li>
                                         <li>
                                              <span>Last Tweet Start Time</span>
-                                             <p>2012-3-14 2:6:43</p>
+                                             <p>{{ user['psy_tweets_starttime'] }}</p>
                                         </li>
                                    </ul>
                              </div>
@@ -235,24 +265,24 @@
                                         <tbody>
                                              <tr>
                                                   <td>用户分类</td>
-                                                  <td>Religion</td>
+                                                  <td>{{ user['category'] }}</td>
                                                   <td>影响力等级</td>
-                                                  <td>2</td>
+                                                  <td>{{ user['rank_influ'] }}</td>
                                              </tr>
                                              <tr>
                                                   <td>影响力分数</td>
-                                                  <td>95.523096</td>
+                                                  <td>{{ user['influence_score'] }}</td>
                                                   <td>心理状态</td>
-                                                  <td>1</td>
+                                                  <td>{{ user['psy'] }}</td>
                                              </tr>
                                              <tr>
                                                   <td>兴趣标签</td>
-                                                  <td colspan=3>Conference,Christ,Newsroom,Mormon,Saints,Jesus,Mormons,Church,Temple,Leaders</td>
+                                                  <td colspan=3>{{ user['interest_tags'] }}</td>
                                              </tr>
                                              <tr>
                                                   <td>心理状态变化</td>
-                                                  <td colspan=3>
-                                                       <div id="psy-sequence" class="psy-sequence">
+                                                  <td colspan=3 style="padding: 0">
+                                                       <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}"" class="psy-sequence">
                                                        </div>
                                                   </td>
                                              </tr>
@@ -262,8 +292,21 @@
                          </div>
                     </div>
                </div>
-               <div class="shadow col-md-3 col-lg-2">
-                    
+               <div class="col-md-3 col-lg-2" style="padding-left: 25px;">
+                    <div class="shadow suggested-user-wrap clearfix" >
+                         <p class="suggested-user-title">Suggested Users</p>
+                         <ul>
+                              {% for user in related_users %}
+                                   <li class="suggested-user-item col-xs-6 col-sm-4 col-md-12">
+                                        <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}" alt="">
+                                        <div>
+                                             <p>{{ user['name'] }}</p>
+                                             <a href="{{ '/typical_character_detail/%s' % user['_id'] }}">@ {{ user['screen_name'] }}</a>
+                                        </div>
+                                   </li> 
+                              {% endfor %}
+                         </ul>
+                    </div>
                </div>
        </div>
      </section>
@@ -273,8 +316,11 @@
 <script>
      $(function() {
           var myChart = echarts.init(document.getElementById('psy-sequence'));
-
-          // 指定图表的配置项和数据
+          var seq = $("#psy-sequence").attr('data-seq'),
+          psyArr = seq.split(",");
+          xAxis = psyArr.map(function(value, i){
+               return i;
+          }),
           option = {
                title: {
                    text: '人物心理状态变化',
@@ -282,25 +328,10 @@
                tooltip: {
                    trigger: 'axis'
                },
-               legend: {
-                   data:['','']
-               },
-               toolbox: {
-                   show: true,
-                   feature: {
-                       dataZoom: {
-                           yAxisIndex: 'none'
-                       },
-                       dataView: {readOnly: false},
-                       magicType: {type: ['line', 'bar']},
-                       restore: {},
-                       saveAsImage: {}
-                   }
-               },
                xAxis:  {
                    type: 'category',
                    boundaryGap: false,
-                   data: ['周一','周二','周三','周四','周五','周六','周日']
+                   data: xAxis
                },
                yAxis: {
                    type: 'value',
@@ -312,22 +343,10 @@
                    {
                        name:'心理状态',
                        type:'line',
-                       data:[1, -1, 1, -1, 1, 1, -1],
-                       markPoint: {
-                           data: [
-                               {type: 'max', name: '最大值'},
-                               {type: 'min', name: '最小值'}
-                           ]
-                       },
-                       markLine: {
-                           data: [
-                               {type: 'average', name: '平均值'}
-                           ]
-                       }
+                       data:psyArr,
                    }
                ]
           };
-          // 使用刚指定的配置项和数据显示图表。
           myChart.setOption(option);
      })
 </script>

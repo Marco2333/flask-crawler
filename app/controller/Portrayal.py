@@ -1,5 +1,7 @@
 import re
+import time
 import json
+import urllib
 
 from crawler.db import MongoDB
 from app.controller import verify
@@ -42,7 +44,7 @@ def typical_character_list_detail():
 	res = []
 	for u in users:
 		res.append({
-			"_id": u['_id'],
+			"_id": str(u['_id']),
 			"screen_name": u['screen_name'],
 			"name": u['name'],
 			"friends_count": u['friends_count'],
@@ -55,4 +57,31 @@ def typical_character_list_detail():
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
 def typical_character_detail(user_id):
-	return render_template('portrayal/typical_character_detail.html')
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	user = collect.find_one({'_id': long(user_id)})
+
+	user['ratio'] = user['followers_count'] if not  user['friends_count'] else round(user['followers_count'] * 1.0 / user['friends_count'], 2)
+	user['created_at'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['created_at'].replace('+0000 ','')))
+	user['crawler_date'] = str(user['crawler_date']).split(" ")[0]
+	user['psy_seq'] = user['psy_seq'].replace('pos', '1').replace("neg", "-1")
+
+	get_image(user['profile_image_url'], user['screen_name'])
+
+	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}).limit(6)
+
+	ru_arr = []
+	for ru in related_users:
+		ru_arr.append({
+			'_id': ru['_id'],
+			'screen_name': ru['screen_name'],
+			'name': ru['name']
+		})
+		get_image(ru['profile_image_url'], ru['screen_name'])
+
+	return render_template('portrayal/typical_character_detail.html', user = user, related_users = ru_arr)
+
+
+def get_image(url, screen_name):
+	urllib.urlretrieve(url.replace('normal.','bigger.'), 'app/static/profile/%s.jpg' % screen_name)
