@@ -1,0 +1,152 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 新增样本 {% endblock %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+<div class="content-wrap">
+	<div class="alert alert-info fade in">
+        <button class="close" data-dismiss="alert">&times;</button>
+        <strong>新增样本：根据用户screen_name抓取相关用户的基础信息以及推文信息，并进行用户画像</strong>
+    </div>
+
+	<div class="clearfix input-group">
+		<input id="search-input" class="form-control"  type="text" placeholder="请输入人物名称" style="width:200px">
+		<span class="input-group-btn fl">
+            <button class="btn btn-primary" type="button">提交</button>
+        </span>
+	</div>
+	<div class="table-wrap">
+	    <table class="table table-bordered table-striped">
+	        <thead>
+	          	<tr>
+	          		<th>screen_name</th>
+	          		<th>name</th>
+	          		<th>加入日期</th>
+	          		<th>简介</th>
+	          		<th>粉丝数</th>
+	          		<th>朋友数</th>
+	          		<th>推文数</th>
+	          		<th>语言</th>
+	          	</tr>
+	        </thead>
+	     	<tbody>
+	     	</tbody>
+	     </table>
+	</div>
+</div>
+<style>
+	#DataTables_Table_0_filter {display: none}
+	.dataTables_paginate {display: none}
+	.dataTables_length {position: absolute; top: -45px; right: 0}
+	.dataTables_length select {outline: none;height: 26px}
+</style>
+<script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript">
+	$(function() {
+		$('button').click(function () {
+			var screen_name = $("#search-input").val().trim();
+			if(screen_name == '') {
+				alert('用户名称不能为空');
+				return;
+			}
+			if(screen_name.length > 20) {
+				alert('用户名称长度不能大于20！');
+				return;
+			}
+			$.post("{{ url_for('typical_character_add_submit') }}", {screen_name: screen_name}, function(data) {
+				$("#search-input").val("");
+				switch(data.status) {
+					case 0: alert("添加失败"); break;
+					case 1: alert("添加成功"); break;
+					case 'notfound': alert("添加失败，该用户不存在"); break;
+					case 'protected': alert("添加失败，该用户设置了隐私保护"); break;
+					case 'ratelimit': alert("请求超时，请稍后添加"); break;
+					case 'suspend': alert("添加失败，该用户已经被挂起"); break;
+				}
+			})
+		});
+		$("#search-input").on('propertychange input', function() {
+			var screen_name = $(this).val().trim();
+			if(screen_name.length > 20) {
+				alert('用户名称长度不能大于20！');
+				return;
+			}
+			$("#DataTables_Table_0_filter input").val(screen_name).trigger('keyup');
+		});
+		$("table").on('dblclick', 'tr', function() {
+			$("#search-input").val($(this).find('td').first().text().trim())
+		});
+		var dataTableOut = $('table').dataTable( {
+		       	language: {
+		       	   "sProcessing" : "正在获取数据，请稍后...", 
+		       	    "sProcessing": "处理中...",
+		       	    "sLengthMenu": "显示 _MENU_ 项结果",
+		       	    "sZeroRecords": "没有匹配结果",
+		       	    "sInfo": "",
+		       	    "sInfoEmpty": "",
+		       	    "sInfoFiltered": "",
+		       	    "sInfoPostFix": "",
+		       	    "sSearch": "搜索:",
+		       	    "sUrl": "",
+		       	    "sEmptyTable": "表中数据为空",
+		       	    "sLoadingRecords": "载入中...",
+		       	    "sInfoThousands": ",",
+		       	    "oPaginate": {
+		       	        "sFirst": "首页",
+		       	        "sPrevious": "上页",
+		       	        "sNext": "下页",
+		       	        "sLast": "末页"
+		            },
+		            "oAria": {
+		                "sSortAscending": ": 以升序排列此列",
+		                "sSortDescending": ": 以降序排列此列"
+		            }
+		        },
+		        "searching":true,
+		        "bProcessing": true,
+		        "bServerSide": true,
+		        "iDisplayLength": 20,
+		        "fnServerData":  retrieveData,
+		        "aLengthMenu": [ 10, 20, 40, 100 ],
+		        "sAjaxSource": "{{ url_for('user_search_detail') }}",
+		        "aoColumns": [
+		             {"mDataProp":"screen_name"},
+		             {"mDataProp":"name"},
+		             {"mDataProp":"created_at"},
+		             {"mDataProp":"description"},
+		             {"mDataProp":"followers_count"},
+		             {"mDataProp":"friends_count"},
+		             {"mDataProp":"statuses_count"},
+		             {"mDataProp":"lang"}
+		        ]//$_GET['sColumns']将接收到aoColumns传递数据
+		   });  
+	})
+
+	function retrieveData( sSource111,aoData111, fnCallback111) {
+		function fn(){
+		    $.ajax({
+		        url : sSource111,//这个就是请求地址对应sAjaxSource
+		        data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+		        type : 'post',
+		        dataType : 'json',
+		        async : false,
+		        success : function(result) {
+		            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+		        },
+		        error : function(msg) {
+		        }
+		    });
+		}
+		throttle(fn)
+	}
+
+	function throttle(fn,context) {
+	   clearTimeout(fn.tid);
+	   fn.tid = setTimeout(function() {
+	       fn.call(context);
+	   },200);
+	}
+</script>
+
+{% endblock %}

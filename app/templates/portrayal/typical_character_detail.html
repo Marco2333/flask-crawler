@@ -16,9 +16,14 @@
 }
 .shadow {
      padding: 0;
+     margin-bottom: 26px;
      -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
      -moz-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
      box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+}
+.panel-title {
+    font-size: 15px;
+    margin-top: 2px;
 }
 /*typical_character_detail*/
 .profile-header {
@@ -107,9 +112,6 @@
      float: right;
      font-size: 13px;
 }
-.profile-body {
-     margin: 10px 25px;
-}
 .profile-basicinfo li {
      float: left;
      width: 33.3%;
@@ -132,6 +134,7 @@
 .profile-table {
      font-weight: bold;
      font-size: 15px;
+     table-layout: fixed
 }
 .profile-table > tbody > tr > td {
      padding: 10px;
@@ -181,19 +184,25 @@
      <!-- Main content -->
      <section class="content">
           <div class="row">
-               <div class="shadow col-md-9 col-lg-8" style="max-width: 980px">
-                    <div class="profile-header">
+               <div class="col-md-9 col-lg-8" style="max-width: 980px">
+                    <div class="profile-header shadow">
                          <div class="profile-header-top">
                               <div class="profile-header-portrait">
                                    <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}">
-                                   <i class="glyphicon glyphicon-ok"></i>
+                                   {% if user['verified'] %}
+                                       <i class="glyphicon glyphicon-ok"></i>
+                                   {% endif %}
                               </div>
                               <span>{{ user['name'] }}</span>
                          </div>
                          <div class="profile-header-bottom">
-                              <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{ user['created_at'] }}</p>
-                              <p>{{ user['description'] }}</p>
-                              <p><i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }}</p>
+                            <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{ user['created_at'] }}</p>
+                            <p style="width: calc(100% - 270px)">{{ user['description'] }}</p>
+                            <p>
+                                {% if user['location'] %}
+                                    <i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }}
+                                {% endif %}
+                            </p>
                          </div>
                          <div class="profile-header-rank">
                               <div class="rank-top">
@@ -210,70 +219,82 @@
                     </div>
                     
                     <div class="profile-body">
-                         <div class="panel panel-success profile-basicinfo">
+                         <div class="shadow panel-success profile-basicinfo">
                              <div class="panel-heading">
                                  <h3 class="panel-title">基础信息</h3>
                              </div>
-                             <div class="panel-body" style="padding-bottom: 0">
-                                   <ul class="clearfix">
-                                        <li>
-                                             <span>Join Date</span>
-                                             <p>{{ user['created_at'] }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Lang</span>
-                                             <p>{{ user['lang'] }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Protected</span>
-                                             <p>{{ True if user['protected'] else False }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Time Zone</span>
-                                             <p>{{ user['time_zone' ]}}</p>
-                                        </li>
-                                        <li>
-                                             <span>Verified</span>
-                                             <p>{{ True if user['verified'] else Flase }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Utc Offset</span>
-                                             <p>{{ user['utc_offset'] }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Geo Enabled</span>
-                                             <p>{{ True if user['geo_enabled'] else False }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Crawler Date</span>
-                                             <p>{{ user['crawler_date'] }}</p>
-                                        </li>
-                                        <li>
-                                             <span>Last Tweet Start Time</span>
-                                             <p>{{ user['psy_tweets_starttime'] }}</p>
-                                        </li>
-                                   </ul>
+                             <div class="panel-body">
+                                <table class="table table-bordered table-striped profile-table">
+                                     <tbody>
+                                          <tr>
+                                               <td>加入日期</td>
+                                               <td>{{ user['created_at'] }}</td>
+                                               <td>语言</td>
+                                               <td>{{ user['lang'] }}</td>
+                                          </tr>
+                                          <tr>
+                                               <td>隐私保护</td>
+                                               <td>{{ '已设置' if user['protected'] else '未设置' }}</td>
+                                               <td>时区</td>
+                                               <td>{{ user['time_zone'] if user['time_zone'] else ''}}</td>
+                                          </tr>
+                                          <tr>
+                                               <td>官方认证</td>
+                                               <td>{{ '已认证' if user['verified'] else '未认证' }}</td>
+                                               <td>UTC偏移量</td>
+                                               <td>{{ user['utc_offset'] if user['utc_offset'] else ''}}</td>
+                                          </tr>
+                                          <tr>
+                                               <td>Geo状态</td>
+                                               <td>{{ '已开启' if user['geo_enabled'] else '未开启' }}</td>
+                                               <td>抓取日期</td>
+                                               <td>{{ user['crawler_date'] }}</td>
+                                          </tr>
+                                          <tr>
+                                               <td>最新推文</td>
+                                               <td>{{ user['psy_tweets_starttime'] }}</td>
+                                               <td>粉丝朋友比</td>
+                                               <td>{{ user['ratio'] }}</td>
+                                          </tr>
+                                     </tbody>
+                                </table>  
                              </div>
                          </div>
 
-                         <div class="panel panel-info">
+                         <div class="panel-info shadow">
                               <div class="panel-heading">
                                    <h3 class="panel-title">人物画像</h3>
                               </div>
-                              <div class="panel-body" style="padding-bottom: 0">
+                              <div class="panel-body">
                                    <table class="table table-bordered table-striped profile-table">
                                         <tbody>
                                              <tr>
                                                   <td>用户分类</td>
                                                   <td>{{ user['category'] }}</td>
                                                   <td>影响力等级</td>
-                                                  <td>{{ user['rank_influ'] }}</td>
+                                                  <td>
+                                                      {% if user['rank_influ'] == 1 %}
+                                                        低
+                                                      {% elif user['rank_influ'] == 2 %}
+                                                        中
+                                                      {% elif user['rank_influ'] == 3 %}
+                                                        高
+                                                      {% endif %}
+                                                  </td>
                                              </tr>
                                              <tr>
                                                   <td>影响力分数</td>
-                                                  <td>{{ user['influence_score'] }}</td>
+                                                  <td>
+                                                      {{ user['influence_score'] }}
+                                                  </td>
                                                   <td>心理状态</td>
-                                                  <td>{{ user['psy'] }}</td>
+                                                  {% if user['psy'] == 1 %}
+                                                     <td>正面</td>
+                                                  {% elif user['psy'] == -1 %}
+                                                     <td>正面</td>
+                                                  {% else %}
+                                                      <td></td>
+                                                  {% endif %}
                                              </tr>
                                              <tr>
                                                   <td>兴趣标签</td>
@@ -292,7 +313,7 @@
                          </div>
                     </div>
                </div>
-               <div class="col-md-3 col-lg-2" style="padding-left: 25px;">
+               <div class="col-md-3 col-lg-3" style="padding-left: 25px;max-width: 280px">
                     <div class="shadow suggested-user-wrap clearfix" >
                          <p class="suggested-user-title">Suggested Users</p>
                          <ul>
@@ -344,6 +365,13 @@
                        name:'心理状态',
                        type:'line',
                        data:psyArr,
+                       itemStyle : {  
+                            normal : {  
+                                lineStyle:{  
+                                    color:'#3c8dbc'  
+                                }  
+                            }  
+                        },  
                    }
                ]
           };

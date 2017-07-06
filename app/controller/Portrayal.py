@@ -4,10 +4,15 @@ import json
 import urllib
 import threading
 
+from app import app
+from app.database import db
 from twitter import error
 from crawler.db import MongoDB
 from app.controller import verify
+from app.models import TypicalCharacter
 from flask import request, render_template, jsonify, session, redirect, url_for
+
+from portrayal import UserProfile
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
 from crawler.relation_crawler import RelationCrawler
@@ -129,6 +134,13 @@ def typical_character_add_submit():
 			status = 'protected'
 
 		else:
+			TypicalCharacter.query.filter(TypicalCharacter.user_id == user.id).delete()
+			tc = TypicalCharacter(admin_id = session['userid'], user_id = user.id, screen_name = screen_name, 
+				created_at = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+
+			db.session.add(tc)
+			db.session.commit()
+			 
 			user = {
 				'userid': user.id,
 				'screen_name': user.screen_name,
@@ -152,12 +164,89 @@ def typical_character_add_submit():
 				'profile_image_url': user.profile_image_url,
 				'listed_count': user.listed_count
 			}
-			threading.Thread(target = portrayal_thread, args = (user,))
+			th = threading.Thread(target = portrayal_thread, args = (user, tc.id))
+			th.start()
 
 	return jsonify({'status': status})
 
 
-def portrayal_thread(user):
-	tweet_list = tweets_crawler.get_user_all_timeline_temp(screen_name = user.screen_name)
+def portrayal_thread(user, task_id):
+	tweet_list = tweets_crawler.get_user_all_timeline_temp(screen_name = user['screen_name'])
 	user['tweets'] = tweet_list
+
+	out = UserProfile.UserProfileFromDic(user)
+
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	cur_user = collect.find_one({'_id': long(out['userid'])})
+
+	out['_id'] = out['userid']
+	del out['userid']
+	del out['tweets']
+
+	if cur_user == None:
+		collect.insert_one(out)
+
+	else:
+		collect.remove({'_id': long(out['_id'])})
+		collect.insert_one(out)
+
+	with app.app_context():
+		TypicalCharacter.query.filter(TypicalCharacter.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+@verify
+def typical_character_newlist():
+	return render_template('portrayal/typical_character_newlist.html')
+
+@verify
+def typical_character_newlist_detail():
+	data = json.loads(request.form['aoData'])
+
+	for item in data:
+		if item['name'] == 'sSearch':
+			s_search = item['value'].strip()
+
+		if item['name'] == 'iDisplayLength':
+			data_length = item['value']
+
+		if item['name'] == 'iDisplayStart':
+			data_start = item['value'];      
 	
+	data_length = int(data_length)
+	data_start = int(data_start)
+
+	character = TypicalCharacter.query.paginate((data_start / data_length) + 1, data_length, False).items
+
+	if s_search == '':
+		character = TypicalCharacter.query.paginate((data_start / data_length) + 1, data_length, False).items
+		count = TypicalCharacter.query.filter().count()
+	else:
+		character = TypicalCharacter.query.filter(TypicalCharacter.screen_name.like("%"+s_search+"%")).paginate((data_start / data_length) + 1, data_length, False).items
+		count = TypicalCharacter.query.filter(TypicalCharacter.screen_name.like("%"+s_search+"%")).count()
+	
+
+	res = []
+	for u in character:
+		res.append({
+			"id": str(u.id),
+			"screen_name": u.screen_name,
+			"user_id": u.user_id,
+			"created_at": u.created_at,
+			"finished_at": u.finished_at,
+			"admin_id": u.admin_id
+		})
+
+	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
+
+@verify
+def typical_character_newdelete():
+	user_id = request.form['user_id']
+	TypicalCharacter.query.filter(TypicalCharacter.user_id == user_id).delete()
+
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	collect.delete_one({'_id': long(user_id)})
+
+	return jsonify({'status': 1})

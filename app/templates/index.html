@@ -49,7 +49,8 @@
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="javascript:openapp('{{ url_for('typical_character_list') }}',9)">典型人物</a></li>
-                        <li><a href="javascript:openapp('{{ url_for('relation_search') }}',10)">新增样本</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('typical_character_add') }}',10)">新增样本</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('typical_character_newlist') }}',11)">新增列表</a></li>
                     </ul>
                 </li>
             </ul>
@@ -153,9 +154,16 @@
                     </a>
                  </li>
                 <li>
-                    <a data-id="10" href="javascript:openapp('{{ url_for('system_help') }}',10)">
+                    <a data-id="10" href="javascript:openapp('{{ url_for('typical_character_add') }}',10)">
                         <i class="glyphicon glyphicon-chevron-right"></i>
                         <span>新增样本</span>
+                        <i class="glyphicon glyphicon-angle-right fr"></i>
+                    </a>
+                </li>
+                <li>
+                    <a data-id="11" href="javascript:openapp('{{ url_for('typical_character_newlist') }}',11)">
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                        <span>新增列表</span>
                         <i class="glyphicon glyphicon-angle-right fr"></i>
                     </a>
                 </li>

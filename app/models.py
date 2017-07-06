@@ -34,11 +34,13 @@ class Task(db.Model):
     # followers_num = Column(Integer)
     basicinfo_num = Column(Integer)
     is_file = Column(Integer)
-    # def __init__(self, task_name = None, userid = None, search_name = None,  remark = None, created_at = None, finished_at = None, search_type = '1'):
-    #     self.task_name = task_name
-    #     self.userid = userid
-    #     self.created_at = created_at
-    #     self.finished_at = finished_at
-    #     self.search_type = search_type
-    #     self.search_name = search_name
-    #     self.remark = remark
+
+
+class TypicalCharacter(db.Model):
+    __tablename__ = 'typical_character'
+    id = Column(Integer, primary_key = True)
+    screen_name = Column(String(50))
+    user_id = Column(String(50))
+    created_at = Column(String(40))
+    finished_at = Column(String(40))
+    admin_id = Column(String(30))

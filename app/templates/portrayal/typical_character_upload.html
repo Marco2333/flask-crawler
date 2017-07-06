@@ -1,0 +1,143 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 任务列表 {% endblock %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+<style>.typical-newdelete{margin-left: 8px} .typical-newdelete:hover{color: #a00}</style>
+
+<div class="content-wrap">
+	
+	<div class="alert alert-success fade in">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    <strong>典型人物：典型人物列表</strong>
+	</div>
+
+	<table class="table table-bordered table-striped" >
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>user_id</th>
+				<th>screen_name</th>
+				<th>创建日期</th>
+				<th>完成日期</th>
+				<th>创建用户</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+
+<script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
+<script>
+	$(document).ready(function() {
+		$('table').on('click','.typical-newdelete',function(e) {
+			var that = $(this);
+			if(!confirm('确认删除？')) {
+				e.preventDefault();
+				return;
+			}
+			else {
+				$.post("/typical_character_newdelete",{user_id: $(this).attr('data-id')},function(data) {
+					if(data.status == 1) {
+						alert("删除成功！");
+						that.parents('tr').remove();
+					}
+					else {
+						alert("删除失败！");
+					}
+				})
+			}
+		});
+	    var dataTableOut = $('table').dataTable( {
+	       	language: {
+	       	   "sProcessing" : "正在获取数据，请稍后...", 
+	       	    "sProcessing": "处理中...",
+	       	    "sLengthMenu": "显示 _MENU_ 项结果",
+	       	    "sZeroRecords": "没有匹配结果",
+	       	    "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+	            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+	            "sInfoFiltered": "",
+	       	    "sInfoPostFix": "",
+	       	    "sSearch": "搜索:",
+	       	    "sUrl": "",
+	       	    "sEmptyTable": "表中数据为空",
+	       	    "sLoadingRecords": "载入中...",
+	       	    "sInfoThousands": ",",
+	       	    "oPaginate": {
+	       	        "sFirst": "首页",
+	       	        "sPrevious": "上页",
+	       	        "sNext": "下页",
+	       	        "sLast": "末页"
+	            },
+	            "oAria": {
+	                "sSortAscending": ": 以升序排列此列",
+	                "sSortDescending": ": 以降序排列此列"
+	            }
+	        },
+	        "bSort": false,
+	        "bPaginate": true, 
+	        "bLengthChange": true, 
+	        "searching":true,
+	        "bProcessing": true,
+	        "bServerSide": true,
+	        "iDisplayLength": 20,
+	        "fnServerData":  retrieveData,
+	        "aLengthMenu": [ 10, 20, 40, 100 ],
+	        "sAjaxSource": "{{ url_for('typical_character_newlist_detail') }}",
+	        "aoColumns": [
+	             {"mDataProp":"id"},
+	             {"mDataProp":"user_id"},
+	             {"mDataProp":"screen_name"},
+	             {"mDataProp":"created_at"},
+	             {"mDataProp":"finished_at"},
+	             {"mDataProp":"admin_id"},
+	             {"mDataProp":"admin_id"}
+	        ]
+	   });  
+	});
+
+	function retrieveData( sSource111,aoData111, fnCallback111) {
+		function fn(){
+		    $.ajax({
+		        url : sSource111,//这个就是请求地址对应sAjaxSource
+		        data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+		        type : 'post',
+		        dataType : 'json',
+		        async : false,
+		        success : function(result) {
+		            fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+		            var trList = $(".table tbody tr");
+	                var employee_id, id;     
+	          		if(result['aaData'].length == 0) {
+	          			return;
+	          		}
+	          		var data = result['aaData'];
+	                trList.each(function(i){
+	                	if(data[i]['finished_at'] != '') {
+	                		var a = $("<a>").attr('href', "typical_character_detail/" + data[i]['user_id']).text("详情");
+	                		$(this).find('td').last().empty().append(a);
+	                		var a = $("<a class='typical-newdelete'>").attr('data-id', data[i]['user_id']).text("删除");
+	                		$(this).find('td').last().append(a);
+	                	}
+	                	else {
+	                		$(this).find('td').last().empty();
+	                	}
+	                });
+		        },
+		        error : function(msg) {
+		        }
+		    });
+		}
+		throttle(fn)
+	}
+
+	function throttle(fn,context) {
+	   clearTimeout(fn.tid);
+	   fn.tid = setTimeout(function() {
+	       fn.call(context);
+	   },200);
+	}
+</script>
+{% endblock %}

@@ -32,8 +32,9 @@ app.add_url_rule('/typical_character_add', 'typical_character_add', Portrayal.ty
 app.add_url_rule('/typical_character_list_detail', 'typical_character_list_detail', Portrayal.typical_character_list_detail, methods = ['POST'])
 app.add_url_rule('/typical_character_detail/<user_id>', 'typical_character_detail', Portrayal.typical_character_detail)
 app.add_url_rule('/typical_character_add_submit', 'typical_character_add_submit', Portrayal.typical_character_add_submit, methods = ['POST'])
-# app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])
-
+app.add_url_rule('/typical_character_newlist', 'typical_character_newlist', Portrayal.typical_character_newlist)
+app.add_url_rule('/typical_character_newlist_detail', 'typical_character_newlist_detail', Portrayal.typical_character_newlist_detail, methods = ['POST'])
+app.add_url_rule('/typical_character_newdelete', 'typical_character_newdelete', Portrayal.typical_character_newdelete, methods = ['POST'])
 
 
 app.add_url_rule('/main', 'main', System.main)
