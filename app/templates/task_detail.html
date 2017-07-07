@@ -1,0 +1,75 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 任务详情 {% endblock %}
+{% block body %}
+<style>td:nth-child(odd){font-weight: bold;color:#3c8dbc;}</style>
+<div class="content-wrap">
+    
+    <div class="alert alert-success fade in">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>任务详情：查看已提交任务详细信息</strong>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td>ID</td>
+                    <td>{{ task.id }}</td>
+                    <td>任务名称</td>
+                    <td>{{ task.task_name }}</td>
+                    <td>创建用户</td>
+                    <td>{{ task.user_name }}</td>
+                </tr>
+                <tr>
+                    <td>screen_name</td>
+                    <td>{{ task.screen_name }}</td>
+                    <td>创建日期</td>
+                    <td>{{ task.created_at }}</td>
+                    <td>完成日期</td>
+                    <td>{{ task.finished_at }}</td>
+                </tr>
+                <tr>
+                    <td>抓取内容</td>
+                    <td>
+                        {% if task['search_type'] == '1' %}
+                           推文
+                        {% elif task['search_type'] == '4' %}
+                           基础信息
+                        {% else %}
+                            推文 | 基础信息
+                        {% endif %}
+                    </td>
+                    <td>抓取深度</td>
+                    <td>{{ task.deepth }}</td>
+                    <td>线程数量</td>
+                    <td>{{ task.thread_num }}</td>
+                </tr>
+                <tr>
+                    <td>扩展方式</td>
+                    <td>{{ task.extension }}</td>
+                    <td>抓取推文用户数</td>
+                    <td>{{ task.tweet_num }}</td>
+                    <td>抓取基础信息用户数</td>
+                    <td>{{ task.basicinfo_num }}</td>
+                </tr>
+                <tr>
+                    <td>任务类型</td>
+                    <td>{{ task.type }}</td>
+                    <td>已抓取推文数量</td>
+                    <td>{{ task.tweet_num_finished }}</td>
+                    <td>已抓取基础信息数量</td>
+                    <td>{{ task.basicinfo_num_finished }}</td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td colspan=5>{{ task['remark'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+{% endblock %}

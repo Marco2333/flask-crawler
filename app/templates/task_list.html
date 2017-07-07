@@ -46,7 +46,10 @@
 					</td>
 					<td>{{ task['finished_at'].date() if task['finished_at'] else '' }}</td>
 					<td>{{ task['remark'] }}</td>
-					<td><a class="task-delete" data-id={{task['id']}}>删除</a></td>
+					<td>
+						<a href="/task_detail/{{task['id']}}">详情</a>
+						<a class="task-delete" data-id={{task['id']}}>删除</a>
+					</td>
 				</tr>
 			{% endfor %}
 		</tbody>

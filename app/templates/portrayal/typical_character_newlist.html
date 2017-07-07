@@ -10,7 +10,7 @@
 	
 	<div class="alert alert-success fade in">
 	    <button type="button" class="close" data-dismiss="alert">&times;</button>
-	    <strong>典型人物：典型人物列表</strong>
+	    <strong>新增列表：新加入人物样本库的用户列表</strong>
 	</div>
 
 	<table class="table table-bordered table-striped" >
@@ -115,7 +115,7 @@
 	          		}
 	          		var data = result['aaData'];
 	                trList.each(function(i){
-	                	if(data[i]['finished_at'] != '') {
+	                	if(data[i]['finished_at'] != null) {
 	                		var a = $("<a>").attr('href', "typical_character_detail/" + data[i]['user_id']).text("详情");
 	                		$(this).find('td').last().empty().append(a);
 	                		a = $("<a class='typical-newdelete'>").attr('data-id', data[i]['user_id']).text("删除");

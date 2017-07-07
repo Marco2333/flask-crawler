@@ -6,9 +6,10 @@ import warnings
 import threading
 
 from app import app
+from crawler.db import MongoDB
 from app.controller import verify
 from app.database import db
-from app.models import Task
+from app.models import Task, Admin
 from pybloom import BloomFilter
 from werkzeug import secure_filename
 from flask import request, render_template, jsonify, session, url_for, redirect
@@ -33,6 +34,42 @@ def task_list():
 			task.remark += ' ...'
 
 	return render_template('task_list.html', tasks = tasks)
+
+@verify
+def task_detail(task_id):
+	task = Task.query.filter(Task.id == task_id).first()
+	user = Admin.query.filter(Admin.userid == task.userid).first()
+
+	res = {
+		'id': task.id,
+		'task_name': task.task_name,
+		'user_name': user.username,
+		'created_at': task.created_at,
+		'finished_at': task.finished_at,
+		'screen_name': task.search_name,
+		'remark': task.remark,
+		'thread_num': task.thread_num,
+		'deepth': task.deepth,
+		'extension': task.extension,
+		'tweet_num': task.tweet_num,
+		'basicinfo_num': task.basicinfo_num,
+		'type': '文件导入' if task.is_file else '广度优先扩展',
+		'search_type': task.search_type,
+		'basicinfo_num_finished': '',
+		'tweet_num_finished': ''
+	}
+
+	if '4' in task.search_type:
+		sql = "select count(*) from task_%s" % task.id
+		bsc = db.session.execute(sql).first()
+		res['basicinfo_num_finished'] = bsc[0]
+
+	if '1' in task.search_type:
+		md = MongoDB().connect()
+		collect = md["task_%s" % task.id]
+		res['tweet_num_finished'] = collect.find().count()
+
+	return render_template('task_detail.html', task = res)
 
 
 @verify
