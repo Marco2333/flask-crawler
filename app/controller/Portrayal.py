@@ -72,9 +72,56 @@ def typical_character_list_detail():
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
 @verify
+def get_typical_relation(user_id):
+	sql = "select target_user_id from relation where following = 'true' and 'followed_by' = 'false' and source_user_id = '%s'" % user_id
+	following = db.session.execute(sql)
+
+	following_res = set()
+	for item in following:
+		following_res.add(item[0])
+	
+	sql = "select source_user_id from relation where followed_by = 'true' and following = 'false' and target_user_id = '%s'" % user_id
+	following = db.session.execute(sql)
+
+	for item in following:
+		following_res.add(item[0])
+
+
+	sql = "select target_user_id from relation where followed_by = 'true' and following = 'false' and source_user_id = '%s'" % user_id
+	followed = db.session.execute(sql)
+
+	followed_res = set()
+	for item in followed:
+		followed_res.add(item[0])
+	
+	sql = "select source_user_id from relation where following = 'true' and 'followed_by' = 'false' and target_user_id = '%s'" % user_id
+	followed = db.session.execute(sql)
+
+	for item in followed:
+		followed_res.add(item[0])
+
+	dfans = set()
+	sql = "select source_user_id, target_user_id from relation where following = 'true' and 'followed_by' = 'true' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
+	followed = db.session.execute(sql)
+
+	for item in followed:
+		dfans.add(item[0])
+		dfans.add(item[1])
+
+	if user_id + '' in dfans:
+		dfans.remove(user_id + '')
+
+	user = {}
+	user['friends'] = list(following_res)
+	user['followers'] = list(followed_res)
+	user['dfans'] = list(dfans)
+
+	return jsonify(user)
+
+@verify
 def typical_character_detail(user_id):
-	db = MongoDB().connect()
-	collect = db['typical']
+	mdb = MongoDB().connect()
+	collect = mdb['typical']
 
 	user = collect.find_one({'_id': long(user_id)})
 

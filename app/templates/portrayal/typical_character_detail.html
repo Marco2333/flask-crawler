@@ -311,6 +311,26 @@
                                    </table>  
                              </div>
                          </div>
+
+                         <div class="panel-warning shadow">
+                              <div class="panel-heading">
+                                   <h3 class="panel-title">人物关系</h3>
+                              </div>
+                              <div class="panel-body">
+                                   <table class="table table-bordered table-striped profile-table">
+                                        <tbody>
+                                             <tr>
+                                                  <td>人物关系</td>
+                                                  <td colspan=3 style="padding: 0">
+                                                       <div id="user-relation" data-seq="{{ user['psy_seq'] }}"" style="height: 300px">
+                                                       </div>
+                                                  </td>
+                                             </tr>
+                                        </tbody>
+                                   </table>  
+                             </div>
+                         </div>
+
                     </div>
                </div>
                <div class="col-md-3 col-lg-3" style="padding-left: 25px;max-width: 280px">
@@ -333,7 +353,7 @@
      </section>
 </div>
 
-<script src="{{ url_for('static', filename='plugin/echarts.simple.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
 <script>
      $(function() {
           var myChart = echarts.init(document.getElementById('psy-sequence'));
@@ -343,9 +363,6 @@
                return i;
           }),
           option = {
-               title: {
-                   text: '人物心理状态变化',
-               },
                tooltip: {
                    trigger: 'axis'
                },
@@ -376,6 +393,110 @@
                ]
           };
           myChart.setOption(option);
-     })
+     });
+    $(function() {
+        $.get("/get_typical_relation/{{ user['_id' ]}}", function(data) {
+            var followers = data.followers,
+                friends = data.friends,
+                dfans = data.dfans;
+
+            var nodes = [];
+            followers.forEach(function(v) {
+                nodes.push({
+                    "name": v,
+                    'id': v,
+                    'value': 1
+                })
+            });
+            friends.forEach(function(v) {
+                nodes.push({
+                    "name": v,
+                    "id": v,
+                    'value': 2
+                })
+            });
+            dfans.forEach(function(v) {
+                nodes.push({
+                    "name": v,
+                    "id": v,
+                    'value': 0
+                })
+            });
+
+            nodes.unshift({
+                "name": "{{ user['_id' ]}}",
+                "id":  "{{ user['_id' ]}}",
+                'value': 3
+            });
+            var myChart = echarts.init(document.getElementById('user-relation'));
+            myChart.showLoading();
+
+            var links = []
+            nodes.forEach(function(v, i) {
+                if(i) {
+                    links.push({
+                       "source": 0,  
+                       "target": i   
+                    })
+                }
+            });
+            var webkitDep = {  
+                "type": "force",  
+                "categories": [//关系网类别，可以写多组  
+                    {  
+                        "name": "人物关系",//关系网名称  
+                        "keyword": {},  
+                        "base": "人物关系"  
+                    }  
+                ], 
+                "nodes": nodes,  
+                "links": links
+            };  
+            myChart.hideLoading(); 
+
+            option = {  
+                series: [{  
+                    type: 'graph',  
+                    layout: 'force',  
+                    animation: false,  
+                    label: {  
+                        normal: {  
+                            show:true,  
+                            position: 'right'  
+                        }  
+                    },  
+                    draggable: true,  
+                    data: webkitDep.nodes.map(function (node, idx) {  
+                        // node.id = idx;
+                        return node;  
+                    }), 
+                    itemStyle: {
+                        normal: {
+                            color: function(params) {
+                                // build a color map as your need.
+                                var colorList = [
+                                  '#C1232B','#B5C334','#FCCE10', '#3c8dbc'
+                                ];
+                                console.log(params);
+                                return colorList[params.value]
+                            },
+                            label: {
+                                show: true,
+                                position: 'top',
+                                formatter: '{b}'
+                            }
+                        }
+                    }, 
+                    categories: webkitDep.categories,  
+                    force: {  
+                        edgeLength: 105,//连线的长度  
+                        repulsion: 100  //子节点之间的间距  
+                    },  
+                    edges: webkitDep.links  
+                }]  
+            };  
+            myChart.setOption(option);  
+        })
+    })
 </script>
 {% endblock %}
