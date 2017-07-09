@@ -54,7 +54,6 @@ def typical_character_list_detail():
 
 		users = collect.find(query).skip(data_start).limit(data_length)
 		count = collect.find(query).count()
-	
 
 	res = []
 	for u in users:
@@ -72,36 +71,183 @@ def typical_character_list_detail():
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
 @verify
-def get_typical_relation(user_id):
-	sql = "select target_user_id from relation where following = 'true' and 'followed_by' = 'false' and source_user_id = '%s'" % user_id
+def get_typical_friends(user_id):
+	sql = "select target_user_id from relation where following = 'True' and source_user_id = '%s'" % user_id
 	following = db.session.execute(sql)
 
 	following_res = set()
 	for item in following:
 		following_res.add(item[0])
 	
-	sql = "select source_user_id from relation where followed_by = 'true' and following = 'false' and target_user_id = '%s'" % user_id
+	sql = "select source_user_id from relation where followed_by = 'True' and target_user_id = '%s'" % user_id
 	following = db.session.execute(sql)
 
 	for item in following:
 		following_res.add(item[0])
 
+	count = len(following_res)
+	data = json.loads(request.form['aoData'])
 
-	sql = "select target_user_id from relation where followed_by = 'true' and following = 'false' and source_user_id = '%s'" % user_id
+	for item in data:
+		if item['name'] == 'iDisplayLength':
+			data_length = item['value']
+
+		if item['name'] == 'iDisplayStart':
+			data_start = item['value'];      
+	
+	data_length = int(data_length)
+	data_start = int(data_start)
+
+	following_res = list(following_res)[data_start : data_start + data_length]
+
+	mdb = MongoDB().connect()
+	collect = mdb['typical']
+
+	res = []
+	for user_id in following_res:
+		user = collect.find_one({'_id': long(user_id)})
+		res.append({
+			"user_id": user['_id'],
+			"screen_name": user['screen_name'],
+			"statuses_count": user['statuses_count'],
+			"friends_count": user['friends_count'],
+			"followers_count": user['followers_count'],
+			"category": user['category'],
+			"influence_score": user['influence_score']
+		})
+
+
+	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
+
+
+@verify
+def get_typical_followers(user_id):
+	sql = "select target_user_id from relation where followed_by = 'True' and source_user_id = '%s'" % user_id
 	followed = db.session.execute(sql)
 
 	followed_res = set()
 	for item in followed:
 		followed_res.add(item[0])
 	
-	sql = "select source_user_id from relation where following = 'true' and 'followed_by' = 'false' and target_user_id = '%s'" % user_id
+	sql = "select source_user_id from relation where following = 'True' and target_user_id = '%s'" % user_id
+	followed = db.session.execute(sql)
+
+	for item in followed:
+		followed_res.add(item[0])
+
+	count = len(followed_res)
+	data = json.loads(request.form['aoData'])
+
+	for item in data:
+		if item['name'] == 'iDisplayLength':
+			data_length = item['value']
+
+		if item['name'] == 'iDisplayStart':
+			data_start = item['value'];      
+	
+	data_length = int(data_length)
+	data_start = int(data_start)
+
+	followed_res = list(followed_res)[data_start : data_start + data_length]
+
+	mdb = MongoDB().connect()
+	collect = mdb['typical']
+
+	res = []
+	for user_id in followed_res:
+		user = collect.find_one({'_id': long(user_id)})
+		res.append({
+			"user_id": user['_id'],
+			"screen_name": user['screen_name'],
+			"statuses_count": user['statuses_count'],
+			"friends_count": user['friends_count'],
+			"followers_count": user['followers_count'],
+			"category": user['category'],
+			"influence_score": user['influence_score']
+		})
+
+
+	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
+
+@verify
+def get_typical_dfans(user_id):
+	dfans = set()
+	sql = "select source_user_id, target_user_id from relation where following = 'True' and followed_by = 'True' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
+	realtion = db.session.execute(sql)
+
+	for item in realtion:
+		dfans.add(item[0])
+		dfans.add(item[1])
+
+	if user_id + '' in dfans:
+		dfans.remove(user_id + '')
+
+	count = len(dfans)
+
+	data = json.loads(request.form['aoData'])
+
+	for item in data:
+		if item['name'] == 'iDisplayLength':
+			data_length = item['value']
+
+		if item['name'] == 'iDisplayStart':
+			data_start = item['value'];      
+	
+	data_length = int(data_length)
+	data_start = int(data_start)
+
+	dfans = list(dfans)[data_start : data_start + data_length]
+
+	mdb = MongoDB().connect()
+	collect = mdb['typical']
+
+	res = []
+	for user_id in dfans:
+		user = collect.find_one({'_id': long(user_id)})
+		res.append({
+			"user_id": user['_id'],
+			"screen_name": user['screen_name'],
+			"statuses_count": user['statuses_count'],
+			"friends_count": user['friends_count'],
+			"followers_count": user['followers_count'],
+			"category": user['category'],
+			"influence_score": user['influence_score']
+		})
+
+	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
+
+
+@verify
+def get_typical_relation(user_id):
+	sql = "select target_user_id from relation where following = 'True' and 'followed_by' = 'False' and source_user_id = '%s'" % user_id
+	following = db.session.execute(sql)
+
+	following_res = set()
+	for item in following:
+		following_res.add(item[0])
+	
+	sql = "select source_user_id from relation where followed_by = 'True' and following = 'False' and target_user_id = '%s'" % user_id
+	following = db.session.execute(sql)
+
+	for item in following:
+		following_res.add(item[0])
+
+
+	sql = "select target_user_id from relation where followed_by = 'True' and following = 'False' and source_user_id = '%s'" % user_id
+	followed = db.session.execute(sql)
+
+	followed_res = set()
+	for item in followed:
+		followed_res.add(item[0])
+	
+	sql = "select source_user_id from relation where following = 'True' and 'followed_by' = 'False' and target_user_id = '%s'" % user_id
 	followed = db.session.execute(sql)
 
 	for item in followed:
 		followed_res.add(item[0])
 
 	dfans = set()
-	sql = "select source_user_id, target_user_id from relation where following = 'true' and 'followed_by' = 'true' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
+	sql = "select source_user_id, target_user_id from relation where following = 'True' and 'followed_by' = 'True' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
 	followed = db.session.execute(sql)
 
 	for item in followed:
