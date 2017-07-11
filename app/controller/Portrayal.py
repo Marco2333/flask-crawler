@@ -10,12 +10,12 @@ from twitter import error
 from crawler.db import MongoDB
 from app.controller import verify
 from app.models import TypicalCharacter
-from flask import request, render_template, jsonify, session, redirect, url_for
+from flask import request, render_template, jsonify, session, make_response, send_file
 
+from portrayal.XMLInteraction.GenerateXML import GenerateUserXml
 from portrayal import UserProfile
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
-from crawler.relation_crawler import RelationCrawler
 from crawler.tweets_crawler import TweetsCrawler
 
 basicinfo_crawler = BasicinfoCrawler()
@@ -107,7 +107,7 @@ def get_typical_friends(user_id):
 	for user_id in following_res:
 		user = collect.find_one({'_id': long(user_id)})
 		res.append({
-			"user_id": user['_id'],
+			"user_id": str(user['_id']),
 			"screen_name": user['screen_name'],
 			"statuses_count": user['statuses_count'],
 			"friends_count": user['friends_count'],
@@ -157,7 +157,7 @@ def get_typical_followers(user_id):
 	for user_id in followed_res:
 		user = collect.find_one({'_id': long(user_id)})
 		res.append({
-			"user_id": user['_id'],
+			"user_id": str(user['_id']),
 			"screen_name": user['screen_name'],
 			"statuses_count": user['statuses_count'],
 			"friends_count": user['friends_count'],
@@ -205,7 +205,7 @@ def get_typical_dfans(user_id):
 	for user_id in dfans:
 		user = collect.find_one({'_id': long(user_id)})
 		res.append({
-			"user_id": user['_id'],
+			"user_id": str(user['_id']),
 			"screen_name": user['screen_name'],
 			"statuses_count": user['statuses_count'],
 			"friends_count": user['friends_count'],
@@ -270,7 +270,7 @@ def typical_character_detail(user_id):
 	collect = mdb['typical']
 
 	user = collect.find_one({'_id': long(user_id)})
-
+	print user
 	user['ratio'] = user['followers_count'] if not user['friends_count'] else round(user['followers_count'] * 1.0 / user['friends_count'], 2)
 	user['created_at'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['created_at'].replace('+0000 ','')))
 	user['crawler_date'] = str(user['crawler_date']).split(" ")[0]
@@ -283,7 +283,7 @@ def typical_character_detail(user_id):
 	ru_arr = []
 	for ru in related_users:
 		ru_arr.append({
-			'_id': ru['_id'],
+			'_id': str(ru['_id']),
 			'screen_name': ru['screen_name'],
 			'name': ru['name']
 		})
@@ -443,3 +443,16 @@ def typical_character_newdelete():
 	collect.delete_one({'_id': long(user_id)})
 
 	return jsonify({'status': 1})
+
+@verify
+def download_user_xml(user_id):
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	user = collect.find_one({'_id': long(user_id)})
+	user['user_id'] = str(user['_id'])
+	file_name = GenerateUserXml(user)
+
+	response = make_response(send_file(file_name))
+	response.headers["Content-Disposition"] = "attachment; filename=%s.xml" % user['screen_name']
+	return response

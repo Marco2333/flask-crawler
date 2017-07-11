@@ -100,8 +100,10 @@
 	          		}
 	          		var data = result['aaData'];
 	                trList.each(function(i){  
-	                    var a = $("<a>").attr('href', "typical_character_detail/" + data[i]['_id']).text("详情");
+	                    var a = $("<a style='margin-right:5px'>").attr('href', "/typical_character_detail/" + data[i]['_id']).text("详情");
 	                    $(this).find('td').last().empty().append(a);
+	                    a = $("<a>").attr('href', "/download_user_xml/" + data[i]['_id']).text("导出");
+	                    $(this).find('td').last().append(a);
 	                });
 		        },
 		        error : function(msg) {

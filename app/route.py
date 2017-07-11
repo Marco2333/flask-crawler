@@ -27,7 +27,7 @@ app.add_url_rule('/get_user_friends', 'get_user_friends', Search.get_user_friend
 app.add_url_rule('/get_user_followers', 'get_user_followers', Search.get_user_followers, methods = ['POST'])
 app.add_url_rule('/get_user_relation', 'get_user_relation', Search.get_user_relation, methods = ['POST'])
 
-
+app.add_url_rule('/download_user_xml/<user_id>', 'download_user_xml', Portrayal.download_user_xml)
 app.add_url_rule('/get_typical_dfans/<user_id>', 'get_typical_dfans', Portrayal.get_typical_dfans, methods = ['POST'])
 app.add_url_rule('/get_typical_followers/<user_id>', 'get_typical_followers', Portrayal.get_typical_followers, methods = ['POST'])
 app.add_url_rule('/get_typical_friends/<user_id>', 'get_typical_friends', Portrayal.get_typical_friends, methods = ['POST'])
