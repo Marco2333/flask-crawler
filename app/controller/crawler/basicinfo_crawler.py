@@ -115,6 +115,7 @@ class BasicinfoCrawler:
 		thread_pool = []
 		length = len(user_list)
 
+		THREAD_NUM = app.config['THREAD_NUM']
 		per_thread = length / THREAD_NUM
 		
 		while i < THREAD_NUM:

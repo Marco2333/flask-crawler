@@ -6,9 +6,9 @@ class Config(object):
     DEBUG = False
     SECRET_KEY = "z\xe5v\xf1'\xde\x99\xa3P|\xa8\xd25op\xdd\xe96\r\xd3\xb7o"
 
-    MONGO_HOST = '127.0.0.1'
-    MONGO_PORT = 27017
-    MONGO_DBNAME = 'qeeniao'
+    # MONGO_HOST = '127.0.0.1'
+    # MONGO_PORT = 27017
+    # MONGO_DBNAME = 'twitter'
 
     # MYSQL_HOST = '127.0.0.1'
     # MYSQL_USER = 'root'
