@@ -18,10 +18,18 @@ relation_crawler = RelationCrawler()
 tweets_crawler = TweetsCrawler()
 
 
+'''
+返回用户查询页面
+'''
 @verify
 def user_search():
 	return render_template('user_search.html')
 
+
+'''
+返回两个用户的关系
+'''
+@verify
 def get_user_relation():
 	screen_name1 = request.form['screen_name1'].strip()
 	screen_name2 = request.form['screen_name2'].strip()
@@ -44,6 +52,10 @@ def get_user_relation():
 	
 	return jsonify(res)
 
+
+'''
+返回用户推文
+'''
 @verify
 def get_user_tweets():
 	screen_name = request.form['screen_name']
@@ -70,6 +82,10 @@ def get_user_tweets():
 		
 	return jsonify(res)
 
+
+'''
+获取用户朋友
+'''
 @verify
 def get_user_friends():
 	screen_name = request.form['screen_name']
@@ -97,6 +113,10 @@ def get_user_friends():
 		
 	return jsonify([friends[0], res])
 
+
+'''
+获取用户粉丝
+'''
 @verify
 def get_user_followers():
 	screen_name = request.form['screen_name']
@@ -125,6 +145,10 @@ def get_user_followers():
 		
 	return jsonify([followers[0], res])
 
+
+'''
+返回用户信息（基础信息、部分关系信息、部分推文信息）页面
+'''
 @verify
 def user_profile(screen_name):
 	try:
@@ -193,10 +217,16 @@ def user_profile(screen_name):
 	return render_template('user_profile.html', status = 1, user = user, followers = followers, friends = friends, tweets = res)
 
 
+'''
+根据url下载图片
+'''
 def get_image(url, screen_name):
 	urllib.urlretrieve(url.replace('normal.','bigger.'), 'app/static/profile/%s.jpg' % screen_name)
 
 
+'''
+返回根据关键词查询用户的结果
+'''
 @verify
 def user_search_detail():
 	data = json.loads(request.form['aoData'])
@@ -259,21 +289,18 @@ def user_search_detail():
 
 	return jsonify({'aaData': res})
 
+
+'''
+返回用户关系查询页面
+'''
 @verify
 def relation_search():
 	return render_template('relation_search.html')
 
-@verify
-def task_list():
-	tasks = Task.query.filter().all()
 
-	for task in tasks:
-		if len(task.remark) > 8:
-			task.remark = task.remark[0:8]
-			task.remark += ' ...'
-
-	return render_template('task_list.html', tasks = tasks)
-
+'''
+返回用户推文查询页面
+'''
 @verify
 def tweets_search():
 	return render_template('tweets_search.html')

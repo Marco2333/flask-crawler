@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import re
 import time
 import json
@@ -21,10 +22,18 @@ from crawler.tweets_crawler import TweetsCrawler
 basicinfo_crawler = BasicinfoCrawler()
 tweets_crawler = TweetsCrawler()
 
+
+'''
+典型人物列表页面
+'''
 @verify
 def typical_character_list():
 	return render_template('portrayal/typical_character_list.html')
 
+
+'''
+获取型人物列表详情
+'''
 @verify
 def typical_character_list_detail():
 	data = json.loads(request.form['aoData'])
@@ -70,6 +79,10 @@ def typical_character_list_detail():
 
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
+
+'''
+获取典型人物的朋友
+'''
 @verify
 def get_typical_friends(user_id):
 	sql = "select target_user_id from relation where following = 'True' and source_user_id = '%s'" % user_id
@@ -120,6 +133,9 @@ def get_typical_friends(user_id):
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
 
+'''
+获取典型人物粉丝
+'''
 @verify
 def get_typical_followers(user_id):
 	sql = "select target_user_id from relation where followed_by = 'True' and source_user_id = '%s'" % user_id
@@ -169,13 +185,17 @@ def get_typical_followers(user_id):
 
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
+
+'''
+获取典型人物互粉人物
+'''
 @verify
 def get_typical_dfans(user_id):
 	dfans = set()
 	sql = "select source_user_id, target_user_id from relation where following = 'True' and followed_by = 'True' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
-	realtion = db.session.execute(sql)
+	relation = db.session.execute(sql)
 
-	for item in realtion:
+	for item in relation:
 		dfans.add(item[0])
 		dfans.add(item[1])
 
@@ -217,6 +237,9 @@ def get_typical_dfans(user_id):
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
 
+'''
+获取典型人物关系，包括朋友、粉丝、互粉人物
+'''
 @verify
 def get_typical_relation(user_id):
 	sql = "select target_user_id from relation where following = 'True' and 'followed_by' = 'False' and source_user_id = '%s'" % user_id
@@ -264,6 +287,10 @@ def get_typical_relation(user_id):
 
 	return jsonify(user)
 
+
+'''
+获取典型人物详情，包括人物基础信息、画像信息、关心信息
+'''
 @verify
 def typical_character_detail(user_id):
 	mdb = MongoDB().connect()
@@ -292,13 +319,24 @@ def typical_character_detail(user_id):
 	return render_template('portrayal/typical_character_detail.html', user = user, related_users = ru_arr)
 
 
+'''
+根据url下载图片
+'''
 def get_image(url, screen_name):
 	urllib.urlretrieve(url.replace('normal.','bigger.'), 'app/static/profile/%s.jpg' % screen_name)
 
+
+'''
+典型人物添加页面
+'''
 @verify
 def typical_character_add():
 	return render_template('portrayal/typical_character_add.html')
 
+
+'''
+提交新增典型人物
+'''
 @verify
 def typical_character_add_submit():
 	screen_name = request.form['screen_name']
@@ -363,6 +401,9 @@ def typical_character_add_submit():
 	return jsonify({'status': status})
 
 
+'''
+新增典型人物，画像线程
+'''
 def portrayal_thread(user, task_id):
 	tweet_list = tweets_crawler.get_user_all_timeline_temp(screen_name = user['screen_name'])
 	user['tweets'] = tweet_list
@@ -388,10 +429,18 @@ def portrayal_thread(user, task_id):
 	with app.app_context():
 		TypicalCharacter.query.filter(TypicalCharacter.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
+
+'''
+新增典型人物列表页面
+'''
 @verify
 def typical_character_newlist():
 	return render_template('portrayal/typical_character_newlist.html')
 
+
+'''
+获取新增典型人物列表详情
+'''
 @verify
 def typical_character_newlist_detail():
 	data = json.loads(request.form['aoData'])
@@ -432,6 +481,10 @@ def typical_character_newlist_detail():
 
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
+
+'''
+删除新增典型人物（包括 mysql 数据库和 MongoDB 数据库）
+'''
 @verify
 def typical_character_newdelete():
 	user_id = request.form['user_id']
@@ -444,6 +497,10 @@ def typical_character_newdelete():
 
 	return jsonify({'status': 1})
 
+
+'''
+下载用户画像XML文件
+'''
 @verify
 def download_user_xml(user_id):
 	db = MongoDB().connect()

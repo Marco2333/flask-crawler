@@ -24,6 +24,10 @@ tweets_crawler = TweetsCrawler()
 
 LOCK = threading.Lock()
 
+
+'''
+返回任务列表
+'''
 @verify
 def task_list():
 	tasks = Task.query.filter().all()
@@ -43,6 +47,10 @@ def task_list():
 
 	return render_template('task_list.html', tasks = res)
 
+
+'''
+返回任务详情
+'''
 @verify
 def task_detail(task_id):
 	task = Task.query.filter(Task.id == task_id).first()
@@ -80,6 +88,9 @@ def task_detail(task_id):
 	return render_template('task_detail.html', task = res)
 
 
+'''
+删除任务
+'''
 @verify
 def task_delete():
 	id = request.form['id']
@@ -91,6 +102,9 @@ def task_delete():
 		return jsonify({'status': 0})
 
 
+'''
+返回任务添加页面
+'''
 @verify
 def task_add():
 	if 'status' in request.args:
@@ -101,6 +115,9 @@ def task_add():
 	return render_template('task_add.html')
 
 
+'''
+返回任务上传页面
+'''
 @verify
 def file_upload():
 	if 'status' in request.args:
@@ -111,6 +128,9 @@ def file_upload():
 	return render_template('file_upload.html')
 
 
+'''
+提交任务添加，开始后台执行抓取任务
+'''
 @verify
 def task_add_submit():
 	screen_name = request.form['search_name']
@@ -168,9 +188,12 @@ def task_add_submit():
 		t = threading.Thread(target = tweet_basicinfo_process, args = (args,))
 		t.start()
 
-	# return render_template('task_add.html', status = 1)
 	return redirect(url_for('task_add', status = 1))
 
+
+'''
+提交文件上传，开始后台执行抓取任务
+'''
 @verify
 def file_upload_submit():
 	file = request.files['file']
@@ -203,11 +226,17 @@ def file_upload_submit():
 	return redirect(url_for('file_upload', status = 1))
 
 
+'''
+判断上传文件类型是否合法
+'''
 def allowed_file(filename):
 	ALLOWED_EXTENSIONS = set(['txt'])
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
+'''
+读取文件内容，并执行抓取任务
+'''
 def read_and_crawler(file_name, search_type, task_id):
 	file = open(file_name)
 	user_list = set()
@@ -238,6 +267,9 @@ def read_and_crawler(file_name, search_type, task_id):
 		t.start()
 
 
+'''
+线程：抓取所有用户推文，并保存在数据库中
+'''
 def tweet_process_file(task_id, user_list):
 	collect_name = "task_" + str(task_id)
 	tweets_crawler.get_all_users_timeline(user_list, collect_name)
@@ -246,6 +278,9 @@ def tweet_process_file(task_id, user_list):
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
+'''
+线程：抓取所有用户基础信息，并保存在数据库中
+'''
 def basicinfo_process_file(task_id, user_list):
 	table_name = "task_" + str(task_id)
 	create_table(table_name)
@@ -255,6 +290,9 @@ def basicinfo_process_file(task_id, user_list):
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
+'''
+线程：从一个用户出发，广度优先抓取相关用户的推文信息
+'''
 def tweet_process(args):
 	user_list = []
 	collect_name = "task_" + str(args['id'])
@@ -299,6 +337,9 @@ def tweet_process(args):
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
+'''
+线程：从一个用户出发，广度优先抓取相关用户的基础信息
+'''
 def basicinfo_process(args):
 	user_list = []
 	table_name = "task_" + str(args['id'])
@@ -350,6 +391,9 @@ def basicinfo_process(args):
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
 
+'''
+线程：从一个用户出发，广度优先抓取相关用户的基础信息和推文信息
+'''
 def tweet_basicinfo_process(args):
 	tweet_user_list = []
 	basicinfo_user_list = []
@@ -391,7 +435,10 @@ def tweet_basicinfo_process(args):
 	with app.app_context():
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
 
-		
+
+'''
+扩展线程：从一个用户出发，广度优先扩展与之相关的用户，并保存在 user_list 中，供其他线程抓取信息
+'''
 def thread_extension(user_list, user_id, person_num, deepth, extension):
 	bloom_filter = BloomFilter(capacity = int(person_num), error_rate = 0.001)
 	bloom_filter.add(str(user_id))
@@ -455,6 +502,9 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 	bloom_filter = None
 
 
+'''
+创建表，如果表已存在，则先删除原表
+'''
 def create_table(table_name):
 	ctx = app.app_context()
 	ctx.push()
@@ -477,6 +527,9 @@ def create_table(table_name):
 		print e
 
 
+'''
+基础信息线程：抓取指定数量用户的基础信息
+'''
 def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name):
 	n = 1
 	while n < basicinfo_num:
@@ -508,6 +561,9 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name)
 			thread.join()
 
 
+'''
+推文信息线程：抓取指定数量用户的推文信息
+'''
 def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
 	n = 1
 	while n < tweet_num:
@@ -540,6 +596,10 @@ def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
 			thread.join()
 
 
+'''
+扩展线程（同时需要抓取基础信息和推文信息时）：从一个用户出发，广度优先扩展与之
+相关的用户，并保存在 (basicinfo/tweet)_user_list 中，供其他线程抓取信息
+'''
 def thread_extension_tweet_basicinfo(tweet_user_list, 
 									 basicinfo_user_list, 
 									 user_id, 
@@ -621,6 +681,9 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 	bloom_filter = None
 
 
+'''
+根据关键词查询相关用户
+'''
 def user_search_keyword():
 	data = json.loads(request.form['aoData'])
 
