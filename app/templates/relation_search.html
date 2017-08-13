@@ -47,7 +47,7 @@
    	        				<th>语言</th>
    	        				<th>操作</th>
    	        			</tr>
-   	        			<tbody>
+   	        			<tbody class="relation-body">
    	        			</tbody>
    	        		</thead>
    	        	</table>
@@ -69,7 +69,7 @@
 	        				<th>语言</th>
 	        				<th>操作</th>
 	        			</tr>
-	        			<tbody>
+	        			<tbody class="relation-body">
 	        			</tbody>
 	        		</thead>
 	        	</table>
@@ -134,7 +134,7 @@
 				}
 				getRelation(val, val1);
 			} else {
-				$("tbody").empty();
+				$(".relation-body").empty();
 				$(".view-more").attr("data-value", val);
 				getUserFriends(val);
 				getUserFollowers(val)
@@ -209,9 +209,6 @@
 				if((i + 1) % 2 == 0) {
 					if((i + 1) % 4 == 0) {
 						td = $(tdList[i]);
-						console.log(td);
-						console.log(td.attr('data-key'));
-						console.log(data['target'][td.attr('data-key')]);
 						td.text(data['target'][td.attr('data-key')]);
 					} else {
 						td = $(tdList[i])

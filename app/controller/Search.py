@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import time
 import urllib
 import json
@@ -22,8 +23,9 @@ def user_search():
 	return render_template('user_search.html')
 
 def get_user_relation():
-	screen_name1 = request.form['screen_name1']
-	screen_name2 = request.form['screen_name2']
+	screen_name1 = request.form['screen_name1'].strip()
+	screen_name2 = request.form['screen_name2'].strip()
+	
 	rel = relation_crawler.show_friendship(source_screen_name = screen_name1, target_screen_name = screen_name2)
 	res = {
 		'source': {

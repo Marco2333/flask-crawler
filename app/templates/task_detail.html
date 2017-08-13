@@ -23,11 +23,11 @@
                 </tr>
                 <tr>
                     <td>screen_name</td>
-                    <td>{{ task.screen_name }}</td>
+                    <td>{{ task.screen_name if task.screen_name else '文件导入'}}</td>
                     <td>创建日期</td>
                     <td>{{ task.created_at }}</td>
                     <td>完成日期</td>
-                    <td>{{ task.finished_at }}</td>
+                    <td>{{ task.finished_at if task.finished_at else ''}}</td>
                 </tr>
                 <tr>
                     <td>抓取内容</td>
@@ -41,17 +41,25 @@
                         {% endif %}
                     </td>
                     <td>抓取深度</td>
-                    <td>{{ task.deepth }}</td>
+                    <td>{{ task.deepth if task.screen_name else ''}}</td>
                     <td>线程数量</td>
-                    <td>{{ task.thread_num }}</td>
+                    <td>{{ task.thread_num if task.screen_name else 3 }}</td>
                 </tr>
                 <tr>
                     <td>扩展方式</td>
-                    <td>{{ task.extension }}</td>
+                    <td>
+                        {% if task['extension'] == '1' %}
+                           朋友
+                        {% elif task['extension'] == '2' %}
+                           粉丝
+                        {% else %}
+                            朋友 | 粉丝
+                        {% endif %}
+                    </td>
                     <td>抓取推文用户数</td>
-                    <td>{{ task.tweet_num }}</td>
+                    <td>{{ task.tweet_num if task.tweet_num else ''}}</td>
                     <td>抓取基础信息用户数</td>
-                    <td>{{ task.basicinfo_num }}</td>
+                    <td>{{ task.basicinfo_num if task.basicinfo_num else '' }}</td>
                 </tr>
                 <tr>
                     <td>任务类型</td>

@@ -63,7 +63,7 @@ class TweetsCrawler:
 							 					   trim_user = True, count = 200, max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
-				if te.message['code'] == 88:
+				if hasattr(te.message, 'code') and te.message['code'] == 88:
 					sleep_count += 1
 					if sleep_count == ApiCount:
 						print "sleeping..."
@@ -135,7 +135,7 @@ class TweetsCrawler:
 							 					   trim_user = True, count = 200, max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
-				if te.message['code'] == 88:
+				if hasattr(te.message, 'code') and te.message['code'] == 88:
 					sleep_count += 1
 					if sleep_count == ApiCount:
 						print "sleeping..."

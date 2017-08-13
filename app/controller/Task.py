@@ -28,12 +28,20 @@ LOCK = threading.Lock()
 def task_list():
 	tasks = Task.query.filter().all()
 
+	res = []
 	for task in tasks:
-		if len(task.remark) > 8:
-			task.remark = task.remark[0:8]
-			task.remark += ' ...'
+		res.append({
+			'id': task.id,
+			'task_name': task.task_name,
+			'created_at': task.created_at,
+			'userid': task.userid,
+			'search_name': task.search_name,
+			'finished_at': task.finished_at,
+			'search_type': task.search_type,
+			'remark': task.remark[0:8] + " ..." if len(task.remark) > 8 else task.remark
+		})
 
-	return render_template('task_list.html', tasks = tasks)
+	return render_template('task_list.html', tasks = res)
 
 @verify
 def task_detail(task_id):
@@ -130,7 +138,6 @@ def task_add_submit():
 		basicinfo_num = request.form['basicinfo_num']
 		st += '4'
 
-		
 	task = Task(task_name = request.form['task_name'], userid = session['userid'], search_name = request.form['search_name'], 
 		thread_num = thread_num, deepth = deepth, extension = extension, search_type = st, tweet_num = tweet_num,  basicinfo_num = basicinfo_num, 
 		remark = request.form['remark'], created_at = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
@@ -161,8 +168,8 @@ def task_add_submit():
 		t = threading.Thread(target = tweet_basicinfo_process, args = (args,))
 		t.start()
 
-	return render_template('task_add.html', status = 1)
-
+	# return render_template('task_add.html', status = 1)
+	return redirect(url_for('task_add', status = 1))
 
 @verify
 def file_upload_submit():
@@ -217,10 +224,16 @@ def read_and_crawler(file_name, search_type, task_id):
 	user_list = list(user_list)
 
 	if '1' in search_type:
+		with app.app_context():
+			Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
+
 		t = threading.Thread(target = tweet_process_file, args = (task_id, user_list,))
 		t.start()
 	
 	if '4' in search_type:
+		with app.app_context():
+			Task.query.filter(Task.id == task_id).update({'basicinfo_num': len(user_list)})
+
 		t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list,))
 		t.start()
 

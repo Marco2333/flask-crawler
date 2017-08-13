@@ -270,7 +270,7 @@ def typical_character_detail(user_id):
 	collect = mdb['typical']
 
 	user = collect.find_one({'_id': long(user_id)})
-	print user
+	
 	user['ratio'] = user['followers_count'] if not user['friends_count'] else round(user['followers_count'] * 1.0 / user['friends_count'], 2)
 	user['created_at'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['created_at'].replace('+0000 ','')))
 	user['crawler_date'] = str(user['crawler_date']).split(" ")[0]
