@@ -2,6 +2,7 @@ import hashlib
 from app import app
 from database import db
 from models import Admin
+# from controller import Task, Search, System
 from controller import Task, Search, System, Portrayal
 from flask import request, render_template, redirect, session, url_for, jsonify
 

@@ -185,6 +185,32 @@
 			cursor = -1
 		}
 		$.post("{{ url_for('get_user_friends') }}", {screen_name: screen_name, cursor: cursor}, function(data) {
+			var message = '',
+				_status = true;
+
+			switch(data) {
+				case 'ratelimit':
+					message = '操作过于频繁，超过频率限制';
+					_status = false;
+					break;
+				case 'suspend':
+					message = '用户被挂起';
+					_status = false;
+					break;
+				case 'notfound':
+					message = '未查找到该用户';
+					_status = false;
+					break;
+				case null:
+					message = '';
+					_status = false;
+			}
+			
+			if(!_status) {
+				alert('查询失败！' + message)
+				return;	
+			}
+
 			$.each(data[1], function(i, val) {
 				dataToElement(val, 0);
 			})
@@ -203,8 +229,34 @@
 			return;
 		}
 		$.post("{{ url_for('get_user_relation') }}", {screen_name1: screen_name1, screen_name2: screen_name2}, function(data) {
+			var message = '',
+				_status = true;
+
+			switch(data) {
+				case 'ratelimit':
+					message = '操作过于频繁，超过频率限制';
+					_status = false;
+					break;
+				case 'suspend':
+					message = '用户被挂起';
+					_status = false;
+					break;
+				case 'notfound':
+					message = '未查找到该用户';
+					_status = false;
+					break;
+				case null:
+					message = '';
+					_status = false;
+			}
+			
+			if(!_status) {
+				alert('查询失败！' + message)
+				return;	
+			}
+			
 			var tdList = $("#relation-confirm td");
-			console.log(tdList);
+			
 			for(var i = 0,len = tdList.length;i < len;i++){
 				if((i + 1) % 2 == 0) {
 					if((i + 1) % 4 == 0) {
@@ -227,6 +279,32 @@
 			cursor = -1
 		}
 		$.post("{{ url_for('get_user_followers') }}", {screen_name: screen_name, cursor: cursor}, function(data) {
+			var message = '',
+				_status = true;
+
+			switch(data) {
+				case 'ratelimit':
+					message = '操作过于频繁，超过频率限制';
+					_status = false;
+					break;
+				case 'suspend':
+					message = '用户被挂起';
+					_status = false;
+					break;
+				case 'notfound':
+					message = '未查找到该用户';
+					_status = false;
+					break;
+				case null:
+					message = '';
+					_status = false;
+			}
+			
+			if(!_status) {
+				alert('查询失败！' + message)
+				return;	
+			}
+
 			$.each(data[1], function(i, val) {
 				dataToElement(val, 1);
 			})

@@ -70,6 +70,32 @@
 			max_id = 0
 		}
 		$.post("{{ url_for('get_user_tweets') }}", {screen_name: screen_name, max_id: max_id}, function(data) {
+			var message = '',
+				_status = true;
+
+			switch(data) {
+				case 'ratelimit':
+					message = '操作过于频繁，超过频率限制';
+					_status = false;
+					break;
+				case 'suspend':
+					message = '用户被挂起';
+					_status = false;
+					break;
+				case 'notfound':
+					message = '未查找到该用户';
+					_status = false;
+					break;
+				case null:
+					message = '';
+					_status = false;
+			}
+			
+			if(!_status) {
+				alert('查询失败！' + message)
+				return;	
+			}
+
 			$.each(data, function(i, val) {
 				dataToElement(val);
 			})

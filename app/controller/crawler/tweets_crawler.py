@@ -366,12 +366,7 @@ class TweetsCrawler:
 		db = MongoDB().connect()
 		collect = db[collect_name]
 
-		n = 0
 		while len(status_list) > 0:
-			n += 1
-
-			if n % 1000 == 0:
-				print n
 
 			status_id = status_list.pop(0)
 			status_obj = wrapper_func(status_id)

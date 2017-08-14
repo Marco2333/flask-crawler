@@ -8,7 +8,7 @@ from api import API_COUNT, Api
 from app.database import db
 from decorator import generate_decorator
 
-handle_exception = generate_decorator(600)
+handle_exception = generate_decorator(400)
 
 class BasicinfoCrawler:
 	get_api = Api().get_api
@@ -69,7 +69,24 @@ class BasicinfoCrawler:
 
 
 	'''
-	获取单个用户的信息并保存（参考 get_user ）
+	获取单个用户的基础信息并返回，如果超时则休眠 400s 后返回
+	'''
+	def get_user_sleep(self,
+					   user_id = None, 
+					   screen_name = None, 
+					   include_entities = True):
+
+		if user_id == None and screen_name == None:
+			return None
+
+		wrapper_func = handle_exception(self.get_user)
+
+		user = wrapper_func(user_id = user_id, screen_name = screen_name, include_entities = include_entities)
+
+		return user
+
+	'''
+	获取单个用户的基础信息并保存（参考 get_user ）
 
 	参数：
 		table_name (str, optional):
@@ -140,7 +157,7 @@ class BasicinfoCrawler:
 						 user_list = None, 
 						 table_name  = "user_task", 
 						 search_type = "user_id"):
-		
+
 		if search_type != "screen_name":
 			while len(user_list) > 0:
 				user_id = user_list.pop(0)

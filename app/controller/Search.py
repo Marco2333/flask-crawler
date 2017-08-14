@@ -34,7 +34,26 @@ def get_user_relation():
 	screen_name1 = request.form['screen_name1'].strip()
 	screen_name2 = request.form['screen_name2'].strip()
 	
-	rel = relation_crawler.show_friendship(source_screen_name = screen_name1, target_screen_name = screen_name2)
+	try:
+		rel = relation_crawler.show_friendship(source_screen_name = screen_name1, target_screen_name = screen_name2)
+	except error.TwitterError as te:
+		try:
+			status = None
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
+
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
+
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+
+			return jsonify(status)
+		except Exception as ee:
+			return jsonify(None)
+	except Exception as e:
+		return jsonify(None)
+
 	res = {
 		'source': {
 			"id_str": rel['relationship']['source']['id_str'],
@@ -66,7 +85,26 @@ def get_user_tweets():
 		max_id = 1
 
 	max_id = long(max_id) - 1
-	tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = count)
+
+	try:
+		tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, max_id = max_id, count = count)
+	except error.TwitterError as te:
+		try:
+			status = None
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
+
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
+
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+
+			return jsonify(status)
+		except Exception as ee:
+			return jsonify(None)
+	except Exception as e:
+		return jsonify(None)
 
 	res = []
 	for tweet in tweets:
@@ -96,7 +134,26 @@ def get_user_friends():
 		cursor = -1
 
 	cursor = long(cursor)
-	friends = relation_crawler.get_friends_paged(screen_name = screen_name, cursor = cursor, count = count)
+
+	try:
+		friends = relation_crawler.get_friends_paged(screen_name = screen_name, cursor = cursor, count = count)
+	except error.TwitterError as te:
+		try:
+			status = None
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
+
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
+
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+
+			return jsonify(status)
+		except Exception as ee:
+			return jsonify(None)
+	except Exception as e:
+		return jsonify(None)
 
 	res = []
 	for friend in friends[2]:
@@ -127,7 +184,26 @@ def get_user_followers():
 		cursor = -1
 
 	cursor = long(cursor)
-	followers = relation_crawler.get_followers_paged(screen_name = screen_name, cursor = cursor, count = count)
+
+	try:
+		followers = relation_crawler.get_followers_paged(screen_name = screen_name, cursor = cursor, count = count)
+	except error.TwitterError as te:
+		try:
+			status = None
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
+
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
+
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+
+			return jsonify(status)
+		except Exception as ee:
+			return jsonify(None)
+	except Exception as e:
+		return jsonify(None)
 
 	res = []
 
@@ -151,17 +227,23 @@ def get_user_followers():
 '''
 @verify
 def user_profile(screen_name):
+	status = 0
+
 	try:
 		user = basicinfo_crawler.get_user(screen_name = screen_name)
+
 	except error.TwitterError as te:
-		if te.message[0]['code'] == 88:
-			status = "ratelimit"
+		try:
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
 
-		elif te.message[0]['code'] == 63:
-			status = "suspend"
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
 
-		elif te.message[0]['code'] == 50:
-			status = "notfound"
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+		except Exception as ee:
+			status = 0
 
 		return render_template('user_profile.html', status = status, user = None, followers = [], friends = [], tweets = [])
 	except:
@@ -170,6 +252,8 @@ def user_profile(screen_name):
 
 	friends = []
 	followers = []
+	res = []
+
 	try:
 		friends = relation_crawler.get_friends(screen_name = screen_name, total_count = 30)
 		for friend in friends:
@@ -178,7 +262,7 @@ def user_profile(screen_name):
 				friend.description = friend.description[0:28]
 				friend.description += ' ...'
 
-	except error.TwitterError as te:
+	except Exception as te:
 		pass
 
 	try:
@@ -189,13 +273,12 @@ def user_profile(screen_name):
 				follower.description = follower.description[0:18]
 				follower.description += ' ...'
 
-	except error.TwitterError as te:
+	except Exception as te:
 		pass
 
 	try:
 		tweets = tweets_crawler.get_user_timeline(screen_name = screen_name, count = 30)
 
-		res = []
 		for tweet in tweets:
 			res.append({
 				# 'id': tweet.id,
@@ -207,7 +290,7 @@ def user_profile(screen_name):
 				'source':re.sub(r'^<a href.+?>','',tweet.source)[0 : -4]
 			})
 
-	except error.TwitterError as te:
+	except Exception as te:
 		pass
 
 	user.created_at = time.strftime('%Y-%m-%d', time.strptime(user.created_at.replace('+0000 ','')))
@@ -253,7 +336,7 @@ def user_search_detail():
 
 	try:
 		while count > 0:
-			user_temp = basicinfo_crawler.get_user_search(term = s_search, count = 20, page = page)
+			user_temp = basicinfo_crawler.get_users_search(term = s_search, count = 20, page = page)
 			user_list.extend(user_temp)
 			page += 1
 
@@ -264,7 +347,7 @@ def user_search_detail():
 			count -= 1
 
 		if data_length % 20 != 0 and flag:	
-			user_list.extend(basicinfo_crawler.get_user_search(term = s_search, page = page, count = data_length % 20))
+			user_list.extend(basicinfo_crawler.get_users_search(term = s_search, page = page, count = data_length % 20))
 
 	except:
 		return jsonify({'aaData': []})

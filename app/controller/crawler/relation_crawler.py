@@ -126,8 +126,8 @@ class RelationCrawler:
 		                          stringify_ids = False,
 		                          count = 5000):
 
-		# wrapper_func = handle_exception(self.get_friendids_paged)
-		# friendids = wrapper_func(user_id = user_id,
+		wrapper_func = handle_exception(self.get_friendids_paged)
+		friendids = wrapper_func(user_id = user_id,
 								 screen_name = screen_name,
 								 cursor = cursor,
 								 stringify_ids = stringify_ids,

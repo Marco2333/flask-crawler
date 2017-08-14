@@ -69,7 +69,7 @@ def task_detail(task_id):
 		'extension': task.extension,
 		'tweet_num': task.tweet_num,
 		'basicinfo_num': task.basicinfo_num,
-		'type': '文件导入' if task.is_file else '广度优先扩展',
+		'type': 'File Upload' if task.is_file else 'Breadth First Extension',
 		'search_type': task.search_type,
 		'basicinfo_num_finished': '',
 		'tweet_num_finished': ''
@@ -143,7 +143,7 @@ def task_add_submit():
 	if thread_num < 1 or thread_num > 6:
 		return redirect(url_for('task_add'))
 
-	if deepth < 1 or deepth > 6:
+	if deepth < 1 or deepth > 7:
 		return redirect(url_for('task_add'))
 
 	st = ""
@@ -243,12 +243,15 @@ def read_and_crawler(file_name, search_type, task_id):
 
 	while 1:
 	    lines = file.readlines(100000)
+
 	    if not lines:
 	        break
+
 	    for line in lines:
 	    	res = line.split(" ")
+
 	    	for s in res:
-	        	user_list.add(s.strip())
+	        	s.strip() != '' and user_list.add(s.strip())
 
 	user_list = list(user_list)
 
@@ -284,6 +287,7 @@ def tweet_process_file(task_id, user_list):
 def basicinfo_process_file(task_id, user_list):
 	table_name = "task_" + str(task_id)
 	create_table(table_name)
+
 	basicinfo_crawler.get_all_users(user_list, table_name)
 
 	with app.app_context():
@@ -294,6 +298,14 @@ def basicinfo_process_file(task_id, user_list):
 线程：从一个用户出发，广度优先抓取相关用户的推文信息
 '''
 def tweet_process(args):
+	user = basicinfo_crawler.get_user_sleep(screen_name = args['screen_name'])
+
+	if not user:
+		with app.app_context():
+			Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+		return -1
+
 	user_list = []
 	collect_name = "task_" + str(args['id'])
 	tweets_crawler.get_user_all_timeline(screen_name = args['screen_name'], collect_name = collect_name)
@@ -303,21 +315,24 @@ def tweet_process(args):
 	deepth = int(args['deepth'])
 	extension = int(args['extension'])
 
-	user = basicinfo_crawler.get_user(screen_name = args['screen_name'])
-
 	relation_thread = threading.Thread(target = thread_extension, 
 									args = (user_list, user.id, tweet_num, deepth, extension))
 	relation_thread.start()
 	
-	while (tweet_num < 6 and relation_thread.is_alive()) or (tweet_num > 6 and len(user_list) < 5):
+	# 保证关系线程先完成任务，推文线程不提前终止
+	_count = 0
+	while (tweet_num < 20 and relation_thread.is_alive()) or (tweet_num >= 20 and len(user_list) < 19 and relation_thread.is_alive()):
 		time.sleep(1)
+		_count += 1
+		if _count > 720:
+			break
 
-	while len(user_list) != 0:
+	while len(user_list) > 0:
 		i = 0
 		threads_pool = []
 
 		while i < thread_num:
-			if len(user_list) == 0:
+			if len(user_list) <= 0:
 				break
 
 			if LOCK.acquire():
@@ -346,6 +361,14 @@ def basicinfo_process(args):
 	
 	create_table(table_name)
 
+	user = basicinfo_crawler.get_user_sleep(screen_name = args['screen_name'])
+
+	if not user:
+		with app.app_context():
+			Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+		return -1
+
 	basicinfo_crawler.get_user_save(screen_name = args['screen_name'], table_name = table_name)
 
 	thread_num = int(args['thread_num'])
@@ -353,26 +376,29 @@ def basicinfo_process(args):
 	deepth = int(args['deepth'])
 	extension = int(args['extension'])
 
-	user = basicinfo_crawler.get_user(screen_name = args['screen_name'])
-
 	relation_thread = threading.Thread(target = thread_extension, 
 									args = (user_list, user.id, basicinfo_num, deepth, extension))
 	relation_thread.start()
 	
-	while (basicinfo_num < 6 and relation_thread.is_alive()) or (basicinfo_num > 6 and len(user_list) < 5):
+	# 保证关系线程先完成任务，基础信息线程不提前终止
+	_count = 0
+	while (basicinfo_num < 20 and relation_thread.is_alive()) or (basicinfo_num >= 20 and len(user_list) < 19 and relation_thread.is_alive()):
 		time.sleep(1)
+		_count += 1
+		if _count > 720:
+			break
 
-	while len(user_list) != 0 or relation_thread.is_alive():
+	while len(user_list) > 0 or relation_thread.is_alive():
 		if len(user_list) == 0:
-			print "sleeping, relation crawler is slow!"
-			time.sleep(10)
+			print "basicinfo thread is sleeping, relation crawler is slow!"
+			time.sleep(5)
 			continue
 
 		i = 0
 		threads_pool = []
 
 		while i < thread_num:
-			if len(user_list) == 0:
+			if len(user_list) <= 0:
 				break
 
 			if LOCK.acquire():
@@ -402,6 +428,14 @@ def tweet_basicinfo_process(args):
 
 	create_table(table_name)
 
+	user = basicinfo_crawler.get_user_sleep(screen_name = args['screen_name'])
+
+	if not user:
+		with app.app_context():
+			Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+		return -1
+
 	basicinfo_crawler.get_user_save(screen_name = args['screen_name'], table_name = table_name)
 
 	collect_name = "task_" + str(args['id'])
@@ -414,18 +448,16 @@ def tweet_basicinfo_process(args):
 	deepth = int(args['deepth'])
 	extension = int(args['extension'])
 
-	user = basicinfo_crawler.get_user(screen_name = args['screen_name'])
-
 	rt = threading.Thread(target = thread_extension_tweet_basicinfo, 
 									args = (tweet_user_list, basicinfo_user_list, user.id, tweet_num, basicinfo_num, deepth, extension,))
 	rt.start()
 
 	tt = threading.Thread(target = tweet_thread, 
-									args = (tweet_num, tweet_user_list, thread_num, collect_name,))
+									args = (tweet_num, tweet_user_list, thread_num, collect_name, rt,))
 	tt.start()
 
 	bt = threading.Thread(target = basicinfo_thread, 
-									args = (basicinfo_num, basicinfo_user_list, thread_num, table_name,))
+									args = (basicinfo_num, basicinfo_user_list, thread_num, table_name, rt,))
 	bt.start()
 
 	rt.join()
@@ -447,6 +479,10 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 	count = 1	
 
 	while count < person_num:
+
+		if len(user_list_temp) <= 0:
+			break
+
 		user_if = user_list_temp.pop(0)
 		user_id = user_if[0]
 		user_deepth = user_if[1]
@@ -457,7 +493,11 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 		if extension == 1 or extension == 3:
 			cursor = -1
 			while cursor != 0:
-				users_info = relation_crawler.get_friendids_paged(user_id = user_id, cursor = cursor)
+				users_info = relation_crawler.get_friendids_paged_sleep(user_id = user_id, cursor = cursor)
+
+				if users_info == None:
+					break
+
 				cursor = users_info[0]
 				friend_list = users_info[2]
 				
@@ -479,11 +519,15 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 		elif extension == 2 or extension == 3:
 			cursor = -1
 			while cursor != 0:
-				users_info = relation_crawler.get_followerids_paged(user_id = user_id, cursor = cursor)
-				cursor = users_info[0]
-				friend_list = users_info[2]
+				users_info = relation_crawler.get_followerids_paged_sleep(user_id = user_id, cursor = cursor)
 
-				for u in friend_list:
+				if users_info == None:
+					break
+
+				cursor = users_info[0]
+				follower_list = users_info[2]
+
+				for u in follower_list:
 					u = str(u)
 
 					if u not in bloom_filter:
@@ -530,11 +574,13 @@ def create_table(table_name):
 '''
 基础信息线程：抓取指定数量用户的基础信息
 '''
-def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name):
-	n = 1
-	while n < basicinfo_num:
+def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name, tbthread):
+	count = 1
+
+	while len(basicinfo_user_list) > 0 or (count < basicinfo_num and tbthread.is_alive()):
+		
 		if len(basicinfo_user_list) == 0:
-			print "(basicinfo_thread)sleeping, relation crawler is slow!"
+			print "(basicinfo_thread)sleeping, relation crawler is slow!\n"
 			time.sleep(3)
 			continue
 
@@ -551,7 +597,8 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name)
 				user_id = basicinfo_user_list.pop(0)
 				LOCK.release()
 
-			n += 1
+			count += 1
+			
 			thread = threading.Thread(target = basicinfo_crawler.get_user_save, args = (user_id, table_name, ))
 			thread.start()
 			threads_pool.append(thread)
@@ -564,12 +611,13 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name)
 '''
 推文信息线程：抓取指定数量用户的推文信息
 '''
-def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
-	n = 1
-	while n < tweet_num:
+def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name, tbthread):
+	count = 1
+
+	while len(tweet_user_list) > 0 or (count < tweet_num and tbthread.is_alive()):
 
 		if len(tweet_user_list) == 0:
-			print "(tweet_thread)sleeping, relation crawler is slow!"
+			print "(tweet_thread)sleeping, relation crawler is slow!\n"
 			time.sleep(3)
 			continue
 
@@ -586,7 +634,8 @@ def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name):
 				user_id = tweet_user_list.pop(0)
 				LOCK.release()
 
-			n += 1
+			count += 1
+			
 			thread = threading.Thread(target = tweets_crawler.get_user_all_timeline, args = (user_id, collect_name, ))
 			thread.start()
 			threads_pool.append(thread)
@@ -619,6 +668,10 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 
 	while count < person_num:
 		cursor = -1
+
+		if len(user_list_temp) <= 0:
+			break
+
 		user_if = user_list_temp.pop(0)
 		user_id = user_if[0]
 		user_deepth = user_if[1]
@@ -628,11 +681,17 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 
 		if extension == 1 or extension == 3:
 			while cursor != 0:
-				users_info = relation_crawler.get_friendids_paged(user_id = user_id, cursor = cursor)
+				users_info = relation_crawler.get_friendids_paged_sleep(user_id = user_id, cursor = cursor)
+				
+				if users_info == None:
+					break
+
 				cursor = users_info[0]
 				friend_list = users_info[2]
+
 				for u in friend_list:
 					u = str(u)
+
 					if u not in bloom_filter:
 						user_list_temp.append((u, user_deepth + 1))
 						bloom_filter.add(u)
@@ -654,11 +713,17 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 		elif extension == 2 or extension == 3:
 			cursor = -1
 			while cursor != 0:
-				users_info = relation_crawler.get_followerids_paged(user_id = user_id, cursor = cursor)
+				users_info = relation_crawler.get_followerids_paged_sleep(user_id = user_id, cursor = cursor)
+				
+				if users_info == None:
+					break
+
 				cursor = users_info[0]
 				friend_list = users_info[2]
+
 				for u in friend_list:
 					u = str(u)
+					
 					if u not in bloom_filter:
 						user_list_temp.append((u, user_deepth + 1))
 						bloom_filter.add(u)
@@ -696,7 +761,11 @@ def user_search_keyword():
 		return jsonify({'aaData': []})
 
 	user_list = []
-	user_list = basicinfo_crawler.get_user_search(term = s_search, count = 20)
+
+	try:
+		user_list = basicinfo_crawler.get_users_search(term = s_search, count = 20)
+	except Exception as e:
+		return jsonify({'aaData': []})
 
 	res = []
 	for user in user_list:
