@@ -34,6 +34,7 @@ class Task(db.Model):
     # followers_num = Column(Integer)
     basicinfo_num = Column(Integer)
     is_file = Column(Integer)
+    file_content = Column(Integer)
 
 
 class TypicalCharacter(db.Model):

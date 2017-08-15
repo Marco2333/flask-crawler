@@ -36,6 +36,8 @@
                            推文
                         {% elif task['search_type'] == '4' %}
                            基础信息
+                        {% elif task['search_type'] == '' %}
+                           推文
                         {% else %}
                             推文 | 基础信息
                         {% endif %}
@@ -43,7 +45,7 @@
                     <td>抓取深度</td>
                     <td>{{ task.deepth if task.screen_name else ''}}</td>
                     <td>线程数量</td>
-                    <td>{{ task.thread_num if task.screen_name else 3 }}</td>
+                    <td>{{ task.thread_num if task.thread_num else 3 }}</td>
                 </tr>
                 <tr>
                     <td>扩展方式</td>
@@ -52,8 +54,9 @@
                            朋友
                         {% elif task['extension'] == '2' %}
                            粉丝
+                        {% elif task['extension'] == '3' %}
+                           朋友 | 粉丝
                         {% else %}
-                            朋友 | 粉丝
                         {% endif %}
                     </td>
                     <td>抓取推文用户数</td>
@@ -70,8 +73,19 @@
                     <td>{{ task.basicinfo_num_finished }}</td>
                 </tr>
                 <tr>
+                    <td>文件内容</td>
+                    <td>
+                        {% if task['file_content'] == 1 %}
+                           用户 id (user_id)
+                        {% elif task['file_content'] == 2 %}
+                           用户 screen_name
+                        {% elif task['file_content'] == 3 %}
+                           推文 id
+                        {% else %}
+                        {% endif %}
+                    </td>
                     <td>备注</td>
-                    <td colspan=5>{{ task['remark'] }}</td>
+                    <td colspan=3>{{ task['remark'] }}</td>
                 </tr>
             </tbody>
         </table>

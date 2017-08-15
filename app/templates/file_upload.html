@@ -4,6 +4,7 @@
 {% block body %}
 <style>
 	.max-width {max-width: 580px} .width-260 {width: 260px;} .box-footer > button {padding: 8px 23px}
+	input[type='radio'], input[type='checkbox'] {vertical-align: -2px; margin: 5px 8px 11px 0}
 </style>
 <div class="content-wrap">
 	<div class="alert alert-warning fade in" style="line-height: 23px">
@@ -30,32 +31,49 @@
                         <input name="file" type="file" id="inputFile">
                     </div>
                 </div>
-				<div class="form-group" style="margin-top: 25px">
+                <div class="form-group" style="margin-top: 25px">
+                    <label class="col-sm-2 control-label">文件内容</label>
+                    <div class="col-sm-10">
+                        <div>
+                            <input type="radio" name="content" value="1" checked>
+                            <label>用户 id</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="content" value="2">
+                            <label>用户 screen_name</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="content" value="3">
+                            <label>推文 id</label>
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group" style="margin-top: 25px;">
                     <label class="col-sm-2 control-label">抓取内容</label>
                     <div class="col-sm-10">
-                        <div class="radio">
+                        <div>
                             <input type="checkbox" name="type" value="1" checked>
                             <label>推文信息</label>
                         </div>
-                        <div class="radio">
+                        <div>
                             <input type="checkbox" name="type" value="4">
                             <label>基础信息</label>
                         </div>
                     </div>
                 </div>
-               <!--  <div class="form-group">
+                <div class="form-group">
                     <label class="col-sm-2 control-label">线程数量</label>
                     <div class="col-sm-10">
                         <select name="thread" class="form-control width-260">
                             <option value="1">1</option>
                             <option value="2">2</option>
-                            <option value="3">3</option>
+                            <option value="3" selected>3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
                         </select>
                     </div>
-                </div> -->
+                </div>
                 <div class="form-group">
                     <label for="inputRemakes" class="col-sm-2 control-label">备注</label>
                     <div class="col-sm-10">
@@ -78,13 +96,23 @@
 		if(status == 1) {
 			alert("提交成功");
 		}
-	
+
+		$("input[type='radio']").click(function(){
+			if($(this).val() == '3') {
+				$("input[type='checkbox']").prop({'checked': false, disabled: true});
+			}
+			else {
+				$("input[type='checkbox']").prop({disabled: false});
+				if($("input[type='checkbox']:checked").length == 0) {
+					$("input[type='checkbox']").first().prop('checked', true);
+				}
+			}
+		})
 	});
 
 	function onSubmit() {
 		var task_name = $("input[name='task_name']").val(),
-		    remark = $("textarea").val(),
-			type = $("input[name='type[]']").val();
+		    remark = $("textarea").val();
 
 		if (task_name.trim() == '' || remark.trim() == '') {
 		    alert("信息填写不完整！");
@@ -93,7 +121,7 @@
 
 		var checkbox = $("input[type='checkbox']:checked");
 
-		if (checkbox.length == 0) {
+		if (checkbox.length == 0 && $("input[type='radio']:checked").val() != '3') {
 		    alert("请选择抓取内容");
 		    return false;
 		}

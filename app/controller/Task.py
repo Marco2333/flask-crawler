@@ -6,7 +6,7 @@ import warnings
 import threading
 
 from app import app
-from crawler.db import MongoDB
+from crawler.database import MongoDB
 from app.controller import verify
 from app.database import db
 from app.models import Task, Admin
@@ -71,6 +71,7 @@ def task_detail(task_id):
 		'basicinfo_num': task.basicinfo_num,
 		'type': 'File Upload' if task.is_file else 'Breadth First Extension',
 		'search_type': task.search_type,
+		'file_content': task.file_content,
 		'basicinfo_num_finished': '',
 		'tweet_num_finished': ''
 	}
@@ -80,7 +81,7 @@ def task_detail(task_id):
 		bsc = db.session.execute(sql).first()
 		res['basicinfo_num_finished'] = bsc[0]
 
-	if '1' in task.search_type:
+	if '1' in task.search_type or task.search_type == '':
 		md = MongoDB().connect()
 		collect = md["task_%s" % task.id]
 		res['tweet_num_finished'] = collect.find().count()
@@ -205,22 +206,26 @@ def file_upload_submit():
 		return redirect(url_for('file_upload'))
 
 	search_type = request.form.getlist('type')
-	# thread_num = int(request.form['thread'])
+	thread_num = int(request.form['thread'])
+	file_content = int(request.form['content'])
 
 	st = ""
-	if '1' in search_type:
-		st += '1'
+	if file_content == 3:
+		search_type = []
+	else:
+		if '1' in search_type:
+			st += '1'
 
-	if '4' in search_type:
-		st += '4'
+		if '4' in search_type:
+			st += '4'
 
 	task = Task(task_name = request.form['task_name'], userid = session['userid'], search_type = st, remark = request.form['remark'], 
-		is_file = 1, created_at = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+		is_file = 1, thread_num = thread_num, file_content = file_content, created_at = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 	db.session.add(task)
 	db.session.commit()
 
-	t = threading.Thread(target = read_and_crawler, args = (os.path.join(app.config['UPLOAD_FOLDER'], filename), search_type, task.id))
+	t = threading.Thread(target = read_and_crawler, args = (os.path.join(app.config['UPLOAD_FOLDER'], filename), search_type, file_content, task.id, thread_num,))
 	t.start()
 	
 	return redirect(url_for('file_upload', status = 1))
@@ -237,7 +242,7 @@ def allowed_file(filename):
 '''
 读取文件内容，并执行抓取任务
 '''
-def read_and_crawler(file_name, search_type, task_id):
+def read_and_crawler(file_name, search_type, file_content, task_id, thread_num,):
 	file = open(file_name)
 	user_list = set()
 
@@ -255,19 +260,27 @@ def read_and_crawler(file_name, search_type, task_id):
 
 	user_list = list(user_list)
 
-	if '1' in search_type:
+	if file_content == 3:
 		with app.app_context():
 			Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
 
-		t = threading.Thread(target = tweet_process_file, args = (task_id, user_list,))
+		t = threading.Thread(target = status_process_file, args = (task_id, user_list,))
 		t.start()
-	
-	if '4' in search_type:
-		with app.app_context():
-			Task.query.filter(Task.id == task_id).update({'basicinfo_num': len(user_list)})
 
-		t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list,))
-		t.start()
+	else:
+		if '1' in search_type:
+			with app.app_context():
+				Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
+
+			t = threading.Thread(target = tweet_process_file, args = (task_id, user_list,))
+			t.start()
+		
+		if '4' in search_type:
+			with app.app_context():
+				Task.query.filter(Task.id == task_id).update({'basicinfo_num': len(user_list)})
+
+			t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list,))
+			t.start()
 
 
 '''
@@ -289,6 +302,17 @@ def basicinfo_process_file(task_id, user_list):
 	create_table(table_name)
 
 	basicinfo_crawler.get_all_users(user_list, table_name)
+
+	with app.app_context():
+		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+
+'''
+线程：根据推文 id 抓取所有推文，并保存在数据库中
+'''
+def status_process_file(task_id, status_list):
+	collect_name = "task_" + str(task_id)
+	tweets_crawler.get_all_status(status_list, collect_name)
 
 	with app.app_context():
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})

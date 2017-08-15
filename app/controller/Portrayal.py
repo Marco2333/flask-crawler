@@ -8,7 +8,7 @@ import threading
 from app import app
 from app.database import db
 from twitter import error
-from crawler.db import MongoDB
+from crawler.database import MongoDB
 from app.controller import verify
 from app.models import TypicalCharacter
 from flask import request, render_template, jsonify, session, make_response, send_file
@@ -17,10 +17,12 @@ from portrayal.XMLInteraction.GenerateXML import GenerateUserXml
 from portrayal import UserProfile
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
+from crawler.relation_crawler import RelationCrawler
 from crawler.tweets_crawler import TweetsCrawler
 
 basicinfo_crawler = BasicinfoCrawler()
 tweets_crawler = TweetsCrawler()
+relation_crawler = RelationCrawler()
 
 
 '''
@@ -349,14 +351,18 @@ def typical_character_add_submit():
 	try:
 		user = basicinfo_crawler.get_user(screen_name = screen_name)
 	except error.TwitterError as te:
-		if te.message[0]['code'] == 88:
-			status = "ratelimit"
+		status = 0
+		try:
+			if te.message[0]['code'] == 88:
+				status = "ratelimit"
 
-		elif te.message[0]['code'] == 63:
-			status = "suspend"
+			elif te.message[0]['code'] == 63:
+				status = "suspend"
 
-		elif te.message[0]['code'] == 50:
-			status = "notfound"
+			elif te.message[0]['code'] == 50:
+				status = "notfound"
+		except Exception as ee:
+			status = 0
 	except:
 		status = 0
 
@@ -405,7 +411,7 @@ def typical_character_add_submit():
 新增典型人物，画像线程
 '''
 def portrayal_thread(user, task_id):
-	tweet_list = tweets_crawler.get_user_all_timeline_temp(screen_name = user['screen_name'])
+	tweet_list = tweets_crawler.get_user_all_timeline_return(screen_name = user['screen_name'])
 	user['tweets'] = tweet_list
 
 	out = UserProfile.UserProfileFromDic(user)
@@ -422,12 +428,47 @@ def portrayal_thread(user, task_id):
 	if cur_user == None:
 		collect.insert_one(out)
 
+		th = threading.Thread(target = relation_thread, args = (out['_id'],))
+		th.start()
+
 	else:
 		collect.remove({'_id': long(out['_id'])})
 		collect.insert_one(out)
 
 	with app.app_context():
 		TypicalCharacter.query.filter(TypicalCharacter.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
+
+
+'''
+标准人物样本库人物关系抓取
+'''
+def relation_thread(user_id):
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	user_id = long(user_id)
+	stuids = collect.find({}, {'_id': 1})
+
+	friends = []
+	followers = []
+
+	for item in stuids:
+		relation = relation_crawler.show_friendship_sleep(source_user_id = user_id, target_user_id = item['_id'])
+		
+		if not relation:
+			continue
+
+		if relation['relationship']['source']['followed_by'] == True:
+			followers.append(item['_id'])
+
+		if relation['relationship']['source']['following'] == True:
+			friends.append(item['_id'])
+
+	for item in friends:
+		pass
+
+	for item in followers:
+		pass
 
 
 '''
