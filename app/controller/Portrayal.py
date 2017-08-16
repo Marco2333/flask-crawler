@@ -421,7 +421,7 @@ def portrayal_thread(user, task_id):
 
 	cur_user = collect.find_one({'_id': long(out['userid'])})
 
-	out['_id'] = out['userid']
+	out['_id'] = long(out['userid'])
 	del out['userid']
 	del out['tweets']
 
@@ -432,7 +432,7 @@ def portrayal_thread(user, task_id):
 		th.start()
 
 	else:
-		collect.remove({'_id': long(out['_id'])})
+		collect.delete_one({'_id': long(out['_id'])})
 		collect.insert_one(out)
 
 	with app.app_context():

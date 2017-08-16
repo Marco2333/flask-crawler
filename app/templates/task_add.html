@@ -1,11 +1,11 @@
 {% extends 'common/layout.html' %}
 
-{% block title %} 任务列表 {% endblock %}
+{% block title %} 任务添加 {% endblock %}
 {% block body %}
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 <style>
 	.max-width {max-width: 580px} .width-260 {width: 260px;} .box-footer > button {padding: 8px 23px} #DataTables_Table_0_filter {display: none}
-	.dataTables_paginate {display: none;}
+	.dataTables_paginate {display: none;} input[type='radio'], input[type='checkbox'] {vertical-align: -2px; margin: 5px 13px 11px 0}
 </style>
 <div class="content-wrap">
 	<div class="alert alert-warning fade in" style="line-height: 23px">
@@ -42,12 +42,12 @@
 				<div class="form-group" style="margin-top: 25px">
                     <label class="col-sm-2 control-label">抓取内容</label>
                     <div class="col-sm-10">
-                        <div class="radio">
+                        <div>
                             <input type="checkbox" name="type" value="1" checked>
                             <label>推文信息</label>
                             <input class="num_input" name="tweet_num" data-min="1" data-max="100000" type="number" placeholder="数量上限十万" value='1'>
                         </div>
-                        <div class="radio">
+                        <div>
                             <input type="checkbox" name="type" value="4">
                             <label>基础信息</label>
                             <input class="num_input" name="basicinfo_num" data-min="1" data-max="50000000" type="number" placeholder="数量上限五千万" value='1'>
