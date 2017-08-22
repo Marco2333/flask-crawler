@@ -305,9 +305,14 @@ def typical_character_detail(user_id):
 	user['crawler_date'] = str(user['crawler_date']).split(" ")[0]
 	user['psy_seq'] = user['psy_seq'].replace('pos', '1').replace("neg", "-1")
 
+	s = ''
+	for item in user['activity_list']:
+		s += "," + str(item)
+	user['activity_list'] = s[1:]
+
 	get_image(user['profile_image_url'], user['screen_name'])
 
-	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}).limit(6)
+	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}).limit(10)
 
 	ru_arr = []
 	for ru in related_users:

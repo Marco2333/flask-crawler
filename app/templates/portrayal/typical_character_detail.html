@@ -1,463 +1,400 @@
-{% extends 'common/layout.html' %}
-
-{% block title %} 用户画像 {% endblock %}
-{% block body %}
+{% extends 'common/layout.html' %} {% block title %} 用户画像 {% endblock %} {% block body %}
 
 
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
 
 <style>
-.content-wrap {
-     padding: 0;
-     -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-     box-shadow: none;
-
-}
-.shadow {
-     padding: 0;
-     margin-bottom: 26px;
-     -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-     -moz-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-     box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-}
-.panel-title {
-    font-size: 15px;
-    margin-top: 2px;
-}
-.tab-content {
-    margin-top: 0;
-}
-/*typical_character_detail*/
-.profile-header {
-     position: relative;
-    height: 260px;
-}
-.profile-header-top {
-    height: 50%;
-    font-size: 25px;
-    color: #111;
-    padding-top: 55px;
-    padding-left: 20px;
-    font-weight: bold;
-    background-color: #666;
-}
-.profile-header-bottom {
-    height: 50%;
-    color: #666;
-    font-size: 13px;
-    padding-top: 20px;
-    padding-left: 140px;
-}
-.profile-header-portrait {
-     position: relative;
-     display: inline-block;
-     width: 100px;
-     margin-right: 14px;
-}
-.profile-header-portrait > img {
-     width: 100px;
-     height: 100px;
-     border-radius: 100%;
-}
-.profile-header-portrait .glyphicon {
-     position: absolute;
-     right: 8px;
-     top: 78px;
-     padding: 4px;
-     color: #fff;
-     border-radius: 100%;
-     font-size: 12px;
-     background-color: #5dc9e4;
-}
-.profile-header-bottom > a {
-     color: #5dc9e4;
-}
-.profile-header-rank {
-     position: absolute;
-     right: 20px;
-     top: 30px;
-     width: 230px;
-     height: 200px;
-     padding: 30px 6px 0 6px;
-     border: 1px solid #aaa;
-     border-radius: 5px;
-     border-top: none;
-     background-color: #fff;
-}
-.rank-top {
-     position: absolute;
-     top: 0;
-     left: 0;
-     width: 100%;
-     height: 16px;
-     color: #fff;
-     text-align: center;
-     border-top-left-radius: 5px;
-     border-top-right-radius: 5px;
-     background-color: #35454e;
-}
-.rank-top > span {
-     padding: 10px;
-     margin-top: -10px;
-     border-radius: 100%;
-     background-color: #35454e;
-}
-.profile-header-rank li {
-     margin: 9px 0;
-}
-.profile-header-rank li span:first-child {
-     color: #111;
-     font-size: 13px;
-     font-weight: bold;
-}
-.profile-header-rank li span:last-child {
-     float: right;
-     font-size: 13px;
-}
-.profile-basicinfo li {
-     float: left;
-     width: 33.3%;
-     margin: 6px 0 4px;
-     text-align: center;
-     overflow: hidden;
-     text-overflow: ellipsis;
-     white-space: nowrap;
-}
-.profile-basicinfo li > span {
-     color: #666;
-     font-size: 14px;
-     font-weight: bold;
-}
-.profile-basicinfo li > p {
-     margin-top: 1px;
-     font-size: 21px;
-     font-weight: bold;
-}
-.profile-table {
-     font-weight: bold;
-     font-size: 15px;
-     table-layout: fixed
-}
-.profile-table > tbody > tr > td {
-     padding: 10px;
-     text-align: center;
-}
-.profile-table td:nth-child(odd) {
-     width: 15%;
-     color: #3c8dbc;
-     vertical-align: middle;
-     white-space: nowrap;
-}
-.profile-table td:nth-child(even) {
-     width: 35%;
-}
-.psy-sequence {
-     height: 340px;
-}
-.suggested-user-wrap {
-     padding: 10px 0;
-}
-.suggested-user-item {
-     margin-bottom: 22px;
-}
-.suggested-user-item img {
-     width: 50px;
-     height: 50px;
-     float: left;
-     border-radius: 100%;
-}
-.suggested-user-item > div {
-     float: left;
-     margin-top: 3px;
-     margin-left: 8px;
-}
-.suggested-user-item p {
-     margin-bottom: 1px;
-}
-.suggested-user-title {
-     margin-bottom: 15px;
-     padding-left: 15px;
-     color: #333;
-     font-size: 15px;
-     font-weight: bold;
-}
+    p {margin-bottom: 7px;}
+    .content-wrap {
+        padding: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+    .shadow {
+        padding: 0;
+        margin-bottom: 26px;
+        -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+        -moz-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+        box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+    }
+    .panel-title {font-size: 15px; margin-top: 2px;}
+    .tab-content { margin-top: 0;}
+    .dataTables_wrapper .dataTables_length {float: right}
+    .deepth {position: absolute; font-size: 15px; z-index: 10;font-weight: bold;}
+    .deepth select {width: 48px;}
+    .tab-pane {position: relative;}
+    .suggested-users{padding-left: 0}
+    @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
 </style>
 <div class="content-wrap">
-     <!-- Main content -->
-     <section class="content">
-          <div class="row">
-               <div class="col-md-9 col-lg-8" style="max-width: 980px">
-                    <div class="profile-header shadow">
-                         <div class="profile-header-top">
-                              <div class="profile-header-portrait">
-                                   <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}">
-                                   {% if user['verified'] %}
-                                       <i class="glyphicon glyphicon-ok"></i>
-                                   {% endif %}
-                              </div>
-                              <span>{{ user['name'] }}</span>
-                         </div>
-                         <div class="profile-header-bottom">
-                            <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{ user['created_at'] }}</p>
-                            <p style="width: calc(100% - 270px)">{{ user['description'] }}</p>
-                            <p>
-                                {% if user['location'] %}
-                                    <i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }}
-                                {% endif %}
-                            </p>
-                         </div>
-                         <div class="profile-header-rank">
-                              <div class="rank-top">
-                                   <span class="glyphicon glyphicon-tags"></span>
-                              </div>
-                              <ul>
-                                   <li><span>Status</span><span class="label label-primary">{{ user['statuses_count'] }}</span></li>
-                                   <li><span>Friends</span><span class="label label-info">{{ user['friends_count'] }}</span></li>
-                                   <li><span>Followers</span><span class="label label-warning">{{ user['followers_count'] }}</span></li>
-                                   <li><span>Follower/Following</span><span class="label label-success">{{ user['ratio'] }}</span></li>
-                                   <li><span>Favorites</span><span class="label label-danger">{{ user['favourites_count'] }}</span></li>
-                              </ul>
-                         </div>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-9 col-lg-8" style="max-width: 980px">
+                <div class="profile-header shadow">
+                    <div class="profile-header-top">
+                        <div class="profile-header-portrait">
+                            <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}"> {% if user['verified'] %}
+                            <i class="glyphicon glyphicon-ok"></i> {% endif %}
+                        </div>
+                        <span>{{ user['name'] }}</span>
                     </div>
-                    
-                    <div class="profile-body">
-                         <div class="shadow panel-success profile-basicinfo">
-                             <div class="panel-heading">
-                                 <h3 class="panel-title">基础信息</h3>
-                             </div>
-                             <div class="panel-body">
-                                <table class="table table-bordered table-striped profile-table">
-                                     <tbody>
-                                          <tr>
-                                               <td>加入日期</td>
-                                               <td>{{ user['created_at'] }}</td>
-                                               <td>语言</td>
-                                               <td>{{ user['lang'] }}</td>
-                                          </tr>
-                                          <tr>
-                                               <td>隐私保护</td>
-                                               <td>{{ '已设置' if user['protected'] else '未设置' }}</td>
-                                               <td>时区</td>
-                                               <td>{{ user['time_zone'] if user['time_zone'] else ''}}</td>
-                                          </tr>
-                                          <tr>
-                                               <td>官方认证</td>
-                                               <td>{{ '已认证' if user['verified'] else '未认证' }}</td>
-                                               <td>UTC偏移量</td>
-                                               <td>{{ user['utc_offset'] if user['utc_offset'] else ''}}</td>
-                                          </tr>
-                                          <tr>
-                                               <td>Geo状态</td>
-                                               <td>{{ '已开启' if user['geo_enabled'] else '未开启' }}</td>
-                                               <td>抓取日期</td>
-                                               <td>{{ user['crawler_date'] }}</td>
-                                          </tr>
-                                          <tr>
-                                               <td>最新推文</td>
-                                               <td>{{ user['psy_tweets_starttime'] }}</td>
-                                               <td>粉丝朋友比</td>
-                                               <td>{{ user['ratio'] }}</td>
-                                          </tr>
-                                     </tbody>
-                                </table>  
-                             </div>
-                         </div>
+                    <div class="profile-header-bottom">
+                        <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{
+                            user['created_at'] }}</p>
+                        <p style="width: calc(100% - 270px)">{{ user['description'] }}</p>
+                        <p>
+                            {% if user['location'] %}
+                            <i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }} {% endif %}
+                        </p>
+                    </div>
+                    <div class="profile-header-rank">
+                        <div class="rank-top">
+                            <span class="glyphicon glyphicon-tags"></span>
+                        </div>
+                        <ul>
+                            <li><span>Status</span><span class="label label-primary">{{ user['statuses_count'] }}</span></li>
+                            <li><span>Friends</span><span class="label label-info">{{ user['friends_count'] }}</span></li>
+                            <li><span>Followers</span><span class="label label-warning">{{ user['followers_count'] }}</span></li>
+                            <li><span>Follower/Following</span><span class="label label-success">{{ user['ratio'] }}</span></li>
+                            <li><span>Favorites</span><span class="label label-danger">{{ user['favourites_count'] }}</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-                         <div class="panel-info shadow">
-                              <div class="panel-heading">
-                                   <h3 class="panel-title">人物画像</h3>
-                              </div>
-                              <div class="panel-body">
-                                   <table class="table table-bordered table-striped profile-table">
-                                        <tbody>
-                                             <tr>
-                                                  <td>用户分类</td>
-                                                  <td>{{ user['category'] }}</td>
-                                                  <td>影响力等级</td>
-                                                  <td>
-                                                      {% if user['rank_influ'] == 1 %}
-                                                        低
-                                                      {% elif user['rank_influ'] == 2 %}
-                                                        中
-                                                      {% elif user['rank_influ'] == 3 %}
-                                                        高
-                                                      {% endif %}
-                                                  </td>
-                                             </tr>
-                                             <tr>
-                                                  <td>影响力分数</td>
-                                                  <td>
-                                                      {{ user['influence_score'] }}
-                                                  </td>
-                                                  <td>心理状态</td>
-                                                  {% if user['psy'] == 1 %}
-                                                     <td>正面</td>
-                                                  {% elif user['psy'] == -1 %}
-                                                     <td>负面</td>
-                                                  {% else %}
-                                                      <td></td>
-                                                  {% endif %}
-                                             </tr>
-                                             <tr>
-                                                  <td>兴趣标签</td>
-                                                  <td colspan=3>{{ user['interest_tags'] }}</td>
-                                             </tr>
-                                             <tr>
-                                                  <td>心理状态变化</td>
-                                                  <td colspan=3 style="padding: 0">
-                                                       <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}"" class="psy-sequence">
-                                                       </div>
-                                                  </td>
-                                             </tr>
-                                        </tbody>
-                                   </table>  
-                             </div>
-                         </div>
+                <div class="profile-body">
+                    <div class="shadow panel-success profile-basicinfo">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">基础信息</h3>
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-bordered table-striped profile-table">
+                                <tbody>
+                                    <tr>
+                                        <td>加入日期</td>
+                                        <td>{{ user['created_at'] }}</td>
+                                        <td>语言</td>
+                                        <td>{{ user['lang'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>隐私保护</td>
+                                        <td>{{ '已设置' if user['protected'] else '未设置' }}</td>
+                                        <td>时区</td>
+                                        <td>{{ user['time_zone'] if user['time_zone'] else ''}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>官方认证</td>
+                                        <td>{{ '已认证' if user['verified'] else '未认证' }}</td>
+                                        <td>UTC偏移量</td>
+                                        <td>{{ user['utc_offset'] if user['utc_offset'] else ''}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Geo状态</td>
+                                        <td>{{ '已开启' if user['geo_enabled'] else '未开启' }}</td>
+                                        <td>抓取日期</td>
+                                        <td>{{ user['crawler_date'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>最新推文</td>
+                                        <td>{{ user['psy_tweets_starttime'] }}</td>
+                                        <td>粉丝朋友比</td>
+                                        <td>{{ user['ratio'] }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                         <div class="panel-warning shadow">
-                              <div class="panel-heading">
-                                   <h3 class="panel-title">人物关系</h3>
-                              </div>
-                              <div class="panel-body">
-                                   <ul id="realtion-tab" class="nav nav-tabs" style="margin-top: 20px"> 
-                                        <li class="active">
-                                            <a href="#friends" data-toggle="tab">朋友</a>
-                                        </li>
-                                        <li>
-                                            <a href="#followers" data-toggle="tab">粉丝</a>
-                                        </li>
-                                        <li>
-                                            <a href="#dfans" data-toggle="tab">互粉</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane active in fade" id="friends">
-                                           <div class="table-wrap">
-                                                <table id="friends-table" class="table table-bordered table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>screen_name</th>
-                                                            <th>推文数</th>
-                                                            <th>朋友数</th>
-                                                            <th>粉丝数</th>
-                                                            <th>类别</th>
-                                                            <th>影响力</th>
-                                                            <th>操作</th>
-                                                        </tr>
-                                                        <tbody>
-                                                        </tbody>
-                                                    </thead>
-                                                </table>
+                    <div class="panel-info shadow">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">人物画像</h3>
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-bordered table-striped profile-table">
+                                <tbody>
+                                    <tr>
+                                        <td>用户分类</td>
+                                        <td>{{ user['category'] }}</td>
+                                        <td>心理状态</td>
+                                        {% if user['psy'] == 1 %}
+                                        <td>正面</td>
+                                        {% elif user['psy'] == -1 %}
+                                        <td>负面</td>
+                                        {% else %}
+                                        <td></td>
+                                        {% endif %}
+                                    </tr>
+                                    <tr>
+                                        <td>影响力分数</td>
+                                        <td>
+                                            {{ user['influence_score'] }}
+                                        </td>
+                                        <td>影响力等级</td>
+                                        <td>
+                                            {% if user['rank_influ'] == 1 %} 低 
+                                            {% elif user['rank_influ'] == 2 %} 中 
+                                            {% elif user['rank_influ'] == 3 %} 高 
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>活跃度</td>
+                                        <td colspan=3>
+                                            {{ user['activity'] }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>兴趣标签</td>
+                                        <td colspan=3>{{ user['interest_tags'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>心理状态变化</td>
+                                        <td colspan=3 style="padding: 0">
+                                            <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}" class="psy-sequence ">
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="followers">
-                                            <div class="table-wrap">
-                                                <table id="followers-table" class="table table-bordered table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>screen_name</th>
-                                                            <th>推文数</th>
-                                                            <th>朋友数</th>
-                                                            <th>粉丝数</th>
-                                                            <th>类别</th>
-                                                            <th>影响力</th>
-                                                            <th>操作</th>
-                                                        </tr>
-                                                        <tbody>
-                                                        </tbody>
-                                                    </thead>
-                                                </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>活跃度变化</td>
+                                        <td colspan=3 style="padding: 0 ">
+                                            <div id="activity-sequence" data-seq="{{ user[ 'activity_list']}}" class="psy-sequence">
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="dfans">
-                                            <div class="table-wrap">
-                                                <table id="dfans-table" class="table table-bordered table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>screen_name</th>
-                                                            <th>推文数</th>
-                                                            <th>朋友数</th>
-                                                            <th>粉丝数</th>
-                                                            <th>类别</th>
-                                                            <th>影响力</th>
-                                                            <th>操作</th>
-                                                        </tr>
-                                                        <tbody>
-                                                        </tbody>
-                                                    </thead>
-                                                </table>
-                                            </div>
-                                        </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel-warning shadow">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">人物关系</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul id="realtion-tab" class="nav nav-tabs" style="margin-top: 20px">
+                                <li class="active">
+                                    <a href="#friends" data-toggle="tab">朋友</a>
+                                </li>
+                                <li>
+                                    <a href="#followers" data-toggle="tab">粉丝</a>
+                                </li>
+                                <li>
+                                    <a href="#dfans" data-toggle="tab">互粉</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active in fade" id="friends">
+                                    <div class="deepth">
+                                        关系深度: 
+                                        <select>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                        </select>
+                                    </div>
+                                    <div class="table-wrap">
+                                        <table id="friends-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>screen_name</th>
+                                                    <th>推文数</th>
+                                                    <th>朋友数</th>
+                                                    <th>粉丝数</th>
+                                                    <th>类别</th>
+                                                    <th>影响力</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                                <tbody>
+                                                </tbody>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="followers">
+                                    <div class="deepth">
+                                        关系深度: 
+                                        <select>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                        </select>
+                                    </div>
+                                    <div class="table-wrap">
+                                        <table id="followers-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>screen_name</th>
+                                                    <th>推文数</th>
+                                                    <th>朋友数</th>
+                                                    <th>粉丝数</th>
+                                                    <th>类别</th>
+                                                    <th>影响力</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                                <tbody>
+                                                </tbody>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="dfans">
+                                    <div class="deepth">
+                                        关系深度: 
+                                        <select>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                        </select>
+                                    </div>
+                                    <div class="table-wrap">
+                                        <table id="dfans-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>screen_name</th>
+                                                    <th>推文数</th>
+                                                    <th>朋友数</th>
+                                                    <th>粉丝数</th>
+                                                    <th>类别</th>
+                                                    <th>影响力</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                                <tbody>
+                                                </tbody>
+                                            </thead>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
-               </div>
-               <div class="col-md-3 col-lg-3" style="padding-left: 25px;max-width: 280px">
-                    <div class="shadow suggested-user-wrap clearfix" >
-                         <p class="suggested-user-title">Suggested Users</p>
-                         <ul>
-                              {% for user in related_users %}
-                                   <li class="suggested-user-item col-xs-6 col-sm-4 col-md-12">
-                                        <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}" alt="">
-                                        <div>
-                                             <p>{{ user['name'] }}</p>
-                                             <a href="{{ '/typical_character_detail/%s' % user['_id'] }}">@ {{ user['screen_name'] }}</a>
-                                        </div>
-                                   </li> 
-                              {% endfor %}
-                         </ul>
-                    </div>
-               </div>
-       </div>
-     </section>
+                </div>
+            </div>
+            <div class="suggested-users col-xs-12 col-md-3 col-lg-3">
+                <div class="shadow suggested-user-wrap clearfix">
+                    <p class="suggested-user-title">Suggested Users</p>
+                    <ul>
+                        {% for user in related_users %}
+                        <li class="suggested-user-item col-xs-6 col-sm-4 col-md-12">
+                            <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}" alt="">
+                            <div>
+                                <p>{{ user['name'] }}</p>
+                                <a href="{{ '/typical_character_detail/%s' % user['_id'] }}">@ {{ user['screen_name'] }}</a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 <script src="{{ url_for('static',filename='plugin/DataTables-1.10.8/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url_for('static', filename='plugin/echarts.simple.min.js') }}"></script>
 <script>
-     $(function() {
-          var myChart = echarts.init(document.getElementById('psy-sequence'));
-          var seq = $("#psy-sequence").attr('data-seq'),
-          psyArr = seq.split(",");
-          xAxis = psyArr.map(function(value, i){
-               return i;
-          }),
-          option = {
-               tooltip: {
-                   trigger: 'axis'
-               },
-               xAxis:  {
-                   type: 'category',
-                   boundaryGap: false,
-                   data: xAxis
-               },
-               yAxis: {
-                   type: 'value',
-                   axisLabel: {
-                       formatter: '{value}'
-                   }
-               },
-               series: [
-                   {
-                       name:'心理状态',
-                       type:'line',
-                       data:psyArr,
-                       itemStyle : {  
-                            normal : {  
-                                lineStyle:{  
-                                    color:'#3c8dbc'  
-                                }  
-                            }  
-                        },  
-                   }
-               ]
-        };
+    $(function () {
+        $(".deepth select").change(function() {
+            alert($(this).val());
+            console.log($(this).val());
+        })
+
+        var myChart = echarts.init(document.getElementById('psy-sequence'));
+        var seq = $("#psy-sequence").attr('data-seq'),
+            psyArr = seq.split(","),
+            xAxis = psyArr.map(function (value, i) {
+                return i;
+            }),
+            option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: xAxis
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                },
+                series: [{
+                    name: '心理状态',
+                    type: 'line',
+                    data: psyArr,
+                    itemStyle: {
+                        normal: {
+                            lineStyle: {
+                                color: '#3c8dbc'
+                            }
+                        }
+                    },
+                }]
+            };
+        myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('activity-sequence'));
+        seq = $("#activity-sequence").attr('data-seq');
+        psyArr = seq.split(",");
+        var minV = 10000;
+
+        psyArr.forEach(function (v) {
+            if (minV > +v) {
+                minV = +v;
+            }
+        })
+
+        minV = Math.floor(minV);
+        xAxis = psyArr.map(function (value, i) {
+                return i;
+            }),
+            option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: xAxis
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    },
+                    min: minV - 3 > 0 ? minV - 3 : 0
+                },
+                series: [{
+                    name: '活跃度',
+                    type: 'line',
+                    data: psyArr,
+                    itemStyle: {
+                        normal: {
+                            lineStyle: {
+                                color: '#3c8dbc'
+                            }
+                        }
+                    },
+                }]
+            };
         myChart.setOption(option);
 
         var config = {
             language: {
-                "sProcessing" : "正在获取数据，请稍后...", 
+                "sProcessing": "正在获取数据，请稍后...",
                 "sProcessing": "处理中...",
                 "sLengthMenu": "显示 _MENU_ 项结果",
                 "sZeroRecords": "没有匹配结果",
@@ -473,97 +410,118 @@
                     "sPrevious": "上页",
                     "sNext": "下页",
                     "sLast": "末页"
-               }
-           },
-           "bSort": false,
-           "bPaginate": true, 
-           "bLengthChange": true, 
-           "searching":false,
-           "bProcessing": true,
-           "bServerSide": true,
-           "iDisplayLength": 20,
-           "aLengthMenu": [ 10, 20, 40, 100 ],
-           "aoColumns": [
-                {"mDataProp":"screen_name"},
-                {"mDataProp":"statuses_count"},
-                {"mDataProp":"friends_count"},
-                {"mDataProp":"followers_count"},
-                {"mDataProp":"category"},
-                {"mDataProp":"influence_score"},
-                {"mDataProp":"influence_score"}
-           ]
+                }
+            },
+            "bSort": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "searching": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "iDisplayLength": 20,
+            "aLengthMenu": [10, 20, 40, 100],
+            "aoColumns": [{
+                    "mDataProp": "screen_name"
+                },
+                {
+                    "mDataProp": "statuses_count"
+                },
+                {
+                    "mDataProp": "friends_count"
+                },
+                {
+                    "mDataProp": "followers_count"
+                },
+                {
+                    "mDataProp": "category"
+                },
+                {
+                    "mDataProp": "influence_score"
+                },
+                {
+                    "mDataProp": "influence_score"
+                }
+            ]
         };
         config["fnServerData"] = retrieveData1;
         config["sAjaxSource"] = "{{ '/get_typical_followers/%s' % user['_id'] }}",
-        $('#followers-table').dataTable(config);
+            $('#followers-table').dataTable(config);
         config["fnServerData"] = retrieveData2;
         config["sAjaxSource"] = "{{ '/get_typical_friends/%s' % user['_id'] }}",
-        $('#friends-table').dataTable(config);
+            $('#friends-table').dataTable(config);
         config["fnServerData"] = retrieveData3;
         config["sAjaxSource"] = "{{ '/get_typical_dfans/%s' % user['_id'] }}",
-        $('#dfans-table').dataTable(config);  
+            $('#dfans-table').dataTable(config);
     });
-    
-    function retrieveData1( sSource111,aoData111, fnCallback111) {
+
+    function retrieveData1(sSource111, aoData111, fnCallback111) {
         $.ajax({
-            url : sSource111,//这个就是请求地址对应sAjaxSource
-            data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
-            type : 'post',
-            dataType : 'json',
-            async : false,
-            success : function(result) {
-                fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+            url: sSource111, //这个就是请求地址对应sAjaxSource
+            data: {
+                "aoData": JSON.stringify(aoData111)
+            }, //这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                fnCallback111(result); //把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
                 var trList = $("#followers-table tbody tr");
-                var employee_id, id;     
-                if(result['aaData'].length == 0) {
+                var employee_id, id;
+                if (result['aaData'].length == 0) {
                     return;
                 }
                 var data = result['aaData'];
-                trList.each(function(i){
+                trList.each(function (i) {
                     var a = $("<a>").attr('href', "/typical_character_detail/" + data[i]['user_id']).text("详情");
                     $(this).find('td').last().empty().append(a);
                 });
             }
         });
     }
-    function retrieveData2( sSource111,aoData111, fnCallback111) {
+
+    function retrieveData2(sSource111, aoData111, fnCallback111) {
         $.ajax({
-            url : sSource111,//这个就是请求地址对应sAjaxSource
-            data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
-            type : 'post',
-            dataType : 'json',
-            async : false,
-            success : function(result) {
-                fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+            url: sSource111, //这个就是请求地址对应sAjaxSource
+            data: {
+                "aoData": JSON.stringify(aoData111)
+            }, //这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                fnCallback111(result); //把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
                 var trList = $("#friends-table tbody tr");
-                var employee_id, id;     
-                if(result['aaData'].length == 0) {
+                var employee_id, id;
+                if (result['aaData'].length == 0) {
                     return;
                 }
                 var data = result['aaData'];
-                trList.each(function(i){
+                trList.each(function (i) {
                     var a = $("<a>").attr('href', "/typical_character_detail/" + data[i]['user_id']).text("详情");
                     $(this).find('td').last().empty().append(a);
                 });
             }
         });
     }
-    function retrieveData3( sSource111,aoData111, fnCallback111) {
+
+    function retrieveData3(sSource111, aoData111, fnCallback111) {
         $.ajax({
-            url : sSource111,//这个就是请求地址对应sAjaxSource
-            data : {"aoData":JSON.stringify(aoData111)},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
-            type : 'post',
-            dataType : 'json',
-            async : false,
-            success : function(result) {
-                fnCallback111(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+            url: sSource111, //这个就是请求地址对应sAjaxSource
+            data: {
+                "aoData": JSON.stringify(aoData111)
+            }, //这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                fnCallback111(result); //把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
                 var trList = $("#dfans tbody tr");
-                var employee_id, id;     
-                if(result['aaData'].length == 0) {
+                var employee_id, id;
+                if (result['aaData'].length == 0) {
                     return;
                 }
                 var data = result['aaData'];
-                trList.each(function(i){
+                trList.each(function (i) {
                     var a = $("<a>").attr('href', "/typical_character_detail/" + data[i]['user_id']).text("详情");
                     $(this).find('td').last().empty().append(a);
                 });
