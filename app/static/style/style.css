@@ -44,6 +44,9 @@ thead {
 li {
     list-style: none;
 }
+.over-hidden {
+    overflow: hidden;
+}
 /*login*/
 #login-wrap {
     width: 380px;
@@ -300,6 +303,165 @@ input[type='checkbox']:checked + label + .num_input {
 .profile-header-bottom {
     height: 50%;
 }
+
+/*typical_character_detail*/
+.profile-header {
+    position: relative;
+    height: 266px;
+}
+.profile-header-top {
+    height: 50%;
+    font-size: 25px;
+    color: #111;
+    padding-top: 55px;
+    padding-left: 20px;
+    font-weight: bold;
+    background-color: #666;
+}
+.profile-header-bottom {
+    height: 50%;
+    color: #666;
+    font-size: 13px;
+    padding-top: 15px;
+    padding-left: 140px;
+}
+.profile-header-portrait {
+     position: relative;
+     display: inline-block;
+     width: 100px;
+     margin-right: 14px;
+}
+.profile-header-portrait > img {
+     width: 100px;
+     height: 100px;
+     border-radius: 100%;
+}
+.profile-header-portrait .glyphicon {
+     position: absolute;
+     right: 8px;
+     top: 78px;
+     padding: 4px;
+     color: #fff;
+     border-radius: 100%;
+     font-size: 12px;
+     background-color: #5dc9e4;
+}
+.profile-header-bottom > a {
+     color: #5dc9e4;
+}
+.profile-header-rank {
+     position: absolute;
+     right: 20px;
+     top: 35px;
+     width: 230px;
+     height: 200px;
+     padding: 30px 6px 0 6px;
+     border: 1px solid #aaa;
+     border-radius: 5px;
+     border-top: none;
+     background-color: #fff;
+}
+.rank-top {
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 16px;
+     color: #fff;
+     text-align: center;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+     background-color: #35454e;
+}
+.rank-top > span {
+     padding: 10px;
+     margin-top: -10px;
+     border-radius: 100%;
+     background-color: #35454e;
+}
+.profile-header-rank li {
+     margin: 9px 0;
+}
+.profile-header-rank li span:first-child {
+     color: #111;
+     font-size: 13px;
+     font-weight: bold;
+}
+.profile-header-rank li span:last-child {
+     float: right;
+     font-size: 13px;
+}
+.profile-basicinfo li {
+     float: left;
+     width: 33.3%;
+     margin: 6px 0 4px;
+     text-align: center;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+}
+.profile-basicinfo li > span {
+     color: #666;
+     font-size: 14px;
+     font-weight: bold;
+}
+.profile-basicinfo li > p {
+     margin-top: 1px;
+     font-size: 21px;
+     font-weight: bold;
+}
+.profile-table {
+     font-weight: bold;
+     font-size: 15px;
+     table-layout: fixed
+}
+.profile-table > tbody > tr > td {
+     padding: 10px;
+     text-align: center;
+}
+.profile-table td:nth-child(odd) {
+     width: 15%;
+     color: #3c8dbc;
+     vertical-align: middle;
+     white-space: nowrap;
+}
+.profile-table td:nth-child(even) {
+     width: 35%;
+}
+.psy-sequence {
+     height: 340px;
+}
+.suggested-user-wrap {
+     padding: 10px 0;
+}
+.suggested-user-item {
+     margin-bottom: 22px;
+}
+.suggested-user-item img {
+     width: 50px;
+     height: 50px;
+     float: left;
+     border-radius: 100%;
+}
+.suggested-user-item > div {
+     float: left;
+     margin-top: 3px;
+     margin-left: 8px;
+}
+.suggested-user-item p {
+     margin-bottom: 1px;
+}
+.suggested-user-title {
+    padding: 10px 0 15px;
+    padding-left: 15px;
+    color: #3c8dbc;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+
+
 
 /*response*/
 @media (max-width: 768px) {
