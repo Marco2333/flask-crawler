@@ -14,11 +14,10 @@ class Config(object):
     UPLOAD_FOLDER = 'app/static/uploads'
 
     APP_INFO = [{
-            #========================50=======================================
-            'consumer_key':'bRJ4nxfQ1lQpc0b9OiGyznwTP',
-            'consumer_secret':'duDNQlvxtYInexf8kBiSTUwAuaskty4iGd6HnPKfoWzLoSvJgc',
-            'access_token_key':'716652054446379008-4wz9tWCPDUa61FglUqrhk58zmJmtnP2',
-            'access_token_secret':'hNFCesJ2rADFcmIljjEmywxGcDc6HrV6ORGZqrqNDWLXF'
+		'consumer_key':'bRJ4nxfQ1lQpc0b9OiGyznwTP',
+		'consumer_secret':'duDNQlvxtYInexf8kBiSTUwAuaskty4iGd6HnPKfoWzLoSvJgc',
+		'access_token_key':'716652054446379008-4wz9tWCPDUa61FglUqrhk58zmJmtnP2',
+		'access_token_secret':'hNFCesJ2rADFcmIljjEmywxGcDc6HrV6ORGZqrqNDWLXF'
     }]
 
 class ProductionConfig(Config):
