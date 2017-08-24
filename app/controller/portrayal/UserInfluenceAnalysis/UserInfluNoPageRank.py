@@ -3,10 +3,83 @@
 
 import re
 import math
+import time
+import datetime
 from .. import config
 from ..MySQLInteraction import TwitterWithMysql as mydb
 from ..MongoDBInteraction import TweetsWithMongo as mongo
 
+months = config.months
+
+
+# 计算两个时间之间的差
+def CalcTime(date1,date2):
+    date1 = time.strptime(date1,"%Y-%m-%d %H:%M:%S")
+    date2 = time.strptime(date2,"%Y-%m-%d %H:%M:%S")
+    date1 = datetime.datetime(date1[0],date1[1],date1[2],date1[3],date1[4],date1[5])
+    date2 = datetime.datetime(date2[0],date2[1],date2[2],date2[3],date2[4],date2[5])
+
+    return abs((date2 - date1).days)
+
+
+def Str2Time(str):
+    strs = str.split(" ")
+    week = strs[0]
+    month = months[strs[1]]
+    day = strs[2]
+    time = strs[3]
+    year = strs[5]
+    DateTime = year + '-' + month + '-' + day + ' ' + time
+    return DateTime
+
+
+# 以两个月为一个周期,获取周期性的心理状态
+def getTweetsByMonths(tweets, period):
+    '''
+    :param userid:用户id
+    :param period: 周期月数
+    :return:返回最新推文起始时间以及每个周期内的推文
+    '''
+    # count表示推文条数
+    count = 0
+    threshold = period * 30
+    if tweets == None:
+        print "没有推文"
+        return
+    # 最开始的一条推文起始时间
+    starttime = Str2Time(tweets[0]['created_at'])
+    period_tweets = []
+    temp_starttime = starttime
+    temp_period_tweets = []
+    for tweet in tweets:
+        time = Str2Time(tweet['created_at'])
+        # 在周期内,推文加入
+        if CalcTime(time,temp_starttime) <= threshold:
+            temp_period_tweets.append(tweet)
+        else:
+        # 否则重新记录起始时间
+            temp_starttime = time
+            period_tweets.append(temp_period_tweets)
+            temp_period_tweets = []
+        count += 1
+    # 最后要把临时获取的推文加入
+    if(len(temp_period_tweets) != 0):
+        period_tweets.append(temp_period_tweets)
+    # print "共有%d个周期" % len(period_tweets)
+    # print "推文数%d条" % count
+    return period_tweets
+
+def calculate_activity(followers_count,tweets):
+    tweets_list = getTweetsByMonths(tweets, 1)
+
+    res = []
+    for tts in tweets_list:
+        OTN,RTN,ORTN,RTrtN,OFavN,RTFavN = CalucateParameters(tts)
+        d_active = CalucateActive(followers_count, OTN, RTN)
+        res.append(d_active)
+
+    return res
+    
 def getUsersInfo(table):
     # db = Conn(hostname,username,password,databasename)
     # cursor = db.cursor()

@@ -9,6 +9,7 @@ from app import app
 from app.database import db
 from twitter import error
 from crawler.database import MongoDB, Neo4j
+from py2neo import Graph, Node, Relationship
 from app.controller import verify
 from app.models import TypicalCharacter
 from flask import request, render_template, jsonify, session, make_response, send_file
@@ -102,11 +103,11 @@ def get_typical_friends(user_id):
 	data_length = int(data_length)
 	data_start = int(data_start)
 
-	cql = '''MATCH(a{user_id:%s})-[:following*0..%s]->(f) return count(distinct f) as count''' % (user_id, deepth)
+	cql = '''MATCH(a{user_id:%s})-[:following*1..%s]->(f) return count(distinct f) as count''' % (user_id, deepth)
 	res = graph.data(cql)
 	total = res[0]['count']
 
-	cql = '''MATCH(a{user_id:%s})-[:following*0..%s]->(f) return distinct f.user_id as user_id,
+	cql = '''MATCH(a{user_id:%s})-[:following*1..%s]->(f) return distinct f.user_id as user_id,
 			f.screen_name as screen_name, f.statuses_count as statuses_count, f.friends_count as friends_count,
 			f.followers_count as followers_count, f.influence_score as influence_score, f.category as category 
 			skip %s limit %s''' % (user_id, deepth, data_start, data_length)
@@ -116,7 +117,7 @@ def get_typical_friends(user_id):
 
 	for item in res:
 		friends.append({
-			'user_id': item['user_id'],
+			'user_id': str(item['user_id']),
 			'screen_name': item['screen_name'],
 			'statuses_count': item['statuses_count'],
 			'friends_count': item['friends_count'],
@@ -146,11 +147,11 @@ def get_typical_followers(user_id):
 	data_length = int(data_length)
 	data_start = int(data_start)
 
-	cql = '''Match(f)-[:following*0..%s]->(a{user_id:%s}) return count(distinct f) as count''' % (deepth, user_id)
+	cql = '''Match(f)-[:following*1..%s]->(a{user_id:%s}) return count(distinct f) as count''' % (deepth, user_id)
 	res = graph.data(cql)
 	total = res[0]['count']
 
-	cql = '''Match(f)-[:following*0..%s]->(a{user_id:%s}) return distinct f.user_id as user_id,
+	cql = '''Match(f)-[:following*1..%s]->(a{user_id:%s}) return distinct f.user_id as user_id,
 			f.screen_name as screen_name, f.statuses_count as statuses_count, f.friends_count as friends_count,
 			f.followers_count as followers_count, f.influence_score as influence_score, f.category as category 
 			skip %s limit %s''' % (deepth, user_id, data_start, data_length)
@@ -160,7 +161,7 @@ def get_typical_followers(user_id):
 
 	for item in res:
 		friends.append({
-			'user_id': item['user_id'],
+			'user_id': str(item['user_id']),
 			'screen_name': item['screen_name'],
 			'statuses_count': item['statuses_count'],
 			'friends_count': item['friends_count'],
@@ -203,7 +204,7 @@ def get_typical_dfans(user_id):
 
 	for item in res:
 		friends.append({
-			'user_id': item['user_id'],
+			'user_id': str(item['user_id']),
 			'screen_name': item['screen_name'],
 			'statuses_count': item['statuses_count'],
 			'friends_count': item['friends_count'],
@@ -220,8 +221,8 @@ def get_typical_dfans(user_id):
 '''
 @verify
 def typical_followers_path(user_id, follower_id, deepth):
-	cql = '''MATCH path = allShortestPaths((a:Typical { user_id: %s})<-[:following*..%s]-
-			(b:Typical { user_id: %s})) RETURN path''' % (user_id, deepth, follower_id)
+	cql = '''MATCH path = allShortestPaths((a:Typical { user_id: %s})-[:following*1..%s]->
+			(b:Typical { user_id: %s})) RETURN path''' % (follower_id, deepth, user_id)
 
 	paths = graph.data(cql)
 
@@ -239,7 +240,7 @@ def typical_followers_path(user_id, follower_id, deepth):
 '''
 @verify
 def typical_friends_path(user_id, friend_id, deepth):
-	cql = '''MATCH path = allShortestPaths((a:Typical { user_id: %s})-[:following*..%s]->
+	cql = '''MATCH path = allShortestPaths((a:Typical { user_id: %s})-[:following*1..%s]->
 			(b:Typical { user_id: %s})) RETURN path''' % (user_id, deepth, friend_id)
 
 	paths = graph.data(cql)
@@ -251,57 +252,6 @@ def typical_friends_path(user_id, friend_id, deepth):
 		res.append(map(lambda x: {'name': x['screen_name']}, path.nodes()))
 
 	return jsonify({"paths": res})
-
-
-'''
-获取典型人物关系，包括朋友、粉丝、互粉人物
-'''
-@verify
-def get_typical_relation(user_id):
-	sql = "select target_user_id from relation where following = 'True' and 'followed_by' = 'False' and source_user_id = '%s'" % user_id
-	following = db.session.execute(sql)
-
-	following_res = set()
-	for item in following:
-		following_res.add(item[0])
-	
-	sql = "select source_user_id from relation where followed_by = 'True' and following = 'False' and target_user_id = '%s'" % user_id
-	following = db.session.execute(sql)
-
-	for item in following:
-		following_res.add(item[0])
-
-
-	sql = "select target_user_id from relation where followed_by = 'True' and following = 'False' and source_user_id = '%s'" % user_id
-	followed = db.session.execute(sql)
-
-	followed_res = set()
-	for item in followed:
-		followed_res.add(item[0])
-	
-	sql = "select source_user_id from relation where following = 'True' and 'followed_by' = 'False' and target_user_id = '%s'" % user_id
-	followed = db.session.execute(sql)
-
-	for item in followed:
-		followed_res.add(item[0])
-
-	dfans = set()
-	sql = "select source_user_id, target_user_id from relation where following = 'True' and 'followed_by' = 'True' and (target_user_id = '%s' or source_user_id = '%s')"% (user_id, user_id)
-	followed = db.session.execute(sql)
-
-	for item in followed:
-		dfans.add(item[0])
-		dfans.add(item[1])
-
-	if user_id + '' in dfans:
-		dfans.remove(user_id + '')
-
-	user = {}
-	user['friends'] = list(following_res)
-	user['followers'] = list(followed_res)
-	user['dfans'] = list(dfans)
-
-	return jsonify(user)
 
 
 '''
@@ -398,7 +348,7 @@ def typical_character_add_submit():
 			db.session.commit()
 			 
 			user = {
-				'userid': user.id,
+				'user_id': user.id,
 				'screen_name': user.screen_name,
 				'name': user.name,
 				'verified': user.verified,
@@ -438,18 +388,16 @@ def portrayal_thread(user, task_id):
 	db = MongoDB().connect()
 	collect = db['typical']
 
-	cur_user = collect.find_one({'_id': long(out['userid'])})
+	cur_user = collect.find_one({'_id': long(out['user_id'])})
 
-	out['_id'] = long(out['userid'])
-	del out['userid']
-	del out['tweets']
+	out['_id'] = long(out['user_id'])
+	del out['user_id']
 
 	if cur_user == None:
 		collect.insert_one(out)
 
-		th = threading.Thread(target = relation_thread, args = (out['_id'],))
+		th = threading.Thread(target = relation_thread, args = (out,))
 		th.start()
-
 	else:
 		collect.delete_one({'_id': long(out['_id'])})
 		collect.insert_one(out)
@@ -461,33 +409,85 @@ def portrayal_thread(user, task_id):
 '''
 标准人物样本库人物关系抓取
 '''
-def relation_thread(user_id):
+def relation_thread(user):
+	user_id = user['_id']
+
 	db = MongoDB().connect()
-	collect = db['typical']
+	collect = db['relation']
 
 	user_id = long(user_id)
-	stuids = collect.find({}, {'_id': 1})
+	typical_user = collect.find_one({'_id': user_id})
 
+	print typical_user
+
+	if typical_user:
+		return
+
+	user_node = Node("Typical", 
+					 user_id = user_id,
+					 name = user['name'],
+					 category = user['category'],
+					 followers_count = user['followers_count'],
+					 location = user['location'],
+					 utc_offset = user['utc_offset'],
+					 statuses_count = user['statuses_count'],
+					 description = user['description'],
+					 friends_count = user['friends_count'],
+					 psy = user['psy'],
+					 verified = user['verified'],
+					 psy_tweets_starttime = user['psy_tweets_starttime'],
+					 lang = user['lang'],
+					 favourites_count = user['favourites_count'],
+					 screen_name = user['screen_name'],
+					 influence_score = user['influence_score'],
+					 created_at = user['created_at'],
+					 time_zone = user['time_zone'],
+					 protected = user['protected'],
+					 rank_influ = user['rank_influ'],
+					 activity = user['activity'])
+
+	graph.create(user_node)
+
+	cursor = -1
 	friends = []
-	followers = []
 
-	for item in stuids:
-		relation = relation_crawler.show_friendship_sleep(source_user_id = user_id, target_user_id = item['_id'])
+	while cursor != 0:
+		out = relation_crawler.get_friendids_paged_sleep(user_id = user_id,
+														 cursor = cursor, 
+														 count = 5000)
+		if not out:
+			break
 		
-		if not relation:
+		friends = friends + out[2]
+		cursor = out[0]
+
+	collect.insert_one({
+		'_id': user_id,
+		'friends': friends
+	})
+
+	tus = collect.find()
+	friends = set(friends)
+
+	for item in tus:
+		if item['_id'] == user_id:
 			continue
 
-		if relation['relationship']['source']['followed_by'] == True:
-			followers.append(item['_id'])
+		if item['_id'] in friends:
+			friend_node = graph.find_one("Typical",
+										 property_key = "user_id",
+										 property_value = item['_id'])
 
-		if relation['relationship']['source']['following'] == True:
-			friends.append(item['_id'])
+			following = Relationship(user_node, 'following', friend_node)
+			graph.create(following)
+		
+		if user_id in set(item['friends']):
+			friend_node = graph.find_one("Typical",
+										 property_key = "user_id",
+										 property_value = item['_id'])
 
-	for item in friends:
-		pass
-
-	for item in followers:
-		pass
+			following = Relationship(friend_node, 'following', user_node)
+			graph.create(following)
 
 
 '''
@@ -527,7 +527,6 @@ def typical_character_newlist_detail():
 		character = TypicalCharacter.query.filter(TypicalCharacter.screen_name.like("%"+s_search+"%")).paginate((data_start / data_length) + 1, data_length, False).items
 		count = TypicalCharacter.query.filter(TypicalCharacter.screen_name.like("%"+s_search+"%")).count()
 	
-
 	res = []
 	for u in character:
 		res.append({
@@ -555,6 +554,12 @@ def typical_character_newdelete():
 
 	collect.delete_one({'_id': long(user_id)})
 
+	collect = db['relation']
+	collect.delete_one({'_id': long(user_id)})
+	
+	cql = '''MATCH (a:Typical{user_id:%d})-[r:following]-(b) DETACH delete a, r''' % long(user_id)
+	graph.run(cql)
+
 	return jsonify({'status': 1})
 
 
@@ -572,4 +577,33 @@ def download_user_xml(user_id):
 
 	response = make_response(send_file(file_name))
 	response.headers["Content-Disposition"] = "attachment; filename=%s.xml" % user['screen_name']
+
 	return response
+
+
+'''
+数据统计
+'''
+@verify
+def typical_data_statistics():
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	users = collect.find({}, {'category': 1, '_id': 0})
+
+	res = {
+		'Politics': 0,
+		'Religion': 0,
+		'Military': 0,
+		'Economy': 0,
+		'Technology': 0,
+		'Education': 0,
+		'Agriculture': 0,
+		'Entertainment': 0,
+		'Sports': 0
+	}
+
+	for item in users:
+		res[item['category']] += 1
+
+	return render_template('portrayal/typical_data_statistics.html', statistics = res)

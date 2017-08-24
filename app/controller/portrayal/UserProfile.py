@@ -164,6 +164,9 @@ def UserProfileFromDic(userinfo):
     # rank = config.rank_influence[rank]
     userinfo['rank_influ'] = rank
 
+    activity_list = UserInfluNoPageRank.calculate_activity(userinfo['followers_count'],tweets)
+    userinfo['activity_list'] = activity_list
+
     # 得到用户的心理状态,间隔默认为1个月
     starttime,psychologic,res = SentimentWithTime.SentimentWithTime(tweets,period=1)
     userinfo['psy_tweets_starttime'] = starttime

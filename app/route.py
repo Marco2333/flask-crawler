@@ -29,13 +29,13 @@ app.add_url_rule('/get_user_followers', 'get_user_followers', Search.get_user_fo
 app.add_url_rule('/get_user_relation', 'get_user_relation', Search.get_user_relation, methods = ['POST'])
 
 
+app.add_url_rule('/typical_data_statistics', 'typical_data_statistics', Portrayal.typical_data_statistics)
 app.add_url_rule('/typical_followers_path/<user_id>/<follower_id>/<deepth>', 'typical_followers_path', Portrayal.typical_followers_path)
 app.add_url_rule('/typical_friends_path/<user_id>/<friend_id>/<deepth>', 'typical_friends_path', Portrayal.typical_friends_path)
 app.add_url_rule('/download_user_xml/<user_id>', 'download_user_xml', Portrayal.download_user_xml)
 app.add_url_rule('/get_typical_dfans/<user_id>', 'get_typical_dfans', Portrayal.get_typical_dfans, methods = ['POST'])
 app.add_url_rule('/get_typical_followers/<user_id>', 'get_typical_followers', Portrayal.get_typical_followers, methods = ['POST'])
 app.add_url_rule('/get_typical_friends/<user_id>', 'get_typical_friends', Portrayal.get_typical_friends, methods = ['POST'])
-app.add_url_rule('/get_typical_relation/<user_id>', 'get_typical_relation', Portrayal.get_typical_relation)
 app.add_url_rule('/typical_character_list', 'typical_character_list', Portrayal.typical_character_list)
 app.add_url_rule('/typical_character_add', 'typical_character_add', Portrayal.typical_character_add)
 app.add_url_rule('/typical_character_list_detail', 'typical_character_list_detail', Portrayal.typical_character_list_detail, methods = ['POST'])

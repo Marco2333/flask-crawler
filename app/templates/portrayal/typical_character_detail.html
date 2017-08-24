@@ -11,13 +11,6 @@
         -moz-box-shadow: none;
         box-shadow: none;
     }
-    .shadow {
-        padding: 0;
-        margin-bottom: 26px;
-        -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-        -moz-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-        box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-    }
     .panel-title {font-size: 15px; margin-top: 2px;}
     .tab-content { margin-top: 0;}
     .dataTables_wrapper .dataTables_length {float: right}
@@ -26,52 +19,6 @@
     .tab-pane {position: relative;}
     .suggested-users{padding-left: 0}
     .table a {font-size: 14px; margin-right: 11px;}
-    .mask {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        z-index: 1000;
-        background-color: rgba(120, 120, 120, .6)
-    }
-    .relation-path-wrap {
-        position: absolute; 
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 80%;
-        margin: 6% auto 6%;
-    }
-    .relation-path-content {
-        width: 100%;
-        max-height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden; 
-        padding: 12px 0;
-        background-color: #fff;
-    }
-    .relation-path-item {
-        width: 100%;
-        height: 150px;
-        padding: 10px;
-        border-bottom: 1px dashed #eee;
-    }
-    .relation-path-item:last-child {
-        border-bottom: none;
-    }
-    .mask-close {
-        position: absolute;
-        right: 20px;
-        top: -10px;
-        font-size: 32px;
-        color: #c23531;
-        cursor: pointer;
-        z-index: 1000;
-    }
-
     @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
 </style>
 <div class="content-wrap">
@@ -354,6 +301,7 @@
             $(".mask").addClass('none');
             $("body").removeClass('over-hidden');
         });
+
         $("#friends-table").on('click', '.relation-path-link', function() {
             $('.relation-path-content').empty();
             var id = $(this).attr('data-id');
@@ -363,50 +311,9 @@
                 var paths = data['paths'];
                 paths.forEach(function(path, globalIndex) {
                     var item = $("<div class='relation-path-item'>").appendTo($('.relation-path-content'));
-                    var myChart = echarts.init(item[0]), relation = [];
-                    
-                    for(var i = 0, len = path.length;i < len - 1;i++) {
-                        relation.push({source: i, target: i + 1});
-                    }
-
-                    option = {
-                        legend: {
-                            data: ['人物关系']//此处的数据必须和关系网类别中name相对应
-                        },
-                        series: [{
-                            type: 'graph',
-                            layout: 'none',
-                            symbolSize: 18,
-                            edgeSymbol: ['circle', 'arrow'],
-                            animation: true,
-                            label: {
-                                normal: {
-                                    show:true,
-                                    position: 'bottom'
-                                }
-                            },
-                            draggable: true,
-                            data: path.map(function(value, index) {
-                                return {
-                                    name: value.name, 
-                                    x: 16 * index, 
-                                    y: globalIndex % 2 ? index % 2 ? 99 : 101 : index % 2 ? 101 : 99
-                                }
-                            }),
-                            edges: relation,
-                            lineStyle: {
-                                normal: {
-                                    opacity: 0.9,
-                                    width: 2,
-                                    curveness: 0,
-                                    color: '#c23531',
-                                    lineStyle: {
-                                        color: '#c23531'
-                                    }
-                                }
-                            }
-                        }]
-                    };
+                    var myChart = echarts.init(item[0]),
+                        option = getPathOption(path, globalIndex);
+                   
                     myChart.setOption(option);
                 })
             })
@@ -421,50 +328,9 @@
                 var paths = data['paths'];
                 paths.forEach(function(path, globalIndex) {
                     var item = $("<div class='relation-path-item'>").appendTo($('.relation-path-content'));
-                    var myChart = echarts.init(item[0]), relation = [];
-                    
-                    for(var i = 0, len = path.length;i < len - 1;i++) {
-                        relation.push({source: i, target: i + 1});
-                    }
+                    var myChart = echarts.init(item[0]),
+                        option = getPathOption(path, globalIndex);
 
-                    option = {
-                        legend: {
-                            data: ['人物关系']//此处的数据必须和关系网类别中name相对应
-                        },
-                        series: [{
-                            type: 'graph',
-                            layout: 'none',
-                            symbolSize: 18,
-                            edgeSymbol: ['circle', 'arrow'],
-                            animation: true,
-                            label: {
-                                normal: {
-                                    show:true,
-                                    position: 'bottom'
-                                }
-                            },
-                            draggable: true,
-                            data: path.map(function(value, index) {
-                                return {
-                                    name: value.name, 
-                                    x: 16 * index, 
-                                    y: globalIndex % 2 ? index % 2 ? 99 : 101 : index % 2 ? 101 : 99
-                                }
-                            }),
-                            edges: relation,
-                            lineStyle: {
-                                normal: {
-                                    opacity: 0.9,
-                                    width: 2,
-                                    curveness: 0,
-                                    color: '#c23531',
-                                    lineStyle: {
-                                        color: '#c23531'
-                                    }
-                                }
-                            }
-                        }]
-                    };
                     myChart.setOption(option);
                 })
             })
@@ -472,89 +338,17 @@
 
         var myChart = echarts.init(document.getElementById('psy-sequence'));
         var seq = $("#psy-sequence").attr('data-seq'),
-            psyArr = seq.split(","),
-            xAxis = psyArr.map(function (value, i) {
-                return i;
-            }),
-            option = {
-                tooltip: {
-                    trigger: 'axis'
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: true,
-                    data: xAxis
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: '{value}'
-                    }
-                },
-                series: [{
-                    name: '心理状态',
-                    type: 'line',
-                    data: psyArr,
-                    itemStyle: {
-                        normal: {
-                           color: '#3c8dbc',
-                           lineStyle: {
-                               color: '#3c8dbc'
-                           }
-                        }
-                    },
-                }]
-            };
+            option = getSequenceOption(seq.split(","), '心理状态');
+
         myChart.setOption(option);
 
         myChart = echarts.init(document.getElementById('activity-sequence'));
         seq = $("#activity-sequence").attr('data-seq');
-        psyArr = seq.split(",");
-        var minV = 10000;
+        option = getSequenceOption(seq.split(","), '活跃度', true);
 
-        psyArr.forEach(function (v) {
-            if (minV > +v) {
-                minV = +v;
-            }
-        })
-
-        minV = Math.floor(minV);
-        xAxis = psyArr.map(function (value, i) {
-            return i;
-        }),
-        option = {
-            tooltip: {
-                trigger: 'axis'
-            },
-            xAxis: {
-                type: 'category',
-                boundaryGap: true,
-                data: xAxis
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: '{value}'
-                },
-                min: minV - 3 > 0 ? minV - 3 : 0
-            },
-            series: [{
-                name: '活跃度',
-                type: 'line',
-                data: psyArr,
-                itemStyle: {
-                    normal: {
-                        color: '#3c8dbc',
-                        lineStyle: {
-                            color: '#3c8dbc'
-                        }
-                    }
-                },
-            }]
-        };
         myChart.setOption(option);
 
-        var config = {
+        var tableConfig = {
             language: {
                 "sProcessing": "正在获取数据，请稍后...",
                 "sProcessing": "处理中...",
@@ -580,43 +374,147 @@
             "searching": false,
             "bProcessing": true,
             "bServerSide": true,
-            "iDisplayLength": 20,
+            "iDisplayLength": 10,
             "aLengthMenu": [10, 20, 40, 100],
             "aoColumns": [{
                     "mDataProp": "screen_name"
-                },
-                {
+                },{
                     "mDataProp": "statuses_count"
-                },
-                {
+                },{
                     "mDataProp": "friends_count"
-                },
-                {
+                },{
                     "mDataProp": "followers_count"
-                },
-                {
+                },{
                     "mDataProp": "category"
-                },
-                {
+                },{
                     "mDataProp": "influence_score"
-                },
-                {
+                },{
                     "mDataProp": "influence_score"
                 }
             ]
         };
-        config["fnServerData"] = retrieveData1;
-        config["sAjaxSource"] = "{{ '/get_typical_followers/%s' % user['_id'] }}",
-        $('#followers-table').dataTable(config);
+        tableConfig["fnServerData"] = retrieveData1;
+        tableConfig["sAjaxSource"] = "{{ '/get_typical_followers/%s' % user['_id'] }}",
+        $('#followers-table').dataTable(tableConfig);
 
-        config["fnServerData"] = retrieveData2;
-        config["sAjaxSource"] = "{{ '/get_typical_friends/%s' % user['_id'] }}",
-        $('#friends-table').dataTable(config);
+        tableConfig["fnServerData"] = retrieveData2;
+        tableConfig["sAjaxSource"] = "{{ '/get_typical_friends/%s' % user['_id'] }}",
+        $('#friends-table').dataTable(tableConfig);
 
-        config["fnServerData"] = retrieveData3;
-        config["sAjaxSource"] = "{{ '/get_typical_dfans/%s' % user['_id'] }}",
-        $('#dfans-table').dataTable(config);
+        tableConfig["fnServerData"] = retrieveData3;
+        tableConfig["sAjaxSource"] = "{{ '/get_typical_dfans/%s' % user['_id'] }}",
+        $('#dfans-table').dataTable(tableConfig);
     });
+
+    function getPathOption(path, globalIndex) {
+        var relation = [];
+        for(var i = 0, len = path.length;i < len - 1;i++) {
+            relation.push({source: i, target: i + 1});
+        }
+
+        var pathOption = {
+            legend: {
+                data: ['人物关系']
+            },
+            series: [{
+                type: 'graph',
+                layout: 'none',
+                symbolSize: 20,
+                edgeSymbol: ['circle', 'arrow'],
+                edgeLabel: {
+                    normal: {
+                        show: true,
+                        formatter:'follow',
+                        textStyle: {
+                            fontSize: 14,
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                animation: true,
+                label: {
+                    normal: {
+                        show:true,
+                        position: 'bottom',
+                        textStyle: {
+                            fontSize: 14,
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                draggable: true,
+                data: path.map(function(value, index) {
+                    return {
+                        name: value.name, 
+                        x: 16 * index, 
+                        y: globalIndex % 2 ? index % 2 ? 99 : 101 : index % 2 ? 101 : 99
+                    }
+                }),
+                edges: relation,
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0,
+                        color: '#c23531'
+                    }
+                }
+            }]
+        };
+
+        return pathOption;
+    }
+
+    function getSequenceOption(dataArr, name, minYFlag) {
+        var xAxis = dataArr.map(function (value, i) {
+            return i;
+        });
+
+        if(minYFlag) {
+            var minV = Infinity;
+
+            dataArr.forEach(function(v) {
+                if (minV > +v) {
+                    minV = +v;
+                }
+            })
+
+            minV = Math.floor(minV);
+        }
+
+        var option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,
+                data: xAxis
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}'
+                },
+                min: minYFlag ? minV - 3 > 0 ? minV - 3 : 0 : undefined
+            },
+            series: [{
+                name: name,
+                type: 'line',
+                data: dataArr,
+                itemStyle: {
+                    normal: {
+                        color: '#3c8dbc',
+                        lineStyle: {
+                            color: '#3c8dbc'
+                        }
+                    }
+                },
+            }]
+        };
+
+        return option;
+    }
 
     function retrieveData1(sSource111, aoData111, fnCallback111) {
         $.ajax({
@@ -647,16 +545,16 @@
 
     function retrieveData2(sSource111, aoData111, fnCallback111) {
         $.ajax({
-            url: sSource111, //这个就是请求地址对应sAjaxSource
+            url: sSource111,
             data: {
                 "aoData": JSON.stringify(aoData111),
                 "deepth": $("#friends .deepth select").val()
-            }, //这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            },
             type: 'post',
             dataType: 'json',
             async: false,
             success: function (result) {
-                fnCallback111(result); //把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+                fnCallback111(result);
                 var trList = $("#friends-table tbody tr");
                 var employee_id, id;
                 if (result['aaData'].length == 0) {
@@ -674,16 +572,15 @@
 
     function retrieveData3(sSource111, aoData111, fnCallback111) {
         $.ajax({
-            url: sSource111, //这个就是请求地址对应sAjaxSource
+            url: sSource111,
             data: {
-                "aoData": JSON.stringify(aoData111),
-                "deepth": $("#dfans .deepth select").val()
-            }, //这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+                "aoData": JSON.stringify(aoData111)
+            },
             type: 'post',
             dataType: 'json',
             async: false,
             success: function (result) {
-                fnCallback111(result); //把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+                fnCallback111(result);
                 var trList = $("#dfans tbody tr");
                 var employee_id, id;
                 if (result['aaData'].length == 0) {

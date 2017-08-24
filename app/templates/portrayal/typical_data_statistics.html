@@ -1,0 +1,130 @@
+{% extends 'common/layout.html' %}
+
+{% block title %} 数据统计 {% endblock %}
+{% block body %}
+<style>
+    .content-wrap {
+        padding: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+</style>
+<div class="content-wrap">	
+	<div class="alert alert-success fade in" style="border-radius: 0; box-shadow: 0 0 20px rgba(10, 94, 204, 0.76)">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    <strong>数据统计</strong>
+	</div>
+	<div class="data-statistics-wrap">
+		<div class="shadow panel-info profile-basicinfo">
+            <div class="panel-heading">
+                <h3 class="panel-title">数据分布柱状图</h3>
+            </div>
+            <div class="panel-body">
+                <div id="histogram-amount-count" class="data-statistics-item">
+				</div> 
+            </div>
+        </div>
+		<div class="shadow panel-warning profile-basicinfo">
+            <div class="panel-heading">
+                <h3 class="panel-title">数据分布饼图</h3>
+            </div>
+            <div class="panel-body">
+                <div id="pie-amount-count" class="data-statistics-item" style="height: 420px;">
+				</div> 
+            </div>
+        </div>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
+<script>
+	var statistics = {{ statistics | safe }},
+		keys = {{ statistics.keys() | safe }};
+
+	var option = {
+		color: ['#3398DB'],
+		tooltip : {
+			trigger: 'axis',
+			axisPointer : {
+				type : 'shadow' 
+			}
+		},
+		label: {
+            normal: {
+                show: true,
+                position: 'top'
+            }
+        },
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis : [{
+			type: 'category',
+			data: keys,
+			axisTick: {
+				alignWithLabel: true
+			}
+		}],
+		yAxis : [{
+			type : 'value'
+		}],
+		series: [{
+			type:'bar',
+			barWidth: '60%',
+			data: {{ statistics.values() }}
+		}]
+	};
+	var myChart = echarts.init(document.getElementById('histogram-amount-count'));
+    myChart.setOption(option);
+
+    option = {
+	    title : {
+	        text: '典型人物样本分布',
+	        x:'center'
+	    },
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        orient: 'vertical',
+	        left: 'left',
+	        data: keys
+	    },
+	    series : [{  
+            type: 'pie',
+            radius : '70%',
+            center: ['50%', '55%'],
+            data: keys.map(function(value) {
+            	return {
+            		name: value,
+            		value: statistics[value]
+            	}
+            }),
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+            label: {
+                normal: {
+                    show:true,
+                    position: 'bottom',
+                    textStyle: {
+                        fontSize: 14,
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+        }]
+	};
+	myChart = echarts.init(document.getElementById('pie-amount-count'));
+    myChart.setOption(option);
+</script>
+{% endblock %}

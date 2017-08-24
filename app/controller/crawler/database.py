@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-
+from py2neo import Graph
 from pymongo import MongoClient
 
 class MongoDB:
@@ -12,3 +12,10 @@ class MongoDB:
 
 	# def close(self):
 
+class Neo4j:
+	def connect(self):
+		graph = Graph('http://localhost:7474', 
+				     username = 'neo4j', 
+				     password = 'aliyunneo4j@')
+
+		return graph
