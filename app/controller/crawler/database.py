@@ -2,15 +2,18 @@
 from py2neo import Graph
 from pymongo import MongoClient
 
+
 class MongoDB:
 	def connect(self, db_name = 'twitter'):
-		client = MongoClient('127.0.0.1', 27017)
+		client = MongoClient('127.0.0.1', 27017)  
+
 		db = client[db_name]
+		db.authenticate("twitteruser", "aliyunmongodb_")
+
 		self.db = db
 
 		return db
 
-	# def close(self):
 
 class Neo4j:
 	def connect(self):
