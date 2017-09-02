@@ -274,6 +274,34 @@ def typical_character_detail(user_id):
 		s += "," + str(item)
 	user['activity_list'] = s[1:]
 
+	s = ''
+	for item in user['psy_list2']:
+		s += "," + str(item)
+	user['psy_list2'] = s[1:]
+
+	s = ''
+	for item in user['psy_list_same_count1']:
+		s += "," + str(1) if item == 'pos' else "," + str(-1)
+	user['psy_list_same_count1'] = s[1:]
+
+	s = ''
+	for item in user['psy_list_same_count2']:
+		s += "," + str(item)
+	user['psy_list_same_count2'] = s[1:]
+
+	s = ''
+	s1 = ''
+	for item in user['category_score']:
+		s += "," + item
+		s1 += "," + str(user['category_score'][item])
+
+	user['category_score_keys'] = s[1:]
+	user['category_score_values'] = s1[1:]
+
+	user['tweets_count'] = len(user['tweets'])
+	user['tweets_start_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['tweets'][0]['created_at'].replace('+0000 ','')))
+	user['tweets_end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['tweets'][-1]['created_at'].replace('+0000 ','')))
+
 	get_image(user['profile_image_url'], user['screen_name'])
 
 	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}).limit(10)
@@ -589,9 +617,9 @@ def typical_data_statistics():
 	db = MongoDB().connect()
 	collect = db['typical']
 
-	users = collect.find({}, {'category': 1, '_id': 0})
+	users = collect.find({}, {'category': 1, '_id': 0, 'influence_score': 1})
 
-	res = {
+	category = {
 		'Politics': 0,
 		'Religion': 0,
 		'Military': 0,
@@ -603,7 +631,23 @@ def typical_data_statistics():
 		'Sports': 0
 	}
 
-	for item in users:
-		res[item['category']] += 1
+	influence = {}
 
-	return render_template('portrayal/typical_data_statistics.html', statistics = res)
+	for i in range(15):
+		influence[str(i * 10)] = 0
+
+	for item in users:
+		category[item['category']] += 1
+
+		s = str(int(item['influence_score'] / 10) * 10)
+
+		if int(s) >= 150:
+			if not influence.has_key(s):
+				influence[s] = 1
+			else:
+				influence[s] += 1
+
+		else:
+			influence[s] += 1
+
+	return render_template('portrayal/typical_data_statistics.html', category = category, influence = influence)

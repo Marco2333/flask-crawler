@@ -18,14 +18,16 @@
     .deepth select {width: 48px;}
     .tab-pane {position: relative;}
     .suggested-users{padding-left: 0}
-    .table a {font-size: 14px; margin-right: 11px;}
+    .table a {font-size: 14px; margin-right: 10px;}
+    .multiline {white-space: normal!important}
+    .draw-cell {padding: 25px 0 0 0!important}
     @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
 </style>
 <div class="content-wrap">
     <!-- Main content -->
     <section class="content">
         <div class="row">
-            <div class="col-md-9 col-lg-8" style="max-width: 980px">
+            <div class="col-md-9 col-lg-8" style="max-width: 1000px">
                 <div class="profile-header shadow">
                     <div class="profile-header-top">
                         <div class="profile-header-portrait">
@@ -132,16 +134,10 @@
                                         </td>
                                         <td>影响力等级</td>
                                         <td>
-                                            {% if user['rank_influ'] == 1 %} 低 
-                                            {% elif user['rank_influ'] == 2 %} 中 
-                                            {% elif user['rank_influ'] == 3 %} 高 
+                                            {% if user['influence_score'] < 60 %} 低 
+                                            {% elif user['influence_score'] < 110 %} 中 
+                                            {% else %} 高 
                                             {% endif %}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>活跃度</td>
-                                        <td colspan=3>
-                                            {{ user['activity'] }}
                                         </td>
                                     </tr>
                                     <tr>
@@ -149,15 +145,53 @@
                                         <td colspan=3>{{ user['interest_tags'] }}</td>
                                     </tr>
                                     <tr>
-                                        <td>心理状态变化</td>
-                                        <td colspan=3 style="padding: 0">
-                                            <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}" class="psy-sequence ">
+                                        <td>推文开始时间</td>
+                                        <td>
+                                            {{ user['tweets_start_time'] }}
+                                        </td>
+                                        <td>推文结束时间</td>
+                                        <td>
+                                            {{ user['tweets_end_time'] }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>抓取推文数</td>
+                                        <td>
+                                            {{ user['tweets_count'] }}
+                                        </td>
+                                        <td>活跃度</td>
+                                        <td>
+                                            {{ user['activity'] }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="multiline">心理状态一致度（相同时间差）</td>
+                                        <td id="psy-accuracy1"></td>
+                                        <td class="multiline">心理状态一致度（相同推文数）</td>
+                                        <td id="psy-accuracy2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="multiline">人物分类得分</td>
+                                        <td colspan=3 class="draw-cell">
+                                            <div id="category-score" class="psy-sequence" data-keys="{{ user['category_score_keys'] }}" data-values="{{ user['category_score_values'] }}"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="multiline">心理状态变化（相同时间差）</td>
+                                        <td colspan=3 class="draw-cell">
+                                            <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}" data-seq2="{{ user['psy_list2'] }}" class="psy-sequence"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="multiline">心理状态变化(相同推文数)</td>
+                                        <td colspan=3 class="draw-cell">
+                                            <div id="psy-sequence-same-count" data-seq1="{{ user['psy_list_same_count1'] }}" data-seq2="{{ user['psy_list_same_count2'] }}" class="psy-sequence">
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>活跃度变化</td>
-                                        <td colspan=3 style="padding: 0 ">
+                                        <td colspan=3 class="draw-cell">
                                             <div id="activity-sequence" data-seq="{{ user[ 'activity_list']}}" class="psy-sequence">
                                             </div>
                                         </td>
@@ -344,14 +378,39 @@
 
         var myChart = echarts.init(document.getElementById('psy-sequence'));
         var seq = $("#psy-sequence").attr('data-seq'),
-            option = getSequenceOption(seq.split(","), '心理状态');
-
+            seq2 = $("#psy-sequence").attr('data-seq2'),
+            seqArr2 = seq2.split(","),
+            differCount = 0,
+            option = getSequenceOption([seq.split(",").map(function(value, index) {
+                if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 1) {
+                    differCount += 1;
+                }
+                return value * 10;
+            }), seqArr2], ['朴素贝叶斯', '情感字典']);
+        $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
+
+        myChart = echarts.init(document.getElementById('psy-sequence-same-count'));
+        seq = $("#psy-sequence-same-count").attr('data-seq1'),
+        seq2 = $("#psy-sequence-same-count").attr('data-seq2'),
+        seqArr2 = seq2.split(","),
+        differCount = 0,
+        option = getSequenceOption([seq.split(",").map(function(value, index) {
+            if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 2) {
+                differCount += 1;
+            }
+            return value * 10;
+        }), seqArr2], ['朴素贝叶斯', '情感字典']);
+        myChart.setOption(option);
+        $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
 
         myChart = echarts.init(document.getElementById('activity-sequence'));
         seq = $("#activity-sequence").attr('data-seq');
-        option = getSequenceOption(seq.split(","), '活跃度', true);
+        option = getSequenceOption([seq.split(",")], ['活跃度'], true);
+        myChart.setOption(option);
 
+        myChart = echarts.init(document.getElementById('category-score'));
+        option = getHistogramOption("{{ user['category_score_keys'] }}".split(","), "{{ user['category_score_values']}}".split(","))
         myChart.setOption(option);
 
         var tableConfig = {
@@ -471,15 +530,62 @@
         return pathOption;
     }
 
+    function getHistogramOption(keys, values) {
+        var option = {
+            color: ['#3398DB'],
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {
+                    type : 'shadow' 
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [{
+                type: 'category',
+                data: keys,
+                axisLabel:{
+                    interval: 0
+                }
+            }],
+            yAxis : [{
+                type : 'value'
+            }],
+            series: [{
+                type:'bar',
+                barWidth: '60%',
+                data: values
+            }]
+        };
+
+        return option;
+    }
+
     function getSequenceOption(dataArr, name, minYFlag) {
-        var xAxis = dataArr.map(function (value, i) {
+        var dataArrTemp = [];
+        if(typeof dataArr[0] !== 'object') {
+            dataArr = dataArrTemp.push(dataArr);
+            dataArr = dataArrTemp;
+        }
+        
+        var xAxis = dataArr[0].map(function (value, i) {
             return i;
         });
 
         if(minYFlag) {
             var minV = Infinity;
 
-            dataArr.forEach(function(v) {
+            dataArr[0].forEach(function(v) {
                 if (minV > +v) {
                     minV = +v;
                 }
@@ -492,6 +598,9 @@
             tooltip: {
                 trigger: 'axis'
             },
+            legend: {
+                data: name
+            },
             xAxis: {
                 type: 'category',
                 boundaryGap: true,
@@ -502,21 +611,25 @@
                 axisLabel: {
                     formatter: '{value}'
                 },
-                min: minYFlag ? minV - 3 > 0 ? minV - 3 : 0 : undefined
+                min: minYFlag ? minV : undefined
             },
-            series: [{
-                name: name,
-                type: 'line',
-                data: dataArr,
-                itemStyle: {
-                    normal: {
-                        color: '#3c8dbc',
-                        lineStyle: {
-                            color: '#3c8dbc'
+            series: dataArr.map(function(value, index) {
+                var color = ['#5793f3', '#d14a61', '#675bba'];
+                return {
+                    name: typeof name == 'object' ? name[index] : name,
+                    type: 'line',
+                    data: value,
+                    smooth: true,
+                    itemStyle: {
+                        normal: {
+                            color: color[index],
+                            lineStyle: {
+                                color: color[index]
+                            }
                         }
-                    }
-                },
-            }]
+                    },
+                }
+            })
         };
 
         return option;

@@ -34,13 +34,22 @@
 				</div> 
             </div>
         </div>
+        <div class="shadow panel-success profile-basicinfo">
+            <div class="panel-heading">
+                <h3 class="panel-title">影响力分布图</h3>
+            </div>
+            <div class="panel-body">
+                <div id="influence-histogram" class="data-statistics-item" style="height: 420px;">
+				</div> 
+            </div>
+        </div>
 	</div>
 </div>
 
 <script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
 <script>
-	var statistics = {{ statistics | safe }},
-		keys = {{ statistics.keys() | safe }};
+	var statistics = {{ category | safe }},
+		keys = {{ category.keys() | safe }};
 
 	var option = {
 		color: ['#3398DB'],
@@ -64,10 +73,7 @@
 		},
 		xAxis : [{
 			type: 'category',
-			data: keys,
-			axisTick: {
-				alignWithLabel: true
-			}
+			data: keys
 		}],
 		yAxis : [{
 			type : 'value'
@@ -75,7 +81,7 @@
 		series: [{
 			type:'bar',
 			barWidth: '60%',
-			data: {{ statistics.values() }}
+			data: {{ category.values() }}
 		}]
 	};
 	var myChart = echarts.init(document.getElementById('histogram-amount-count'));
@@ -126,5 +132,72 @@
 	};
 	myChart = echarts.init(document.getElementById('pie-amount-count'));
     myChart.setOption(option);
+
+    var influence = {{ influence | safe}}, values = [],
+    	keys = {{ influence.keys() | safe}};
+
+    keys = keys.sort(function(a, b) {
+    	return +a - +b;
+    });
+
+    keysTemp = [];
+
+    keys.forEach(function(value, index) {
+    	if(influence[value] != '0')  {
+    		keysTemp.push(value + "-" + (+value + 10));
+    		values.push(influence[value + '']);
+    	}
+    });
+
+	option = {
+		color: ['#3398DB'],
+		tooltip : {
+			trigger: 'axis',
+			axisPointer : {
+				type : 'shadow' 
+			}
+		},
+		label: {
+            normal: {
+                show: true,
+                position: 'top'
+            }
+        },
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis : [{
+			type: 'category',
+			data: keysTemp
+		}],
+		yAxis : [{
+			type : 'value'
+		}],
+		series: [{
+			type:'bar',
+			barWidth: '60%',
+			data: values,
+			itemStyle: {
+	            normal: {　　　　　
+	                color: function(params) {
+	                	if(+params.name.split('-')[0] >= 110) {
+	                		return '#D7504B';
+	                	}
+	                	else if(+params.name.split('-')[0] >= 60) {
+	                		return '#9BCA63';
+	                	}
+	                	else {
+	                		return '#60C0DD';
+	                	}
+	                }
+	            }
+	        },
+		}]
+	};
+	myChart = echarts.init(document.getElementById('influence-histogram'));
+    myChart.setOption(option);    
 </script>
 {% endblock %}
