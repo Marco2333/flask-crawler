@@ -651,3 +651,65 @@ def typical_data_statistics():
 			influence[s] += 1
 
 	return render_template('portrayal/typical_data_statistics.html', category = category, influence = influence)
+
+
+'''
+错误统计
+'''
+@verify
+def typical_category_statistics():
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	total_count = collect.find({}, {}).count()
+
+	users = collect.find({}, {'category': 1, '_id': 0, 'category_score': 1})
+
+	category_name = ['Politics', 'Religion', 'Military', 'Economy', 'Technology', 'Education', 'Agriculture', 'Entertainment', 'Sports']
+	category = {}
+
+	for item in category_name:
+		category[item] = {
+			'count': 0,
+			'error_count': 0,
+			'sub_error_count': 0,
+			'error_classfied_count': 0,
+			'error_distribution': {
+
+			}
+		}
+
+		for name in category_name:
+			category[item]['error_distribution'][name] = 0
+			category[item]['error_classfied'][name] = 0
+
+
+	error_count = 0
+	sub_error_count = 0
+
+	for item in users:
+		category[item['category']]['count'] += 1
+		category_score = item['category_score']
+		max_category = max(category_score, key = category_score.get)
+
+		if max_category != item['category']:
+			category[item['category']]['error_distribution'][max_category] += 1
+			category[max_category]['error_classfied_count'] += 1
+
+			error_count += 1
+			category[item['category']]['error_count'] += 1
+
+			category_score[max_category] = 0
+			max_category = max(category_score, key = category_score.get)
+
+			if max_category != item['category']:
+				sub_error_count += 1
+				category[item['category']]['sub_error_count'] += 1
+
+	for item in category:
+		correct_category = (category[item]['count'] - category[item]['error_count']) * 1.0
+		category[item]['recall'] = correct_category / category[item]['count']
+		category[item]['precision'] = correct_category / (correct_category + category[item]['error_classfied_count'])
+		category[item]['f_score'] = 2 * category[item]['recall'] * category[item]['precision'] / (category[item]['recall'] + category[item]['precision'])
+
+	return render_template('portrayal/typical_category_statistics.html', category = category, total_count = total_count, error_count = error_count, sub_error_count = sub_error_count)

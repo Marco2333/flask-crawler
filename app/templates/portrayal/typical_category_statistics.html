@@ -1,0 +1,164 @@
+{% extends 'common/layout.html' %} {% block title %} 用户画像 {% endblock %} {% block body %}
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+
+<style>
+    p {margin-bottom: 6px;}
+    .content-wrap {
+        padding: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+    .panel-title {font-size: 15px; margin-top: 2px;}
+    .multiline {white-space: normal!important}
+    .draw-cell {padding: 0!important}
+    .category-histogram {height: 230px}
+</style>
+<div class="content-wrap">  
+    <div class="panel-info shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">用户分类统计  用户总数：{{ total_count }}</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>{{ total_count - error_count}}</td>
+                        <td>正确率</td>
+                        <td>{{ (total_count - error_count) * 100.0 / total_count }}%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>{{ total_count - sub_error_count}}</td>
+                        <td>多标签正确率</td>
+                        <td>{{ (total_count - sub_error_count) * 100.0 / total_count }}%</td>
+                    </tr>
+                    <tr>
+                        <td class="multiline">用户类别分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div id="total-histogram" style="height: 280px" class="category-histogram"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% for key in category %}
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ key }}</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本数</td>
+                        <td>{{ category[key]['count'] }}</td>
+                        <td>正确分类数</td>
+                        <td>{{ category[key]['count'] - category[key]['error_count'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>{{ categoru[key]['precision'] * 100 }}%</td>
+                        <td>召回率</td>
+                        <td>{{ category[key]['recall'] * 100 }}%</td>
+                    </tr>
+                    <tr>
+                        <td>F-score</td>
+                        <td>{{ category[key]['f_score'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>{{ category[key]['count'] - category[key]['sub_error_count'] }}</td>
+                        <td>多标签召回率</td>
+                        <td>{{ (category[key]['count'] - category[key]['sub_error_count']) * 100.0 / category[key]['count'] }}%</td>
+                    </tr>
+                    <tr>
+                        <td class="multiline">{{ key }}分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="{{ key }}"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
+<script>
+    $(function() {
+        var classArr = ['panel-success', 'panel-warning', 'panel-info']
+        $(".category-distribution").each(function(index) {
+            $(this).addClass(classArr[index % 3]);
+        })
+
+        var category = {{ category | safe}};
+        var allKeys = [], allValues = [];
+        $(".category-distribution .category-histogram").each(function() {
+            var key = $(this).attr('data-key'),
+                errorDistribution = category[key]['error_distribution'],
+                errKeys = Object.keys(errorDistribution);
+
+            allKeys.push(key);
+            allValues.push(category[key]['count']);
+            option = getHistogramOption(errKeys, errKeys.map(function(value) {
+                return errorDistribution[value];
+            }));
+
+            var myChart = echarts.init(this);
+            myChart.setOption(option);
+        });
+
+        option = getHistogramOption(allKeys, allValues);
+        var myChart = echarts.init(document.getElementById('total-histogram'));
+        myChart.setOption(option);
+    })
+
+    function getHistogramOption(keys, values) {
+        console.log(keys,values);
+        var option = {
+            color: ['#3398DB'],
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {
+                    type : 'shadow' 
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [{
+                type: 'category',
+                data: keys,
+                axisLabel:{
+                    interval: 0
+                }
+            }],
+            yAxis : [{
+                type : 'value'
+            }],
+            series: [{
+                type:'bar',
+                barWidth: '60%',
+                data: values
+            }]
+        };
+
+        return option;
+    }
+</script>
+{% endblock %}

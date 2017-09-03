@@ -52,6 +52,7 @@
                         <li><a href="javascript:openapp('{{ url_for('typical_character_add') }}',10)">新增样本</a></li>
                         <li><a href="javascript:openapp('{{ url_for('typical_character_newlist') }}',11)">新增列表</a></li>
                         <li><a href="javascript:openapp('{{ url_for('typical_data_statistics') }}',12)">数据统计</a></li>
+                        <li><a href="javascript:openapp('{{ url_for('typical_category_statistics') }}',13)">用户分类</a></li>
                    </ul>
                 </li>
             </ul>
@@ -168,10 +169,17 @@
                        <i class="glyphicon glyphicon-angle-right fr"></i>
                    </a>
                 </li>
-                 <li>
+                <li>
                    <a data-id="12" href="javascript:openapp('{{ url_for('typical_data_statistics') }}',12)">
                        <i class="glyphicon glyphicon-chevron-right"></i>
                        <span>数据统计</span>
+                       <i class="glyphicon glyphicon-angle-right fr"></i>
+                   </a>
+                </li>
+                <li>
+                   <a data-id="13" href="javascript:openapp('{{ url_for('typical_category_statistics') }}',13)">
+                       <i class="glyphicon glyphicon-chevron-right"></i>
+                       <span>用户分类</span>
                        <i class="glyphicon glyphicon-angle-right fr"></i>
                    </a>
                 </li>
