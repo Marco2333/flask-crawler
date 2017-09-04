@@ -165,25 +165,25 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="multiline">心理状态一致度（相同时间差）</td>
+                                        <td>心理状态一致度（相同时间差）</td>
                                         <td id="psy-accuracy1"></td>
-                                        <td class="multiline">心理状态一致度（相同推文数）</td>
+                                        <td>心理状态一致度（相同推文数）</td>
                                         <td id="psy-accuracy2"></td>
                                     </tr>
                                     <tr>
-                                        <td class="multiline">人物分类得分</td>
+                                        <td>人物分类得分</td>
                                         <td colspan=3 class="draw-cell">
                                             <div id="category-score" class="psy-sequence" data-keys="{{ user['category_score_keys'] }}" data-values="{{ user['category_score_values'] }}"></div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="multiline">心理状态变化（相同时间差）</td>
+                                        <td>心理状态变化（相同时间差）</td>
                                         <td colspan=3 class="draw-cell">
                                             <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}" data-seq2="{{ user['psy_list2'] }}" class="psy-sequence"></div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="multiline">心理状态变化(相同推文数)</td>
+                                        <td>心理状态变化(相同推文数)</td>
                                         <td colspan=3 class="draw-cell">
                                             <div id="psy-sequence-same-count" data-seq1="{{ user['psy_list_same_count1'] }}" data-seq2="{{ user['psy_list_same_count2'] }}" class="psy-sequence">
                                             </div>
@@ -531,6 +531,10 @@
     }
 
     function getHistogramOption(keys, values) {
+        var newValues = values.slice(0).sort(function(a, b) {
+            return +b - +a;
+        });
+        
         var option = {
             color: ['#3398DB'],
             tooltip : {
@@ -564,7 +568,24 @@
             series: [{
                 type:'bar',
                 barWidth: '60%',
-                data: values
+                data: values,
+                itemStyle: {
+                    normal: {　　　　　
+                        color: function(params) {
+							console.log(params);
+							console.log(newValues);
+                            if(params.value == newValues[0]) {
+                                return '#d7504b';
+                            }
+                            if(params.value == newValues[1]) {
+                                return '#f0ad4e';
+                            }
+                            if(params.value == newValues[2]) {
+                                return '#9bca63';
+                            }
+                        }
+                    }
+                }
             }]
         };
 

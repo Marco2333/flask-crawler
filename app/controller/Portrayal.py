@@ -673,7 +673,7 @@ def typical_category_statistics():
 			'count': 0,
 			'error_count': 0,
 			'sub_error_count': 0,
-			'error_classfied_count': 0,
+			'error_classified_count': 0,
 			'error_distribution': {
 
 			}
@@ -681,7 +681,9 @@ def typical_category_statistics():
 
 		for name in category_name:
 			category[item]['error_distribution'][name] = 0
-			category[item]['error_classfied'][name] = 0
+
+	for item in category:
+		del category[item]['error_distribution'][item]
 
 
 	error_count = 0
@@ -694,7 +696,7 @@ def typical_category_statistics():
 
 		if max_category != item['category']:
 			category[item['category']]['error_distribution'][max_category] += 1
-			category[max_category]['error_classfied_count'] += 1
+			category[max_category]['error_classified_count'] += 1
 
 			error_count += 1
 			category[item['category']]['error_count'] += 1
@@ -707,9 +709,25 @@ def typical_category_statistics():
 				category[item['category']]['sub_error_count'] += 1
 
 	for item in category:
-		correct_category = (category[item]['count'] - category[item]['error_count']) * 1.0
-		category[item]['recall'] = correct_category / category[item]['count']
-		category[item]['precision'] = correct_category / (correct_category + category[item]['error_classfied_count'])
+		correct_count = category[item]['count'] - category[item]['error_count']
+		category[item]['correct_count'] = correct_count
+		category[item]['recall'] = correct_count * 1.0 / category[item]['count']
+		category[item]['precision'] = correct_count * 1.0 / (correct_count + category[item]['error_classified_count'])
 		category[item]['f_score'] = 2 * category[item]['recall'] * category[item]['precision'] / (category[item]['recall'] + category[item]['precision'])
+		category[item]['accuracy'] = (correct_count + total_count - category[item]['count'] - category[item]['error_classified_count']) * 1.0 / total_count
+		category[item]['easy_wrong_category'] = max(category[item]['error_distribution'], key = category[item]['error_distribution'].get)
 
-	return render_template('portrayal/typical_category_statistics.html', category = category, total_count = total_count, error_count = error_count, sub_error_count = sub_error_count)
+	average_recall = 0
+	average_precision = 0
+	average_fscore = 0
+	average_accuracy = 0
+
+	for item in category:
+		average_recall += category[item]['recall'] * category[item]['count'] / total_count
+		average_precision += category[item]['precision'] * category[item]['count'] / total_count
+		average_fscore += category[item]['f_score'] * category[item]['count'] / total_count
+		average_accuracy += category[item]['accuracy'] * category[item]['count'] / total_count
+
+
+	return render_template('portrayal/typical_category_statistics.html', category = category, total_count = total_count, error_count = error_count, \
+	average_accuracy = average_accuracy, sub_error_count = sub_error_count, average_recall = average_recall, average_precision = average_precision, average_fscore = average_fscore)
