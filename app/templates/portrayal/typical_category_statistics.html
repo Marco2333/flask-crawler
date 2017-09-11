@@ -1,4 +1,4 @@
-{% extends 'common/layout.html' %} {% block title %} 用户画像 {% endblock %} {% block body %}
+{% extends 'common/layout.html' %} {% block title %} 分类统计 {% endblock %} {% block body %}
 
 
 <link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
@@ -30,8 +30,8 @@
                     <tr>
                         <td>用户总数</td>
                         <td>{{ total_count }}</td>
-                        <!-- <td>Top-3</td>
-                        <td></td> -->
+                        <td>Top-3</td>
+                        <td id="top-3"></td>
                     </tr>
                     <tr>
                         <td>平均召回率</td>
@@ -157,12 +157,14 @@
         })
 
         var category = {{ category | safe}};
-        var allKeys = [], allValues = [];
+        var allKeys = [], allValues = [], top3 = [];
         $(".category-distribution .category-histogram").each(function() {
             var key = $(this).attr('data-key'),
                 errorDistribution = category[key]['error_distribution'],
                 errKeys = Object.keys(errorDistribution);
 
+            top3.push({count: category[key]['count'], key: key})
+           
             allKeys.push(key);
             allValues.push(category[key]['count']);
             option = getHistogramOption(errKeys, errKeys.map(function(value) {
@@ -172,6 +174,12 @@
             var myChart = echarts.init(this);
             myChart.setOption(option);
         });
+
+        top3.sort(function(a, b) {
+            return b.count - a.count
+        });
+
+        $("#top-3").html(top3[0]['key'] + "&nbsp;&nbsp;" + top3[1]['key'] + "&nbsp;&nbsp;" + top3[2]['key']);
 
         option = getHistogramOption(allKeys, allValues);
         var myChart = echarts.init(document.getElementById('total-histogram'));

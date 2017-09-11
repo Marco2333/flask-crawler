@@ -179,13 +179,13 @@
                                     <tr>
                                         <td>心理状态变化（相同时间差）</td>
                                         <td colspan=3 class="draw-cell">
-                                            <div id="psy-sequence" data-seq="{{ user['psy_seq'] }}" data-seq2="{{ user['psy_list2'] }}" class="psy-sequence"></div>
+                                            <div id="psy-with-time" data-seq1="{{ user['psy_with_time1'] }}" data-seq2="{{ user['psy_with_time2'] }}" class="psy-sequence"></div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>心理状态变化(相同推文数)</td>
                                         <td colspan=3 class="draw-cell">
-                                            <div id="psy-sequence-same-count" data-seq1="{{ user['psy_list_same_count1'] }}" data-seq2="{{ user['psy_list_same_count2'] }}" class="psy-sequence">
+                                            <div id="psy-with-count" data-seq1="{{ user['psy_with_count1'] }}" data-seq2="{{ user['psy_with_count2'] }}" class="psy-sequence">
                                             </div>
                                         </td>
                                     </tr>
@@ -376,9 +376,9 @@
             })
         });
 
-        var myChart = echarts.init(document.getElementById('psy-sequence'));
-        var seq = $("#psy-sequence").attr('data-seq'),
-            seq2 = $("#psy-sequence").attr('data-seq2'),
+        var myChart = echarts.init(document.getElementById('psy-with-time'));
+        var seq = $("#psy-with-time").attr('data-seq1'),
+            seq2 = $("#psy-with-time").attr('data-seq2'),
             seqArr2 = seq2.split(","),
             differCount = 0,
             option = getSequenceOption([seq.split(",").map(function(value, index) {
@@ -390,13 +390,13 @@
         $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
 
-        myChart = echarts.init(document.getElementById('psy-sequence-same-count'));
-        seq = $("#psy-sequence-same-count").attr('data-seq1'),
-        seq2 = $("#psy-sequence-same-count").attr('data-seq2'),
+        myChart = echarts.init(document.getElementById('psy-with-count'));
+        seq = $("#psy-with-count").attr('data-seq1'),
+        seq2 = $("#psy-with-count").attr('data-seq2'),
         seqArr2 = seq2.split(","),
         differCount = 0,
         option = getSequenceOption([seq.split(",").map(function(value, index) {
-            if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 2) {
+            if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 1) {
                 differCount += 1;
             }
             return value * 10;
@@ -572,8 +572,8 @@
                 itemStyle: {
                     normal: {　　　　　
                         color: function(params) {
-							console.log(params);
-							console.log(newValues);
+                            console.log(params);
+                            console.log(newValues);
                             if(params.value == newValues[0]) {
                                 return '#d7504b';
                             }
@@ -582,6 +582,9 @@
                             }
                             if(params.value == newValues[2]) {
                                 return '#9bca63';
+                            }
+                            else {
+                                return '#3398db';
                             }
                         }
                     }

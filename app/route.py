@@ -89,3 +89,8 @@ def toLogin():
     session['username'] = user.username
 
     return jsonify({'status': 1})
+
+
+@app.route('/before')
+def before():
+    return render_template('portrayal/before.html')
