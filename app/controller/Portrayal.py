@@ -14,8 +14,9 @@ from app.controller import verify
 from app.models import TypicalCharacter
 from flask import request, render_template, jsonify, session, make_response, send_file
 
-from portrayal.XMLInteraction.GenerateXML import GenerateUserXml
-from portrayal import UserProfile
+from portrayal import user_profile
+from portrayal.interest_extract import tag_cloud
+from portrayal.tools.generate_xml import generate_user_xml
 
 from crawler.basicinfo_crawler import BasicinfoCrawler
 from crawler.relation_crawler import RelationCrawler
@@ -267,7 +268,8 @@ def typical_character_detail(user_id):
 	user['ratio'] = user['followers_count'] if not user['friends_count'] else round(user['followers_count'] * 1.0 / user['friends_count'], 2)
 	user['created_at'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['created_at'].replace('+0000 ','')))
 	user['crawler_date'] = str(user['crawler_date']).split(" ")[0]
-	user['psy_seq'] = user['psy_seq'].replace('pos', '1').replace("neg", "-1")
+	user['interest_tags'] = user['interest_tags'].replace(',', ', ')
+	user['interest_tags'] = re.sub(r'#(\w+)', "<a href='https://www.twitter.com/hashtag/\g<1>' target='_blank'>#\g<1></a>", user['interest_tags'])
 
 	s = ''
 	for item in user['activity_list']:
@@ -275,19 +277,24 @@ def typical_character_detail(user_id):
 	user['activity_list'] = s[1:]
 
 	s = ''
-	for item in user['psy_list2']:
+	for item in user['psy_with_time1']:
 		s += "," + str(item)
-	user['psy_list2'] = s[1:]
+	user['psy_with_time1'] = s[1:]
 
 	s = ''
-	for item in user['psy_list_same_count1']:
-		s += "," + str(1) if item == 'pos' else "," + str(-1)
-	user['psy_list_same_count1'] = s[1:]
+	for item in user['psy_with_time2']:
+		s += "," + str(item)
+	user['psy_with_time2'] = s[1:]
 
 	s = ''
-	for item in user['psy_list_same_count2']:
+	for item in user['psy_with_count1']:
 		s += "," + str(item)
-	user['psy_list_same_count2'] = s[1:]
+	user['psy_with_count1'] = s[1:]
+
+	s = ''
+	for item in user['psy_with_count2']:
+		s += "," + str(item)
+	user['psy_with_count2'] = s[1:]
 
 	s = ''
 	s1 = ''
@@ -411,7 +418,7 @@ def portrayal_thread(user, task_id):
 	tweet_list = tweets_crawler.get_user_all_timeline_return(screen_name = user['screen_name'])
 	user['tweets'] = tweet_list
 
-	out = UserProfile.UserProfileFromDic(user)
+	out = user_profile.user_profile(user)
 
 	db = MongoDB().connect()
 	collect = db['typical']
@@ -446,8 +453,6 @@ def relation_thread(user):
 	user_id = long(user_id)
 	typical_user = collect.find_one({'_id': user_id})
 
-	print typical_user
-
 	if typical_user:
 		return
 
@@ -463,7 +468,6 @@ def relation_thread(user):
 					 friends_count = user['friends_count'],
 					 psy = user['psy'],
 					 verified = user['verified'],
-					 psy_tweets_starttime = user['psy_tweets_starttime'],
 					 lang = user['lang'],
 					 favourites_count = user['favourites_count'],
 					 screen_name = user['screen_name'],
@@ -471,7 +475,6 @@ def relation_thread(user):
 					 created_at = user['created_at'],
 					 time_zone = user['time_zone'],
 					 protected = user['protected'],
-					 rank_influ = user['rank_influ'],
 					 activity = user['activity'])
 
 	graph.create(user_node)
@@ -591,6 +594,24 @@ def typical_character_newdelete():
 	return jsonify({'status': 1})
 
 
+@verify
+def modify_category():
+	user_id = request.form['user_id']
+	category = request.form['category']
+
+	categories = ["Entertainment", "Agriculture", "Sports", "Religion", "Military", "Politics", "Education", "Technology", "Economy"]
+
+	if not user_id or category not in categories:
+		return jsonify({'status': 0})
+
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	collect.update_one({'_id': long(user_id)}, {"$set": {"category": category}})
+
+	return jsonify({'status': 1})
+
+
 '''
 下载用户画像XML文件
 '''
@@ -600,11 +621,24 @@ def download_user_xml(user_id):
 	collect = db['typical']
 
 	user = collect.find_one({'_id': long(user_id)})
-	user['user_id'] = str(user['_id'])
-	file_name = GenerateUserXml(user)
+	file_name = generate_user_xml(user)
 
 	response = make_response(send_file(file_name))
 	response.headers["Content-Disposition"] = "attachment; filename=%s.xml" % user['screen_name']
+
+	return response
+
+@verify
+def download_interest_tags(user_id):
+	db = MongoDB().connect()
+	collect = db['typical']
+
+	user = collect.find_one({'_id': long(user_id)}, {'interest_tags': 1, 'screen_name': 1})
+	
+	file_name = tag_cloud.generate_tag_cloud(user['interest_tags'], user['_id'])
+
+	response = make_response(send_file(file_name))
+	response.headers["Content-Disposition"] = "attachment; filename=%s_interest_tags.png" % user['screen_name']
 
 	return response
 

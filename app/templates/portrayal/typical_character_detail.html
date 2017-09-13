@@ -18,7 +18,7 @@
     .deepth select {width: 48px;}
     .tab-pane {position: relative;}
     .suggested-users{padding-left: 0}
-    .table a {font-size: 14px; margin-right: 10px;}
+    .tab-content .table a {font-size: 14px; margin-right: 10px;}
     .multiline {white-space: normal!important}
     .draw-cell {padding: 25px 0 0 0!important}
     @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
@@ -70,8 +70,8 @@
                                     <tr>
                                         <td>用户 ID</td>
                                         <td>{{ user['_id'] }}</td>
-                                        <td>推文数</td>
-                                        <td>{{ user['statuses_count'] }}</td>
+                                        <td>粉丝朋友比</td>
+                                        <td>{{ user['ratio'] }}</td>
                                     </tr>
                                     <tr>
                                         <td>加入日期</td>
@@ -96,12 +96,6 @@
                                         <td>{{ '已开启' if user['geo_enabled'] else '未开启' }}</td>
                                         <td>抓取日期</td>
                                         <td>{{ user['crawler_date'] }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>最新推文</td>
-                                        <td>{{ user['psy_tweets_starttime'] }}</td>
-                                        <td>粉丝朋友比</td>
-                                        <td>{{ user['ratio'] }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -141,8 +135,8 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>兴趣标签</td>
-                                        <td colspan=3>{{ user['interest_tags'] }}</td>
+                                        <td><a href="/download_interest_tags/{{ user['_id'] }}">兴趣标签</a></td>
+                                        <td colspan=3 style="text-align: left;">{{ user['interest_tags'] | safe}}</td>
                                     </tr>
                                     <tr>
                                         <td>推文开始时间</td>
@@ -572,8 +566,6 @@
                 itemStyle: {
                     normal: {　　　　　
                         color: function(params) {
-                            console.log(params);
-                            console.log(newValues);
                             if(params.value == newValues[0]) {
                                 return '#d7504b';
                             }

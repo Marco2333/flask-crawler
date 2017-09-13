@@ -1,0 +1,614 @@
+{% extends 'common/layout.html' %} {% block title %} 分类统计 {% endblock %} {% block body %}
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+
+<style>
+    p {margin-bottom: 6px;}
+    .content-wrap {
+        padding: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+    .panel-title {font-size: 15px; margin-top: 2px;font-weight: bold;}
+    .draw-cell {padding: 0!important}
+    .category-histogram {height: 250px}
+    .coordinate-table{width: 100%;}
+    .coordinate-table td{padding: 10px;background-color: #fff;width: 40%;color: #3c8dbc}
+    .coordinate-table tbody tr:hover {background-color: #fff}
+    .coordinate-table td:first-child {width: 20%;}
+</style>
+<div class="content-wrap">  
+    <div class="panel-info shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">用户分类统计 / 用户分类评价指标</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>用户总数</td>
+                        <td>1001</td>
+                        <td>Top-3</td>
+                        <td id="top-3"></td>
+                    </tr>
+                    <tr>
+                        <td>平均召回率</td>
+                        <td>85.3146853147%</td>
+                        <td>平均精确率</td>
+                        <td>86.1957710984%</td>
+                    </tr>
+                    <tr>
+                        <td>平均F-Score</td>
+                        <td>84.4300741692%</td>
+                        <td>平均准确率</td>
+                        <td>96.1391256097%</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>854</td>
+                        <td>正确率</td>
+                        <td>85.3146853147%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>936</td>
+                        <td>多标签正确率</td>
+                        <td>93.5064935065%</td>
+                    </tr>
+                    <tr>
+                        <td>分类评价指标</td>
+                        <td colspan=3>
+                            <div class="col-xs-12 col-sm-12 col-md-6">  
+                                <table class="table-bordered coordinate-table">
+                                    <tbody>
+                                        <tr>
+                                            <td>(X, Y)</td>
+                                            <td colspan=2 style="color:#111">Belong to the Category(Y)</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan=2 style="color:#111">Predicted Condition(X)</td>
+                                            <td>TP(True, True)</td>
+                                            <td>FP(True, False)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>FN(False, True)</td>
+                                            <td>TN(False, False)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-12 col-sm-12 col-md-6" style="text-align: left;color: #3c8dbc">
+                                <p>准确率(accuracy) A = (TP + TN) / (TP + FN + FP + TN)</p>
+                                <p>精确率(precision) P = TP / (TP + FP)</p>
+                                <p>召回率(recall) R = TP / (TP + FN)</p>
+                                <p>F-Score = 2 × P × R / (P + R) </p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>用户类别分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div id="total-histogram" style="height: 280px" class="category-histogram col-lg-9"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Entertainment</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>162</td>
+                        <td>易错分类</td>
+                        <td>Sports</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>150</td>
+                        <td>召回率</td>
+                        <td>92.5925925926%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>175</td>
+                        <td>精确率</td>
+                        <td>85.7142857143%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>96.3036963037%</td>
+                        <td>F-score</td>
+                        <td>89.0207715134%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>161</td>
+                        <td>多标签召回率</td>
+                        <td>99.3827160494%</td>
+                    </tr>
+                    <tr>
+                        <td>Entertainment 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Entertainment"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Agriculture</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>14</td>
+                        <td>易错分类</td>
+                        <td>Economy</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>10</td>
+                        <td>召回率</td>
+                        <td>71.4285714286%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>16</td>
+                        <td>精确率</td>
+                        <td>62.5%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>99.000999001%</td>
+                        <td>F-score</td>
+                        <td>66.6666666667%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>14</td>
+                        <td>多标签召回率</td>
+                        <td>100.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Agriculture 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Agriculture"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Sports</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>172</td>
+                        <td>易错分类</td>
+                        <td>Entertainment</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>163</td>
+                        <td>召回率</td>
+                        <td>94.7674418605%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>180</td>
+                        <td>精确率</td>
+                        <td>90.5555555556%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>97.4025974026%</td>
+                        <td>F-score</td>
+                        <td>92.6136363636%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>172</td>
+                        <td>多标签召回率</td>
+                        <td>100.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Sports 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Sports"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Religion</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>110</td>
+                        <td>易错分类</td>
+                        <td>Politics</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>91</td>
+                        <td>召回率</td>
+                        <td>82.7272727273%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>93</td>
+                        <td>精确率</td>
+                        <td>97.8494623656%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>97.9020979021%</td>
+                        <td>F-score</td>
+                        <td>89.6551724138%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>99</td>
+                        <td>多标签召回率</td>
+                        <td>90.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Religion 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Religion"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Military</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>180</td>
+                        <td>易错分类</td>
+                        <td>Politics</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>169</td>
+                        <td>召回率</td>
+                        <td>93.8888888889%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>179</td>
+                        <td>精确率</td>
+                        <td>94.4134078212%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>97.9020979021%</td>
+                        <td>F-score</td>
+                        <td>94.1504178273%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>176</td>
+                        <td>多标签召回率</td>
+                        <td>97.7777777778%</td>
+                    </tr>
+                    <tr>
+                        <td>Military 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Military"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Politics</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>207</td>
+                        <td>易错分类</td>
+                        <td>Military</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>184</td>
+                        <td>召回率</td>
+                        <td>88.8888888889%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>243</td>
+                        <td>精确率</td>
+                        <td>75.7201646091%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>91.8081918082%</td>
+                        <td>F-score</td>
+                        <td>81.7777777778%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>201</td>
+                        <td>多标签召回率</td>
+                        <td>97.1014492754%</td>
+                    </tr>
+                    <tr>
+                        <td>Politics 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Politics"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Education</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>48</td>
+                        <td>易错分类</td>
+                        <td>Politics</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>11</td>
+                        <td>召回率</td>
+                        <td>22.9166666667%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>12</td>
+                        <td>精确率</td>
+                        <td>91.6666666667%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>96.2037962038%</td>
+                        <td>F-score</td>
+                        <td>36.6666666667%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>27</td>
+                        <td>多标签召回率</td>
+                        <td>56.25%</td>
+                    </tr>
+                    <tr>
+                        <td>Education 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Education"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Technology</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>52</td>
+                        <td>易错分类</td>
+                        <td>Entertainment</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>43</td>
+                        <td>召回率</td>
+                        <td>82.6923076923%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>62</td>
+                        <td>精确率</td>
+                        <td>69.3548387097%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>97.2027972028%</td>
+                        <td>F-score</td>
+                        <td>75.4385964912%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>46</td>
+                        <td>多标签召回率</td>
+                        <td>88.4615384615%</td>
+                    </tr>
+                    <tr>
+                        <td>Technology 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Technology"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="category-distribution shadow">
+        <div class="panel-heading">
+            <h3 class="panel-title">类别：Economy</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped profile-table">
+                <tbody>
+                    <tr>
+                        <td>样本总数</td>
+                        <td>56</td>
+                        <td>易错分类</td>
+                        <td>Politics</td>
+                    </tr>
+                    <tr>
+                        <td>正确分类数</td>
+                        <td>33</td>
+                        <td>召回率</td>
+                        <td>58.9285714286%</td>
+                    </tr>
+                    <tr>
+                        <td>分类为该类样本数</td>
+                        <td>41</td>
+                        <td>精确率</td>
+                        <td>80.487804878%</td>
+                    </tr>
+                    <tr>
+                        <td>准确率</td>
+                        <td>96.9030969031%</td>
+                        <td>F-score</td>
+                        <td>68.0412371134%</td>
+                    </tr>
+                    <tr>
+                        <td>多标签正确分类数</td>
+                        <td>40</td>
+                        <td>多标签召回率</td>
+                        <td>71.4285714286%</td>
+                    </tr>
+                    <tr>
+                        <td>Economy 错误分类分布直方图</td>
+                        <td colspan=3 class="draw-cell">
+                            <div class="category-histogram col-lg-9" data-key="Economy"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+<script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
+<script>
+    $(function() {
+        var classArr = ['panel-success', 'panel-warning', 'panel-info']
+        $(".category-distribution").each(function(index) {
+            $(this).addClass(classArr[index % 3]);
+        })
+
+        var category = {'Entertainment': {'count': 162, 'error_distribution': {'Agriculture': 0, 'Sports': 8, 'Religion': 0, 'Military': 0, 'Politics': 3, 'Education': 0, 'Technology': 1, 'Economy': 0}, 'error_classified_count': 25, 'recall': 0.9259259259259259, 'easy_wrong_category': 'Sports', 'precision': 0.8571428571428571, 'f_score': 0.8902077151335311, 'sub_error_count': 1, 'error_count': 12, 'correct_count': 150, 'accuracy': 0.9630369630369631}, 'Agriculture': {'count': 14, 'error_distribution': {'Entertainment': 0, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Technology': 0, 'Economy': 3}, 'error_classified_count': 6, 'recall': 0.7142857142857143, 'easy_wrong_category': 'Economy', 'precision': 0.625, 'f_score': 0.6666666666666666, 'sub_error_count': 0, 'error_count': 4, 'correct_count': 10, 'accuracy': 0.99000999000999}, 'Sports': {'count': 172, 'error_distribution': {'Entertainment': 9, 'Agriculture': 0, 'Religion': 0, 'Military': 0, 'Politics': 0, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 17, 'recall': 0.9476744186046512, 'easy_wrong_category': 'Entertainment', 'precision': 0.9055555555555556, 'f_score': 0.9261363636363636, 'sub_error_count': 0, 'error_count': 9, 'correct_count': 163, 'accuracy': 0.974025974025974}, 'Religion': {'count': 110, 'error_distribution': {'Entertainment': 3, 'Agriculture': 0, 'Sports': 3, 'Military': 1, 'Politics': 12, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 2, 'recall': 0.8272727272727273, 'easy_wrong_category': 'Politics', 'precision': 0.978494623655914, 'f_score': 0.896551724137931, 'sub_error_count': 11, 'error_count': 19, 'correct_count': 91, 'accuracy': 0.9790209790209791}, 'Military': {'count': 180, 'error_distribution': {'Entertainment': 1, 'Agriculture': 1, 'Sports': 3, 'Religion': 0, 'Politics': 4, 'Education': 0, 'Technology': 1, 'Economy': 1}, 'error_classified_count': 10, 'recall': 0.9388888888888889, 'easy_wrong_category': 'Politics', 'precision': 0.9441340782122905, 'f_score': 0.9415041782729804, 'sub_error_count': 4, 'error_count': 11, 'correct_count': 169, 'accuracy': 0.9790209790209791}, 'Politics': {'count': 207, 'error_distribution': {'Entertainment': 1, 'Agriculture': 2, 'Sports': 1, 'Religion': 2, 'Military': 9, 'Education': 1, 'Technology': 3, 'Economy': 4}, 'error_classified_count': 59, 'recall': 0.8888888888888888, 'easy_wrong_category': 'Military', 'precision': 0.757201646090535, 'f_score': 0.8177777777777777, 'sub_error_count': 6, 'error_count': 23, 'correct_count': 184, 'accuracy': 0.9180819180819181}, 'Education': {'count': 48, 'error_distribution': {'Entertainment': 5, 'Agriculture': 0, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 28, 'Technology': 4, 'Economy': 0}, 'error_classified_count': 1, 'recall': 0.22916666666666666, 'easy_wrong_category': 'Politics', 'precision': 0.9166666666666666, 'f_score': 0.36666666666666664, 'sub_error_count': 21, 'error_count': 37, 'correct_count': 11, 'accuracy': 0.962037962037962}, 'Technology': {'count': 52, 'error_distribution': {'Entertainment': 5, 'Agriculture': 1, 'Sports': 2, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Economy': 0}, 'error_classified_count': 19, 'recall': 0.8269230769230769, 'easy_wrong_category': 'Entertainment', 'precision': 0.6935483870967742, 'f_score': 0.7543859649122807, 'sub_error_count': 6, 'error_count': 9, 'correct_count': 43, 'accuracy': 0.972027972027972}, 'Economy': {'count': 56, 'error_distribution': {'Entertainment': 1, 'Agriculture': 2, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 10, 'Education': 0, 'Technology': 10}, 'error_classified_count': 8, 'recall': 0.5892857142857143, 'easy_wrong_category': 'Politics', 'precision': 0.8048780487804879, 'f_score': 0.6804123711340206, 'sub_error_count': 16, 'error_count': 23, 'correct_count': 33, 'accuracy': 0.9690309690309691}};
+        var allKeys = [], allValues = [], top3 = [];
+        $(".category-distribution .category-histogram").each(function() {
+            var key = $(this).attr('data-key'),
+                errorDistribution = category[key]['error_distribution'],
+                errKeys = Object.keys(errorDistribution);
+
+            top3.push({count: category[key]['count'], key: key})
+           
+            allKeys.push(key);
+            allValues.push(category[key]['count']);
+            option = getHistogramOption(errKeys, errKeys.map(function(value) {
+                return errorDistribution[value];
+            }));
+
+            var myChart = echarts.init(this);
+            myChart.setOption(option);
+        });
+
+        top3.sort(function(a, b) {
+            return b.count - a.count
+        });
+
+        $("#top-3").html(top3[0]['key'] + "&nbsp;&nbsp;" + top3[1]['key'] + "&nbsp;&nbsp;" + top3[2]['key']);
+
+        option = getHistogramOption(allKeys, allValues);
+        var myChart = echarts.init(document.getElementById('total-histogram'));
+        myChart.setOption(option);
+    })
+
+    function getHistogramOption(keys, values) {
+        var option = {
+            color: ['#3398DB'],
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {
+                    type : 'shadow' 
+                }
+            },
+            label: {
+                normal: {
+                    show: true,
+                    position: 'top'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [{
+                type: 'category',
+                data: keys,
+                axisLabel:{
+                    interval: 0
+                }
+            }],
+            yAxis : [{
+                type : 'value'
+            }],
+            series: [{
+                type:'bar',
+                barWidth: '60%',
+                data: values
+            }]
+        };
+
+        return option;
+    }
+</script>
+{% endblock %}
