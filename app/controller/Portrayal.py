@@ -59,16 +59,18 @@ def typical_character_list_detail():
 	db = MongoDB().connect()
 	collect = db['typical']
 
+	field = {'screen_name': 1, 'name': 1, 'friends_count': 1, 'followers_count': 1, 'statuses_count': 1, 'influence_score': 1, 'category': 1}
+
 	if s_search == '':
-		users = collect.find().skip(data_start).limit(data_length)
-		count = collect.find().count()
+		users = collect.find({}, field).skip(data_start).limit(data_length)
+		count = collect.find({}, {'_id': 1}).count()
 	else:
 		pattern = re.compile(".*" + s_search + ".*")
 		query = {"$or":[{"name": pattern}, {"category": pattern}, {"interest_tags": pattern}, 
 		{"screen_name": pattern}, {"description": pattern}, {"location": pattern}, {"name": pattern}]}
 
-		users = collect.find(query).skip(data_start).limit(data_length)
-		count = collect.find(query).count()
+		users = collect.find(query, field).skip(data_start).limit(data_length)
+		count = collect.find(query, {'_id': 1}).count()
 
 	res = []
 	for u in users:
@@ -262,8 +264,8 @@ def typical_friends_path(user_id, friend_id, deepth):
 def typical_character_detail(user_id):
 	mdb = MongoDB().connect()
 	collect = mdb['typical']
-
-	user = collect.find_one({'_id': long(user_id)})
+	
+	user = collect.find_one({'_id': long(user_id)}, {'tweets': 0})
 	
 	user['ratio'] = user['followers_count'] if not user['friends_count'] else round(user['followers_count'] * 1.0 / user['friends_count'], 2)
 	user['created_at'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['created_at'].replace('+0000 ','')))
@@ -304,15 +306,22 @@ def typical_character_detail(user_id):
 
 	user['category_score_keys'] = s[1:]
 	user['category_score_values'] = s1[1:]
+	
+	user_tweets = collect.aggregate([{"$match": {'_id': long(user_id)}}, \
+		{"$project": {"length": {"$size": "$tweets"}, "first": {"$slice": ["$tweets.created_at", 0, 1]},\
+		"last": {"$slice": ["$tweets.created_at", -1]}}}])
 
-	user['tweets_count'] = len(user['tweets'])
-	user['tweets_start_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['tweets'][0]['created_at'].replace('+0000 ','')))
-	user['tweets_end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(user['tweets'][-1]['created_at'].replace('+0000 ','')))
+	for item in user_tweets:
+		user['tweets_count'] = item['length']
+		user['tweets_start_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item['first'][0].replace('+0000 ', '')))
+		user['tweets_end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item['last'][0].replace('+0000 ', '')))
 
+		break
+	
 	get_image(user['profile_image_url'], user['screen_name'])
 
-	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}).limit(10)
-
+	related_users = collect.find({'category': user['category'], '_id': {"$ne": user['_id']}}, {'screen_name': 1, 'name': 1, 'profile_image_url': 1}).limit(10)
+	
 	ru_arr = []
 	for ru in related_users:
 		ru_arr.append({
@@ -321,7 +330,7 @@ def typical_character_detail(user_id):
 			'name': ru['name']
 		})
 		get_image(ru['profile_image_url'], ru['screen_name'])
-
+	
 	return render_template('portrayal/typical_character_detail.html', user = user, related_users = ru_arr)
 
 

@@ -118,7 +118,7 @@
                                         {% elif user['psy'] == -1 %}
                                         <td>负面</td>
                                         {% else %}
-                                        <td></td>
+                                        <td>0</td>
                                         {% endif %}
                                     </tr>
                                     <tr>
@@ -167,7 +167,7 @@
                                     <tr>
                                         <td>人物分类得分</td>
                                         <td colspan=3 class="draw-cell">
-                                            <div id="category-score" class="psy-sequence" data-keys="{{ user['category_score_keys'] }}" data-values="{{ user['category_score_values'] }}"></div>
+                                            <div id="category-score" class="psy-sequence"></div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -374,12 +374,17 @@
         var seq = $("#psy-with-time").attr('data-seq1'),
             seq2 = $("#psy-with-time").attr('data-seq2'),
             seqArr2 = seq2.split(","),
+            seqArr2Temp = seqArr2.slice(0).sort(function(v1, v2) {
+                return Math.abs(v1) - Math.abs(v2);
+            }),
+            multiRate = Math.abs(seqArr2Temp[parseInt(seqArr2Temp.length / 2)]),
+            multiRate = multiRate < 15 ? 15 : multiRate,
             differCount = 0,
             option = getSequenceOption([seq.split(",").map(function(value, index) {
-                if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 1) {
+                if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 3) {
                     differCount += 1;
                 }
-                return value * 10;
+                return value * multiRate;
             }), seqArr2], ['朴素贝叶斯', '情感字典']);
         $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
@@ -388,12 +393,17 @@
         seq = $("#psy-with-count").attr('data-seq1'),
         seq2 = $("#psy-with-count").attr('data-seq2'),
         seqArr2 = seq2.split(","),
+        seqArr2Temp = seqArr2.slice(0).sort(function(v1, v2) {
+            return Math.abs(v1) - Math.abs(v2);
+        }),
+        multiRate = Math.abs(seqArr2Temp[parseInt(seqArr2Temp.length / 2)]),
+        multiRate = multiRate < 15 ? 15 : multiRate,
         differCount = 0,
         option = getSequenceOption([seq.split(",").map(function(value, index) {
-            if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 1) {
+            if((value > 0 && seqArr2[index] < 0 || value < 0 && seqArr2[index] > 0) && Math.abs(seqArr2[index]) > 3) {
                 differCount += 1;
             }
-            return value * 10;
+            return value * multiRate;
         }), seqArr2], ['朴素贝叶斯', '情感字典']);
         myChart.setOption(option);
         $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");

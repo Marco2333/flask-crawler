@@ -28,7 +28,8 @@ app.add_url_rule('/get_user_friends', 'get_user_friends', Search.get_user_friend
 app.add_url_rule('/get_user_followers', 'get_user_followers', Search.get_user_followers, methods = ['POST'])
 app.add_url_rule('/get_user_relation', 'get_user_relation', Search.get_user_relation, methods = ['POST'])
 
-# app.add_url_rule('/typical_category_statistics_detail', 'typical_category_statistics_detail', Portrayal.typical_category_statistics_detail)
+app.add_url_rule('/modify_category', 'modify_category', Portrayal.modify_category, methods = ['POST'])
+app.add_url_rule('/download_interest_tags/<user_id>', 'download_interest_tags', Portrayal.download_interest_tags)
 app.add_url_rule('/typical_category_statistics', 'typical_category_statistics', Portrayal.typical_category_statistics)
 app.add_url_rule('/typical_data_statistics', 'typical_data_statistics', Portrayal.typical_data_statistics)
 app.add_url_rule('/typical_followers_path/<user_id>/<follower_id>/<deepth>', 'typical_followers_path', Portrayal.typical_followers_path)
