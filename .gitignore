@@ -47,3 +47,13 @@ Temporary Items
 .apdisk
 app/static/profile
 app/config.py
+pickle/
+corpus/
+slang.txt
+pickle_category/
+app/controller/portrayal/career_classify/data
+app/controller/portrayal/career_classify/data_category
+app/controller/portrayal/career_classify/data_processed
+app/controller/portrayal/career_classify/statistics
+app/controller/portrayal/sentiment_classify/data
+app/controller/portrayal/sentiment_classify/data1
