@@ -2,9 +2,9 @@
 import time
 import threading
 
-from app import app
+from config import THREAD_NUM
 from twitter import error
-from api import API_COUNT, Api
+from api import Api, API_COUNT
 from database import MongoDB
 from decorator import generate_decorator
 
@@ -12,7 +12,7 @@ handle_exception = generate_decorator(300)
 
 class TweetsCrawler:
 	get_api = Api().get_api
-	
+
 
 	'''
 	Fetch the sequence of public Status messages for a single user.
@@ -38,23 +38,23 @@ class TweetsCrawler:
 	'''
 	def get_user_timeline(self,
 						  user_id = None,
-						  screen_name = None, 
-						  since_id = None, 
-						  max_id = None, 
-						  count = None, 
-						  include_rts = True, 
-						  trim_user = True, 
+						  screen_name = None,
+						  since_id = None,
+						  max_id = None,
+						  count = None,
+						  include_rts = True,
+						  trim_user = True,
 						  exclude_replies = False):
 
 		if user_id == None and screen_name == None:
 			return None
 
-		return  self.get_api().GetUserTimeline(user_id = user_id,	
-											   screen_name = screen_name, 
-											   since_id = since_id, 
-											   max_id = max_id, 
+		return  self.get_api().GetUserTimeline(user_id = user_id,
+											   screen_name = screen_name,
+											   since_id = since_id,
+											   max_id = max_id,
 											   count = count,
-											   include_rts = include_rts, 
+											   include_rts = include_rts,
 											   trim_user = trim_user,
 											   exclude_replies = exclude_replies)
 
@@ -65,23 +65,23 @@ class TweetsCrawler:
 	参数：
 		collect_name：数据库集合名，默认 tweets_task
 	'''
-	def get_user_all_timeline(self, 
+	def get_user_all_timeline(self,
 							  user_id = None,
-							  collect_name = "tweet_task",
-						  	  screen_name = None, 
-						  	  include_rts = True, 
-						  	  exclude_replies = False):
+							  collect_name = "tweets_task",
+							  screen_name = None,
+							  include_rts = True,
+							  exclude_replies = False):
 
 		if user_id == None and screen_name == None:
 			return None
 
 		if user_id:
 			user_id = long(user_id)
-
+			
 		flag = True
 		tweets = [0]
 		sleep_count = 0
-		
+	
 		db = MongoDB().connect()
 		collect = db[collect_name]
 		get_api = self.get_api
@@ -89,21 +89,21 @@ class TweetsCrawler:
 		while len(tweets) > 0:
 			try:
 				if flag:
-					tweets = get_api().GetUserTimeline(user_id = user_id, 
-													   screen_name = screen_name, 
-													   include_rts = include_rts, 
+					tweets = get_api().GetUserTimeline(user_id = user_id,
+													   screen_name = screen_name,
+													   include_rts = include_rts,
 													   exclude_replies = exclude_replies,
-							  	  					   trim_user = True, 
+													   trim_user = True,
 													   count = 200)
 					flag = False
 
 				else:
-					tweets = get_api().GetUserTimeline(user_id = user_id, 
+					tweets = get_api().GetUserTimeline(user_id = user_id,
 													   screen_name = screen_name,
-													   include_rts = include_rts, 
+													   include_rts = include_rts,
 													   exclude_replies = exclude_replies,
-							 						   trim_user = True, 
-													   count = 200, 
+							 						   trim_user = True,
+													   count = 200,
 													   max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
@@ -114,7 +114,7 @@ class TweetsCrawler:
 						if sleep_count >= API_COUNT:
 							print "sleeping..."
 							sleep_count = 0
-							time.sleep(300)						
+							time.sleep(300)
 						continue
 
 					else:
@@ -123,7 +123,7 @@ class TweetsCrawler:
 				except Exception as ee:
 					print ee
 					break
-			except Exception as e:	
+			except Exception as e:
 				break
 				
 			for tt in tweets:
@@ -132,16 +132,16 @@ class TweetsCrawler:
 					collect.insert_one(tweet)
 				except Exception as e:
 					continue
-		
+	
 
 	'''
 	获取用户所有推文信息，并返回（参考 get_user_timeline ）
 	'''
-	def get_user_all_timeline_return(self, 
-								     user_id = None,
-							  	     screen_name = None, 
-							  	     include_rts = True, 
-							  	     exclude_replies = False):
+	def get_user_all_timeline_return(self,
+									 user_id = None,
+									 screen_name = None,
+									 include_rts = True,
+									 exclude_replies = False):
 
 		if user_id == None and screen_name == None:
 			return None
@@ -160,21 +160,21 @@ class TweetsCrawler:
 		while len(tweets) > 0:
 			try:
 				if flag:
-					tweets = get_api().GetUserTimeline(user_id = user_id, 
-													   screen_name = screen_name, 
-													   include_rts = include_rts, 
+					tweets = get_api().GetUserTimeline(user_id = user_id,
+													   screen_name = screen_name,
+													   include_rts = include_rts,
 													   exclude_replies = exclude_replies,
-								  	  				   trim_user = True, 
+													   trim_user = True,
 													   count = 200)
 					flag = False
 
 				else:
-					tweets = get_api().GetUserTimeline(user_id = user_id, 
+					tweets = get_api().GetUserTimeline(user_id = user_id,
 													   screen_name = screen_name,
-												   	   include_rts = include_rts, 
+													   include_rts = include_rts,
 													   exclude_replies = exclude_replies,
-							 					   	   trim_user = True, 
-													   count = 200, 
+							 						   trim_user = True,
+													   count = 200,
 													   max_id = tweets[-1].id - 1)
 
 			except error.TwitterError as te:
@@ -185,7 +185,7 @@ class TweetsCrawler:
 						if sleep_count >= API_COUNT:
 							print "sleeping..."
 							sleep_count = 0
-							time.sleep(300)						
+							time.sleep(300)
 						continue
 
 					else:
@@ -221,12 +221,12 @@ class TweetsCrawler:
 			否则认为 user_list 中 存放的是用户 user_id
 
 	'''
-	def get_all_users_timeline(self, 
+	def get_all_users_timeline(self,
 							   user_list = None,
 							   collect_name = "tweets_task",
 							   search_type = "user_id",
-							   include_rts = True, 
-							   exclude_replies = False):		
+							   include_rts = True,
+							   exclude_replies = False):
 
 		if len(user_list) == 0:
 			return
@@ -234,8 +234,6 @@ class TweetsCrawler:
 		i = 0
 		thread_pool = []
 		length = len(user_list)
-
-		THREAD_NUM = app.config['THREAD_NUM']
 		per_thread = length / THREAD_NUM
 
 		while i < THREAD_NUM:
@@ -259,10 +257,10 @@ class TweetsCrawler:
 	线程：获取多个用户推文信息（参考 get_all_users_timeline ）
 	'''
 	def get_all_users_timeline_thread(self,
-									  user_list = [], 
-									  collect_name = "tweets_task", 
-									  search_type = "user_id", 
-									  include_rts = True, 
+									  user_list = [],
+									  collect_name = "tweets_task",
+									  search_type = "user_id",
+									  include_rts = True,
 									  exclude_replies = False):
 
 		if search_type != "screen_name":
@@ -270,17 +268,17 @@ class TweetsCrawler:
 				user_id = user_list.pop(0)
 
 				self.get_user_all_timeline(user_id = user_id,
-									       collect_name = collect_name,
-						  	  		       include_rts = include_rts, 
-						  	  	           exclude_replies = exclude_replies)
+										   collect_name = collect_name,
+										   include_rts = include_rts,
+										   exclude_replies = exclude_replies)
 		else:
 			while len(user_list) > 0:
 				screen_name = user_list.pop(0)
 
 				self.get_user_all_timeline(screen_name = screen_name,
-									       collect_name = collect_name,
-						  	  		       include_rts = include_rts, 
-						  	  	           exclude_replies = exclude_replies)
+										   collect_name = collect_name,
+										   include_rts = include_rts, 
+										   exclude_replies = exclude_replies)
 
 
 	'''
@@ -304,10 +302,10 @@ class TweetsCrawler:
 		if status_id == None:
 			return None
 
-		return  self.get_api().GetStatus(status_id = status_id,	
-										 trim_user = trim_user, 
-										 include_my_retweet = False,
-										 include_entities = include_entities)
+		return self.get_api().GetStatus(status_id = status_id,
+										trim_user = trim_user,
+										include_my_retweet = False,
+										include_entities = include_entities)
 
 
 	'''
@@ -322,8 +320,8 @@ class TweetsCrawler:
 	def get_all_status(self,
 					   status_list = [],
 					   collect_name = 'status',
-				       trim_user = True,
-				       include_entities = True):
+					   trim_user = True,
+					   include_entities = True):
 
 		if len(status_list) == 0:
 			return
@@ -331,8 +329,6 @@ class TweetsCrawler:
 		i = 0
 		thread_pool = []
 		length = len(status_list)
-		
-		THREAD_NUM = app.config['THREAD_NUM']
 		per_thread = length / THREAD_NUM
 
 		while i < THREAD_NUM:
@@ -356,10 +352,10 @@ class TweetsCrawler:
 	线程：根据推文ID获取所有推文信息（参考 get_all_status ）
 	'''
 	def get_all_status_thread(self,
-						      status_list = [],
-						      collect_name = 'status',
-						      trim_user = True,
-						      include_entities = True):
+							  status_list = [],
+							  collect_name = 'status',
+							  trim_user = True,
+							  include_entities = True):
 
 		wrapper_func = handle_exception(self.get_status)
 
@@ -367,7 +363,6 @@ class TweetsCrawler:
 		collect = db[collect_name]
 
 		while len(status_list) > 0:
-
 			status_id = status_list.pop(0)
 			status_obj = wrapper_func(status_id)
 
@@ -416,3 +411,4 @@ class TweetsCrawler:
 
 if __name__ == '__main__':
 	ts = TweetsCrawler()
+	print ts.get_user_all_timeline(screen_name = 'mrmarcohan')

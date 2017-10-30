@@ -1,3 +1,5 @@
 # coding=utf-8
-PROJECT_PATH = "F:/python/user-portrait/app/"
+import os
+
+PROJECT_PATH = os.path.abspath(".") + "/app/controller/"
 XML_PATH = PROJECT_PATH + "/portrayal/resource/users_xml/"

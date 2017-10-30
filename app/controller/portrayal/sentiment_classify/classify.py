@@ -70,7 +70,7 @@ class VotingClassifier:
 			res= mode(votes)
 		except Exception as e:
 			print e
-			return None
+			return 0
 		
 		return res
 

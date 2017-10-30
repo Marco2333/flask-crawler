@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 from twitter import Api
-from app import app
+from config import APP_INFO
 
-APP_INFO = app.config['APP_INFO']
 API_LIST = []
 API_COUNT = len(APP_INFO)
 
 for i in range(API_COUNT):
 	API_LIST.append(Api(consumer_key = APP_INFO[i]['consumer_key'],
-                      consumer_secret = APP_INFO[i]['consumer_secret'],
-                      access_token_key = APP_INFO[i]['access_token_key'],
-                      access_token_secret = APP_INFO[i]['access_token_secret']))
+					  consumer_secret = APP_INFO[i]['consumer_secret'],
+					  access_token_key = APP_INFO[i]['access_token_key'],
+					  access_token_secret = APP_INFO[i]['access_token_secret']))
 
 class Api:
 	def __init__(self):
