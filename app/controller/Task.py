@@ -66,7 +66,7 @@ def task_detail(task_id):
 		'remark': task.remark,
 		'thread_num': task.thread_num,
 		'deepth': task.deepth,
-		'extension': task.extension,
+		'extension': str(task.extension),
 		'tweet_num': task.tweet_num,
 		'basicinfo_num': task.basicinfo_num,
 		'type': 'File Upload' if task.is_file else 'Breadth First Extension',
@@ -242,21 +242,17 @@ def allowed_file(filename):
 '''
 读取文件内容，并执行抓取任务
 '''
-def read_and_crawler(file_name, search_type, file_content, task_id, thread_num,):
-	file = open(file_name)
+def read_and_crawler(file_name, search_type, file_content, task_id, thread_num):
 	user_list = set()
+	file = open(file_name, "r")
 
-	while 1:
-	    lines = file.readlines(100000)
+	for line in file:
+		res = line.split(" ")
 
-	    if not lines:
-	        break
+		for s in res:
+			s.strip() != '' and user_list.add(s.strip())
 
-	    for line in lines:
-	    	res = line.split(" ")
-
-	    	for s in res:
-	        	s.strip() != '' and user_list.add(s.strip())
+	file.close()  
 
 	user_list = list(user_list)
 
@@ -268,27 +264,33 @@ def read_and_crawler(file_name, search_type, file_content, task_id, thread_num,)
 		t.start()
 
 	else:
+		if file_content == 1:
+			file_content = 'user_id'
+
+		elif file_content == 2:
+			file_content = 'screen_name'
+
 		if '1' in search_type:
 			with app.app_context():
 				Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
 
-			t = threading.Thread(target = tweet_process_file, args = (task_id, user_list,))
+			t = threading.Thread(target = tweet_process_file, args = (task_id, user_list, file_content))
 			t.start()
 		
 		if '4' in search_type:
 			with app.app_context():
 				Task.query.filter(Task.id == task_id).update({'basicinfo_num': len(user_list)})
 
-			t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list,))
+			t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list, file_content))
 			t.start()
 
 
 '''
 线程：抓取所有用户推文，并保存在数据库中
 '''
-def tweet_process_file(task_id, user_list):
+def tweet_process_file(task_id, user_list, file_content):
 	collect_name = "task_" + str(task_id)
-	tweets_crawler.get_all_users_timeline(user_list, collect_name)
+	tweets_crawler.get_all_users_timeline(user_list, collect_name, file_content)
 
 	with app.app_context():
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
@@ -297,11 +299,11 @@ def tweet_process_file(task_id, user_list):
 '''
 线程：抓取所有用户基础信息，并保存在数据库中
 '''
-def basicinfo_process_file(task_id, user_list):
+def basicinfo_process_file(task_id, user_list, file_content):
 	table_name = "task_" + str(task_id)
 	create_table(table_name)
 
-	basicinfo_crawler.get_all_users(user_list, table_name)
+	basicinfo_crawler.get_all_users(user_list, table_name, file_content)
 
 	with app.app_context():
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
@@ -540,7 +542,7 @@ def thread_extension(user_list, user_id, person_num, deepth, extension):
 						if count >= person_num:
 							return
 
-		elif extension == 2 or extension == 3:
+		if extension == 2 or extension == 3:
 			cursor = -1
 			while cursor != 0:
 				users_info = relation_crawler.get_followerids_paged_sleep(user_id = user_id, cursor = cursor)
@@ -734,7 +736,7 @@ def thread_extension_tweet_basicinfo(tweet_user_list,
 						if count >= person_num:
 							return
 
-		elif extension == 2 or extension == 3:
+		if extension == 2 or extension == 3:
 			cursor = -1
 			while cursor != 0:
 				users_info = relation_crawler.get_followerids_paged_sleep(user_id = user_id, cursor = cursor)

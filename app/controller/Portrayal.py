@@ -412,7 +412,9 @@ def typical_character_add_submit():
 				'profile_banner_url': user.profile_banner_url,
 				'time_zone': user.time_zone,
 				'profile_image_url': user.profile_image_url,
-				'listed_count': user.listed_count
+				'listed_count': user.listed_count,
+				'geo_enabled': user.geo_enabled,
+				'profile_sidebar_fill_color': user.profile_sidebar_fill_color,
 			}
 			th = threading.Thread(target = portrayal_thread, args = (user, tc.id))
 			th.start()

@@ -182,7 +182,7 @@
 			return;
 		}
 		if(cursor == null) {
-			cursor = -1
+			cursor = -1;
 		}
 		$.post("{{ url_for('get_user_friends') }}", {screen_name: screen_name, cursor: cursor}, function(data) {
 			var message = '',
@@ -214,7 +214,8 @@
 			$.each(data[1], function(i, val) {
 				dataToElement(val, 0);
 			})
-			if(data[1].length < 30) {
+			
+			if(data[0] == 0) {
 				$("#friends .view-more").addClass('hidden');
 			}
 			else {
@@ -308,7 +309,7 @@
 			$.each(data[1], function(i, val) {
 				dataToElement(val, 1);
 			})
-			if(data.length < 30) {
+			if(data[0] == 0) {
 				$("#followers .view-more").addClass('hidden');
 			}
 			else {

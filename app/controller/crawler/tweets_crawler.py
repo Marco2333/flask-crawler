@@ -76,7 +76,11 @@ class TweetsCrawler:
 			return None
 
 		if user_id:
-			user_id = long(user_id)
+			try:
+				user_id = long(user_id)
+			except Exception as e:
+				print e
+				return None
 			
 		flag = True
 		tweets = [0]

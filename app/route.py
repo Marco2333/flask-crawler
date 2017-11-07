@@ -3,6 +3,7 @@ from app import app
 from database import db
 from models import Admin
 from controller import Task, Search, System, Portrayal
+from controller.webservice import Crawling, Portrait
 from flask import request, render_template, redirect, session, url_for, jsonify
 
 
@@ -51,6 +52,12 @@ app.add_url_rule('/main', 'main', System.main)
 app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
 app.add_url_rule('/system_help', 'system_help', System.system_help)
 app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])
+
+
+app.add_url_rule('/profile', 'profile', Portrait.crawl_profile)
+app.add_url_rule('/get_user', 'get_user', Crawling.get_user)
+app.add_url_rule('/get_user_timeline', 'get_user_timeline', Crawling.get_user_timeline)
+
 
 @app.route('/')
 @app.route('/index')
