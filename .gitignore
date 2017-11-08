@@ -52,6 +52,8 @@ pickle/
 corpus/
 slang.txt
 pickle_category/
+uploads/
+users_xml
 app/controller/portrayal/career_classify/data
 app/controller/portrayal/career_classify/data_category
 app/controller/portrayal/career_classify/data_processed

@@ -21,6 +21,8 @@
     .tab-content .table a {font-size: 14px; margin-right: 10px;}
     .multiline {white-space: normal!important}
     .draw-cell {padding: 25px 0 0 0!important}
+    #profile-color:hover{color: #{{ user['profile_background_color'] }};}
+    #sidebar-color:hover{color: #{{ user['profile_sidebar_fill_color'] }};}
     @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
 </style>
 <div class="content-wrap">
@@ -70,18 +72,24 @@
                                     <tr>
                                         <td>用户 ID</td>
                                         <td>{{ user['_id'] }}</td>
-                                        <td>粉丝朋友比</td>
-                                        <td>{{ user['ratio'] }}</td>
+                                        <td>screen_name</td>
+                                        <td>{{ user['screen_name'] }}</td>
                                     </tr>
                                     <tr>
                                         <td>加入日期</td>
                                         <td>{{ user['created_at'] }}</td>
-                                        <td>语言</td>
-                                        <td>{{ user['lang'] }}</td>
+                                        <td>粉丝朋友比</td>
+                                        <td>{{ user['ratio'] }}</td>
                                     </tr>
                                     <tr>
-                                        <td>隐私保护</td>
-                                        <td>{{ '已设置' if user['protected'] else '未设置' }}</td>
+                                        <td>喜欢的推文数</td>
+                                        <td>{{ user['favourites_count'] }}</td>
+                                        <td>所属列表数</td>
+                                        <td>{{ user['listed_count'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>语言</td>
+                                        <td>{{ user['lang'] }}</td>
                                         <td>时区</td>
                                         <td>{{ user['time_zone'] if user['time_zone'] else ''}}</td>
                                     </tr>
@@ -92,10 +100,22 @@
                                         <td>{{ user['utc_offset'] if user['utc_offset'] else ''}}</td>
                                     </tr>
                                     <tr>
+                                        <td>隐私保护</td>
+                                        <td>{{ '已设置' if user['protected'] else '未设置' }}</td>
+                                        <td>默认头像</td>
+                                        <td>{{ '已使用' if user['default_profile_image'] else '未使用' }}</td>
+                                    </tr>
+                                    <tr>
                                         <td>Geo状态</td>
                                         <td>{{ '已开启' if user['geo_enabled'] else '未开启' }}</td>
                                         <td>抓取日期</td>
                                         <td>{{ user['crawler_date'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>主页背景颜色</td>
+                                        <td id="profile-color">#{{ user['profile_background_color'] }}</td>
+                                        <td>侧边栏颜色</td>
+                                        <td id="sidebar-color">#{{ user['profile_sidebar_fill_color'] }}</td>
                                     </tr>
                                 </tbody>
                             </table>

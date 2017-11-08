@@ -196,12 +196,12 @@ class BasicinfoCrawler:
 
 			sql = """INSERT INTO %s (user_id, screen_name, name, location, created_at, description, statuses_count, friends_count,
 					followers_count, favourites_count, lang, protected, time_zone, verified, utc_offset, geo_enabled, listed_count,
-					default_profile_image, profile_background_color, profile_sidebar_fill_color, profile_image_url, crawler_date) VALUES
+					default_profile_image, profile_background_color, profile_sidebar_fill_color, profile_image_url, profile_banner_url, crawler_date) VALUES
 					('%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, '%s', %d, '%s', %d, %d, %d,
-					'%s', '%s', '%s', '%s')""" % (table_name, user.id, user.screen_name, name, location, user.created_at, description, user.statuses_count, \
+					'%s', '%s', '%s', '%s', '%s')""" % (table_name, user.id, user.screen_name, name, location, user.created_at, description, user.statuses_count, \
 					user.friends_count, user.followers_count, user.favourites_count, user.lang, protected, user.time_zone, verified, \
 					user.utc_offset, geo_enabled, user.listed_count, default_profile_image, user.profile_background_color, \
-					user.profile_sidebar_fill_color, user.profile_image_url, time.strftime('%Y-%m-%d',time.localtime(time.time()))) 
+					user.profile_sidebar_fill_color, user.profile_image_url, user.profile_banner_url, time.strftime('%Y-%m-%d',time.localtime(time.time())))
 
 			sql = sql.encode("utf-8").decode("latin1")
 		except Exception as e:

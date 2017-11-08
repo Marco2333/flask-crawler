@@ -7,6 +7,29 @@ from ..crawler.database import MongoDB
 from ..portrayal.user_profile import user_profile
 
 
+def crawl_profile_sync():
+	user_id = request.args.get('user_id')
+	screen_name = request.args.get('screen_name')
+
+	if not user_id and not screen_name:
+		return jsonify({'status': 0})
+
+	user_info = get_user_all_info(user_id, screen_name)
+
+	if not user_info or len(user_info['tweets']) == 0:
+		return jsonify({'status': 0})
+
+	try:
+		user_info = user_profile(user_info)
+	except Exception as e:
+		print e
+		return jsonify({'status': 0})
+
+	del user_info['tweets']
+
+	return jsonify({'status': 1, 'user': user_info})
+
+
 def crawl_profile():
 	user_id = request.args.get('user_id')
 	screen_name = request.args.get('screen_name')
@@ -27,18 +50,18 @@ def crawl_profile_thread(user_id, screen_name, user_list = None, search_type = '
 	db = MongoDB().connect()
 	collect = db['profile']
 
-	print screen_name
-
 	if not user_list:
 		user_info = get_user_all_info(user_id, screen_name)
 
-		if not user_info:
+		if not user_info or len(user_info['tweets']) == 0:
+			return
+		
+		try:
+			user_info = user_profile(user_info)
+		except Exception as e:
+			print e
 			return
 
-		print 1
-		user_info = user_profile(user_info)
-		del user_info['tweets']
-		print user_info
 		collect.insert_one(user_info)
 	else:
 		user_list = user_list.split(',')
@@ -48,15 +71,15 @@ def crawl_profile_thread(user_id, screen_name, user_list = None, search_type = '
 				if search_type == 'user_id':
 					user_info = get_user_all_info(user_id = item)
 
-					if not user_info:
+					if not user_info or len(user_info['tweets']) == 0:
 						continue
-
+	
 					user_info = user_profile(user_info)
 				
 				else:
 					user_info = get_user_all_info(screen_name = item)
 
-					if not user_info:
+					if not user_info or len(user_info['tweets']) == 0:
 						continue
 
 					user_info = user_profile(user_info)
