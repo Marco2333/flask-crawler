@@ -797,7 +797,6 @@ def user_search_keyword():
 	for user in user_list:
 		res.append({
 			'screen_name': user.screen_name,
-			# 'name': user.name,
 			'created_at': time.strftime('%Y-%m-%d', time.strptime(user.created_at.replace('+0000 ',''))),
 			'followers_count': user.followers_count,
 			'friends_count': user.friends_count,

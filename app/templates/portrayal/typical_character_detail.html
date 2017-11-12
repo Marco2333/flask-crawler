@@ -405,7 +405,7 @@
                     differCount += 1;
                 }
                 return value * multiRate;
-            }), seqArr2], ['朴素贝叶斯', '情感字典']);
+            }), seqArr2], ['分类器投票', '情感字典']);
         $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
 
@@ -424,7 +424,7 @@
                 differCount += 1;
             }
             return value * multiRate;
-        }), seqArr2], ['朴素贝叶斯', '情感字典']);
+        }), seqArr2], ['分类器投票', '情感字典']);
         myChart.setOption(option);
         $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
 

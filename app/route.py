@@ -63,42 +63,42 @@ app.add_url_rule('/get_user_timeline', 'get_user_timeline', Crawling.get_user_ti
 @app.route('/')
 @app.route('/index')
 def index():
-	if not session.get('userid'):
-		return redirect(url_for('login'))
-	else:
-		return render_template('index.html')
+    if not session.get('userid'):
+        return redirect(url_for('login'))
+    else:
+        return render_template('index.html')
 
 @app.route('/login')
 def login():
-	if not session.get('userid'):
-		return render_template('login.html')
-	else:
-		return redirect(url_for('index'))
+    if not session.get('userid'):
+        return render_template('login.html')
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
-	session['userid'] = None
-	session['username'] = None
-	return redirect(url_for('login'))
+    session['userid'] = None
+    session['username'] = None
+    return redirect(url_for('login'))
 
 @app.route('/toLogin',methods = ['POST'])
 def toLogin():
-	userid = request.form['username']
-	password = request.form['password']
+    userid = request.form['username']
+    password = request.form['password']
 
-	m = hashlib.md5()
-	m.update(password)
+    m = hashlib.md5()
+    m.update(password)
 
-	user = Admin.query.filter(Admin.userid == userid).first()
-	if not user or user.password != m.hexdigest():
-		return jsonify({'status': 0})
+    user = Admin.query.filter(Admin.userid == userid).first()
+    if not user or user.password != m.hexdigest():
+        return jsonify({'status': 0})
 
-	session['userid'] = userid
-	session['username'] = user.username
+    session['userid'] = userid
+    session['username'] = user.username
 
-	return jsonify({'status': 1})
+    return jsonify({'status': 1})
 
 
 @app.route('/before')
 def before():
-	return render_template('portrayal/before.html')
+    return render_template('portrayal/before.html')

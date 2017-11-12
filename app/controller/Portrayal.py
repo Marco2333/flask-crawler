@@ -383,6 +383,9 @@ def typical_character_add_submit():
 		if user.protected:
 			status = 'protected'
 
+		elif user.statuses_count == 0:
+			status = 'nonetweets'
+			
 		else:
 			TypicalCharacter.query.filter(TypicalCharacter.user_id == user.id).delete()
 			tc = TypicalCharacter(admin_id = session['userid'], user_id = user.id, screen_name = screen_name, 
@@ -409,13 +412,14 @@ def typical_character_add_submit():
 				'profile_background_color': user.profile_background_color,
 				'default_profile_image': user.default_profile_image,
 				'created_at': user.created_at,
-				'profile_banner_url': user.profile_banner_url,
 				'time_zone': user.time_zone,
 				'profile_image_url': user.profile_image_url,
 				'listed_count': user.listed_count,
 				'geo_enabled': user.geo_enabled,
 				'profile_sidebar_fill_color': user.profile_sidebar_fill_color,
+				'profile_banner_url': user.profile_banner_url
 			}
+
 			th = threading.Thread(target = portrayal_thread, args = (user, tc.id))
 			th.start()
 

@@ -100,7 +100,7 @@ class BasicinfoCrawler:
 					  table_name = "user_task",
 					  screen_name = None,
 					  include_entities = True):
-	
+
 		wrapper_func = handle_exception(self.get_user)
 
 		user = wrapper_func(user_id = user_id, screen_name = screen_name, include_entities = include_entities)
@@ -201,7 +201,7 @@ class BasicinfoCrawler:
 					'%s', '%s', '%s', '%s', '%s')""" % (table_name, user.id, user.screen_name, name, location, user.created_at, description, user.statuses_count, \
 					user.friends_count, user.followers_count, user.favourites_count, user.lang, protected, user.time_zone, verified, \
 					user.utc_offset, geo_enabled, user.listed_count, default_profile_image, user.profile_background_color, \
-					user.profile_sidebar_fill_color, user.profile_image_url, user.profile_banner_url, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+					user.profile_sidebar_fill_color, user.profile_image_url, user.profile_banner_url, time.strftime('%Y-%m-%d',time.localtime(time.time()))) 
 
 			sql = sql.encode("utf-8").decode("latin1")
 		except Exception as e:
