@@ -137,14 +137,14 @@ def generate_candidate(word_tags):
 				phrase_list.append(prefix + " " + suffix)
 	
 	return candidate_list + phrase_list
-				
+
 
 def calc_tf_idf(candidate_list):
 	if corpus == None:
 		import_corpus()
 	
 	count = Counter(candidate_list)
-	common_word = count.most_common(150)
+	common_word = count.most_common(300)
 	
 	tf_idf = {}
 	corpus_len = len(corpus)
@@ -162,7 +162,99 @@ def calc_tf_idf(candidate_list):
 	return candidate_list[:100]
 
 
-def extract_tags(text, description = '', count = 30):
+def calc_weight(tweets, candidates):
+	weight_dict = {}
+
+	length = len(candidates)
+
+	for item in candidates:
+		weight_dict[item] = {}
+
+		for sub_item in candidates:
+			if item != sub_item:
+				weight_dict[item][sub_item] = 0
+
+	for i in range(length):
+		item = candidates[i]
+		j = i + 1
+
+		while j < length:
+			sub_item = candidates[j]
+			j += 1
+
+			for tweet in tweets:
+				text = tweet['text']
+
+				if item in text and sub_item in text:
+					weight_dict[item][sub_item] += 1
+					weight_dict[sub_item][item] += 1
+
+	o_vector = {}
+
+	for item in candidates:
+		o_vector[item] = 0
+
+		for sub_item in candidates:
+			if item != sub_item:
+				o_vector[item] += weight_dict[item][sub_item]
+		
+	return weight_dict, o_vector
+
+
+def text_rank(tweets, candidates, count):
+	weight_dict, o_vector = calc_weight(tweets, candidates.keys())
+
+	alpha = 0.85
+	score_vector = {}
+	related_items = {}
+
+	for item in candidates:
+		score_vector[item] = 1
+		related_items[item] = []
+
+		for sub_item in candidates:
+			if item != sub_item and weight_dict[item][sub_item] != 0:
+				related_items[item].push(sub_item)
+
+	i = 0
+	while i < 100:
+		score_vector_temp = {}
+
+		for item in candidates:
+			score_temp = 0
+
+			for sub_item in related_items[item]:
+				score_temp += weight_dict[item][sub_item] * 1.0 / o_vector[sub_item] * score_vector[sub_item] + (1 - alpha) * candidates[item]
+			
+			score_vector_temp[item] = score_temp
+		
+		if calc_differ(score_vector, score_vector_temp) < 0.1:
+			score_vector = score_vector_temp
+			break
+
+		score_vector = score_vector_temp
+
+		i += 1
+
+	top_count = sorted(score_vector.iteritems(), key = lambda item: item[1], reverse = True)
+
+	return top_count[:count]
+
+
+def calc_differ(score_vector1, score_vector2):
+	differ = 0
+
+	for item in score_vector1:
+		differ += abs(score_vector1[item] - score_vector2[item])
+	
+	return differ
+
+
+def extract_tags(tweets, description = '', count = 30):
+	text = ''
+	for tweet in tweets:
+		text += tweet['text']
+
 	word_tags = preprocess_postag(description + text + description)
 	candidate_list = generate_candidate(word_tags)
 
@@ -170,7 +262,7 @@ def extract_tags(text, description = '', count = 30):
 	interset_tags = map(lambda tag: tag[0], candidate_tags)
 
 	res_tags = []
-	filter_set = set(["wish", "hope", "home", "fuck", "shit", "bitch"])
+	filter_set = set(["wish", "hope", "home", "fuck", "shit", "bitch", "morning", "evening", "afternoon"])
 
 	for item in interset_tags:
 		if len(res_tags) >= count:
@@ -191,4 +283,6 @@ def extract_tags(text, description = '', count = 30):
 			
 			res_tags.append(item)
 	
-	return re.sub(r'label(\w+)label', r'#\1' , ','.join(res_tags[:count]))	
+	res = re.sub(r'label(\w+)label', r'#\1' , ','.join(res_tags[:count]))
+
+	return res

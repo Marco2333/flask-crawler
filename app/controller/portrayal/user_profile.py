@@ -25,7 +25,7 @@ def user_profile(user):
 	user['category'] = category
 	user['category_score'] = categories_score
 
-	user['interest_tags'] = extract_tags(text, user['description'])
+	user['interest_tags'] = extract_tags(tweets, user['description'])
 
 	influence_score, activity = calculate_influence(user['followers_count'], tweets)
 	user['influence_score'] = influence_score
