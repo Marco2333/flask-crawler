@@ -6,7 +6,7 @@ class Admin(db.Model):
     __tablename__ = 'admin'
     userid = Column(String(20), primary_key = True)
     username = Column(String(20))
-    password = Column(String(40))
+    password = Column(String(60))
 
     def __init__(self, userid = None, username = None, password = None):
         self.userid = userid

@@ -144,8 +144,8 @@ def calc_tf_idf(candidate_list):
 		import_corpus()
 	
 	count = Counter(candidate_list)
-	common_word = count.most_common(300)
-	
+	common_word = count.most_common(150)
+
 	tf_idf = {}
 	corpus_len = len(corpus)
 	for item in common_word:
@@ -155,11 +155,12 @@ def calc_tf_idf(candidate_list):
 				n += 1
 
 		idf = math.log(corpus_len * 1.0 / n, 10)
-		tf_idf[item[0]] = item[1] * idf
+		key = re.sub(r'label(\w+)label', r'#\1' , item[0])
+		tf_idf[key] = item[1] * idf
 
 	candidate_list = sorted(tf_idf.iteritems(), key = lambda item: item[1], reverse = True)
 
-	return candidate_list[:100]
+	return candidate_list[:90]
 
 
 def calc_weight(tweets, candidates):
@@ -201,7 +202,11 @@ def calc_weight(tweets, candidates):
 	return weight_dict, o_vector
 
 
-def text_rank(tweets, candidates, count):
+def text_rank(tweets, candidates_list):
+	candidates = {}
+	for item in candidates_list:
+		candidates[item[0]] = item[1]
+
 	weight_dict, o_vector = calc_weight(tweets, candidates.keys())
 
 	alpha = 0.85
@@ -214,21 +219,21 @@ def text_rank(tweets, candidates, count):
 
 		for sub_item in candidates:
 			if item != sub_item and weight_dict[item][sub_item] != 0:
-				related_items[item].push(sub_item)
+				related_items[item].append(sub_item)
 
 	i = 0
 	while i < 100:
 		score_vector_temp = {}
 
 		for item in candidates:
-			score_temp = 0
+			score_temp = (1 - alpha) * candidates[item]
 
 			for sub_item in related_items[item]:
-				score_temp += weight_dict[item][sub_item] * 1.0 / o_vector[sub_item] * score_vector[sub_item] + (1 - alpha) * candidates[item]
-			
-			score_vector_temp[item] = score_temp
-		
-		if calc_differ(score_vector, score_vector_temp) < 0.1:
+				score_temp += weight_dict[item][sub_item] * 1.0 / o_vector[sub_item] * score_vector[sub_item]
+
+			score_vector_temp[item] = alpha * score_temp
+
+		if calc_differ(score_vector, score_vector_temp) < 1:
 			score_vector = score_vector_temp
 			break
 
@@ -236,9 +241,7 @@ def text_rank(tweets, candidates, count):
 
 		i += 1
 
-	top_count = sorted(score_vector.iteritems(), key = lambda item: item[1], reverse = True)
-
-	return top_count[:count]
+	return sorted(score_vector.iteritems(), key = lambda item: item[1], reverse = True)
 
 
 def calc_differ(score_vector1, score_vector2):
@@ -246,8 +249,36 @@ def calc_differ(score_vector1, score_vector2):
 
 	for item in score_vector1:
 		differ += abs(score_vector1[item] - score_vector2[item])
-	
+
 	return differ
+
+
+def top_tfidf_tags(candidate_tags, count, filter_set):
+	interset_tags = map(lambda tag: tag[0], candidate_tags)
+
+	res_tags = []
+
+	for item in interset_tags:
+		if len(res_tags) >= count:
+			break
+
+		item_temp = item.replace('#', '')
+		word_list = item.split(' ')
+
+		if len(word_list) == 1:
+			if item_temp not in filter_set and len(item) > 2:
+				res_tags.append(item)
+				filter_set.add(item_temp)
+		else:
+			for word in word_list:
+				if word.strip() != '':
+					filter_set.add(word)
+					if word in res_tags:
+						res_tags.remove(word)
+			
+			res_tags.append(item)
+	
+	return res_tags[:count]
 
 
 def extract_tags(tweets, description = '', count = 30):
@@ -258,31 +289,36 @@ def extract_tags(tweets, description = '', count = 30):
 	word_tags = preprocess_postag(description + text + description)
 	candidate_list = generate_candidate(word_tags)
 
+	filter_set = set(["wish", "hope", "home", "fuck", "shit", "bitch", "morning", "evening", "afternoon", "video"])
+
 	candidate_tags = calc_tf_idf(candidate_list)
-	interset_tags = map(lambda tag: tag[0], candidate_tags)
+	tfidf_tags = top_tfidf_tags(candidate_tags, count, filter_set)
 
-	res_tags = []
-	filter_set = set(["wish", "hope", "home", "fuck", "shit", "bitch", "morning", "evening", "afternoon"])
+	candidate_tags = text_rank(tweets, candidate_tags)
 
-	for item in interset_tags:
-		if len(res_tags) >= count:
-			break
+	final_set = set(tfidf_tags[:count * 2 / 3])
 
+	for item in tfidf_tags[count * 2 / 3:]:
+		if item[0] == '#':
+			final_set.add(item)
+
+	while len(final_set) < count:
+		item = candidate_tags.pop(0)[0]
+
+		item_temp = item.replace('#', '')
 		word_list = item.split(' ')
 
 		if len(word_list) == 1:
-			if item not in filter_set and len(item) > 2:
-				res_tags.append(item)
-				filter_set.add(item)
+			if item_temp not in filter_set and len(item) > 2:
+				final_set.add(item)
+				filter_set.add(item_temp)
 		else:
 			for word in word_list:
 				if word.strip() != '':
 					filter_set.add(word)
-					if word in res_tags:
-						res_tags.remove(word)
+					if word in final_set:
+						final_set.remove(word)
 			
-			res_tags.append(item)
-	
-	res = re.sub(r'label(\w+)label', r'#\1' , ','.join(res_tags[:count]))
+			final_set.add(item)
 
-	return res
+	return ','.join(list(final_set)[:count])

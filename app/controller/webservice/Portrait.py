@@ -33,11 +33,11 @@ def crawl_profile_sync():
 def crawl_profile():
 	user_id = request.args.get('user_id')
 	screen_name = request.args.get('screen_name')
+	user_list = request.args.get('user_list')
 
-	if not user_id and not screen_name:
+	if not user_id and not screen_name and not user_list:
 		return jsonify({'status': 0})
 
-	user_list = request.args.get('user_list')
 	search_type = request.args.get('search_type')
 	
 	th = threading.Thread(target = crawl_profile_thread, args = (user_id, screen_name, user_list, search_type))
@@ -62,6 +62,9 @@ def crawl_profile_thread(user_id, screen_name, user_list = None, search_type = '
 			print e
 			return
 
+		user_info['_id'] = long(user_info['user_id'])
+		del user_info['user_id']
+
 		collect.insert_one(user_info)
 	else:
 		user_list = user_list.split(',')
@@ -83,6 +86,9 @@ def crawl_profile_thread(user_id, screen_name, user_list = None, search_type = '
 						continue
 
 					user_info = user_profile(user_info)
+
+				user_info['_id'] = long(user_info['user_id'])
+				del user_info['user_id']
 
 				collect.insert_one(user_info)
 			except Exception as e:

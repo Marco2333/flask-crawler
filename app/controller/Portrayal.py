@@ -9,7 +9,7 @@ from app import app
 from app.database import db
 from twitter import error
 from crawler.database import MongoDB, Neo4j
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph, Node, Relationship, NodeSelector
 from app.controller import verify
 from app.models import TypicalCharacter
 from flask import request, render_template, jsonify, session, make_response, send_file
@@ -23,6 +23,7 @@ from crawler.relation_crawler import RelationCrawler
 from crawler.tweets_crawler import TweetsCrawler
 
 graph = Neo4j().connect()
+selector = NodeSelector(graph)
 
 basicinfo_crawler = BasicinfoCrawler()
 tweets_crawler = TweetsCrawler()
@@ -519,19 +520,17 @@ def relation_thread(user):
 		if item['_id'] == user_id:
 			continue
 
-		if item['_id'] in friends:
-			friend_node = graph.find_one("Typical",
-										 property_key = "user_id",
-										 property_value = item['_id'])
+		friend_node = selector.select("Typical", user_id = item['_id']).first()
 
+		# friend_node1 = graph.find_one("Typical",
+		# 							 property_key = "user_id",
+		# 							 property_value = item['_id'])
+
+		if item['_id'] in friends:
 			following = Relationship(user_node, 'following', friend_node)
 			graph.create(following)
 		
 		if user_id in set(item['friends']):
-			friend_node = graph.find_one("Typical",
-										 property_key = "user_id",
-										 property_value = item['_id'])
-
 			following = Relationship(friend_node, 'following', user_node)
 			graph.create(following)
 
@@ -583,6 +582,8 @@ def typical_character_newlist_detail():
 			"finished_at": u.finished_at,
 			"admin_id": u.admin_id
 		})
+
+	res.sort(key = lambda item: int(item['id']))
 
 	return jsonify({'aaData': res, 'iTotalDisplayRecords': count})
 
@@ -642,6 +643,7 @@ def download_user_xml(user_id):
 	response.headers["Content-Disposition"] = "attachment; filename=%s.xml" % user['screen_name']
 
 	return response
+
 
 @verify
 def download_interest_tags(user_id):

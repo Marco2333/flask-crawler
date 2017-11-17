@@ -415,6 +415,10 @@ def basicinfo_process(args):
 			break
 
 	while len(user_list) > 0 or relation_thread.is_alive():
+		if not relation_thread.is_alive():
+			print 'not alive'
+			print len(user_list)
+
 		if len(user_list) == 0:
 			print "basicinfo thread is sleeping, relation crawler is slow!"
 			time.sleep(5)

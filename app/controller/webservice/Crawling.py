@@ -140,6 +140,7 @@ def get_user_timeline():
 		try:
 			tweets_list.append(tweet)
 		except Exception as e:
+			print e
 			continue
-	
+
 	return jsonify({'status': 1, 'tweets': tweets_list})

@@ -105,6 +105,8 @@ class BasicinfoCrawler:
 
 		user = wrapper_func(user_id = user_id, screen_name = screen_name, include_entities = include_entities)
 
+		del wrapper_func
+		
 		user and self.save_user(user, table_name)
 
 
@@ -217,6 +219,8 @@ class BasicinfoCrawler:
 		except Exception as e:
 			print e
 			return
+
+		ctx.pop()
 
 
 if __name__ == '__main__':
