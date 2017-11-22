@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import gc
 import os
 import time
 import json
@@ -252,7 +253,7 @@ def read_and_crawler(file_name, search_type, file_content, task_id, thread_num):
 		for s in res:
 			s.strip() != '' and user_list.add(s.strip())
 
-	file.close()  
+	file.close()
 
 	user_list = list(user_list)
 
@@ -260,8 +261,11 @@ def read_and_crawler(file_name, search_type, file_content, task_id, thread_num):
 		with app.app_context():
 			Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
 
-		t = threading.Thread(target = status_process_file, args = (task_id, user_list,))
+		collect_name = "task_" + str(task_id)
+
+		t = threading.Thread(target = tweets_crawler.get_all_status, args = (status_list, collect_name))
 		t.start()
+		t.join()
 
 	else:
 		if file_content == 1:
@@ -274,47 +278,26 @@ def read_and_crawler(file_name, search_type, file_content, task_id, thread_num):
 			with app.app_context():
 				Task.query.filter(Task.id == task_id).update({'tweet_num': len(user_list)})
 
-			t = threading.Thread(target = tweet_process_file, args = (task_id, user_list, file_content))
-			t.start()
-		
+			collect_name = "task_" + str(task_id)
+
+			t1 = threading.Thread(target = tweets_crawler.get_all_users_timeline, args = (user_list, collect_name, file_content))
+			t1.start()
+
 		if '4' in search_type:
 			with app.app_context():
 				Task.query.filter(Task.id == task_id).update({'basicinfo_num': len(user_list)})
 
-			t = threading.Thread(target = basicinfo_process_file, args = (task_id, user_list, file_content))
-			t.start()
+			table_name = "task_" + str(task_id)
+			create_table(table_name)
 
-
-'''
-线程：抓取所有用户推文，并保存在数据库中
-'''
-def tweet_process_file(task_id, user_list, file_content):
-	collect_name = "task_" + str(task_id)
-	tweets_crawler.get_all_users_timeline(user_list, collect_name, file_content)
-
-	with app.app_context():
-		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
-
-
-'''
-线程：抓取所有用户基础信息，并保存在数据库中
-'''
-def basicinfo_process_file(task_id, user_list, file_content):
-	table_name = "task_" + str(task_id)
-	create_table(table_name)
-
-	basicinfo_crawler.get_all_users(user_list, table_name, file_content)
-
-	with app.app_context():
-		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
-
-
-'''
-线程：根据推文 id 抓取所有推文，并保存在数据库中
-'''
-def status_process_file(task_id, status_list):
-	collect_name = "task_" + str(task_id)
-	tweets_crawler.get_all_status(status_list, collect_name)
+			t2 = threading.Thread(target = basicinfo_crawler.get_all_users, args = (user_list, table_name, file_content))
+			t2.start()
+		
+		if '1' in search_type:
+			t1.join()
+		
+		if '4' in search_type:
+			t2.join()
 
 	with app.app_context():
 		Task.query.filter(Task.id == task_id).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
@@ -415,10 +398,6 @@ def basicinfo_process(args):
 			break
 
 	while len(user_list) > 0 or relation_thread.is_alive():
-		if not relation_thread.is_alive():
-			print 'not alive'
-			print len(user_list)
-
 		if len(user_list) == 0:
 			print "basicinfo thread is sleeping, relation crawler is slow!"
 			time.sleep(5)
@@ -442,6 +421,8 @@ def basicinfo_process(args):
 
 		for thread in threads_pool:
 			thread.join()
+
+		gc.collect()
 
 	with app.app_context():
 		Task.query.filter(Task.id == args['id']).update({'finished_at': time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))})
@@ -606,6 +587,7 @@ def create_table(table_name):
 '''
 def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name, tbthread):
 	count = 1
+	thread_num = 4 if thread_num > 3 else thread_num
 
 	while len(basicinfo_user_list) > 0 or (count < basicinfo_num and tbthread.is_alive()):
 		
@@ -616,8 +598,6 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name,
 
 		i = 0
 		threads_pool = []
-
-		thread_num = 3 if thread_num > 3 else thread_num
 
 		while i < thread_num:
 			if len(basicinfo_user_list) == 0:
@@ -643,6 +623,7 @@ def basicinfo_thread(basicinfo_num, basicinfo_user_list, thread_num, table_name,
 '''
 def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name, tbthread):
 	count = 1
+	thread_num = 4 if thread_num > 3 else thread_num
 
 	while len(tweet_user_list) > 0 or (count < tweet_num and tbthread.is_alive()):
 
@@ -653,8 +634,6 @@ def tweet_thread(tweet_num, tweet_user_list, thread_num, collect_name, tbthread)
 
 		i = 0
 		threads_pool = []
-
-		thread_num = 3 if thread_num > 3 else thread_num
 
 		while i < thread_num:
 			if len(tweet_user_list) == 0:
