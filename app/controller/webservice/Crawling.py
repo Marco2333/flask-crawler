@@ -29,7 +29,7 @@ def get_user_all_info(user_id = None, screen_name = None):
 	if not user.protected:
 		tweets = tweets_crawler.get_user_all_timeline_return(user_id = user_id, screen_name = screen_name)
 
-	if not tweets:
+	if tweets == None:
 		return None
 
 	return {
@@ -118,6 +118,12 @@ def get_user_timeline():
 	include_rts = request.args.get('include_rts')
 	exclude_replies = request.args.get('exclude_replies')
 
+	if include_rts == None:
+		include_rts = True
+	
+	if count == None:
+		count = 200
+
 	try:
 		tweets = tweets_crawler.get_user_timeline(user_id = user_id,
 												  screen_name = screen_name,
@@ -130,14 +136,13 @@ def get_user_timeline():
 		print e
 		return jsonify({'status': 0})
 
-	if not tweets:
+	if tweets == None:
 		return jsonify({'status': 0})
 
 	tweets_list = []
 	for tt in tweets:
-		tweet = tweets_crawler.tweetobj_to_dict(tt)
-		
 		try:
+			tweet = tweets_crawler.tweetobj_to_dict(tt)
 			tweets_list.append(tweet)
 		except Exception as e:
 			print e

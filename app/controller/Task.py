@@ -263,7 +263,7 @@ def read_and_crawler(file_name, search_type, file_content, task_id, thread_num):
 
 		collect_name = "task_" + str(task_id)
 
-		t = threading.Thread(target = tweets_crawler.get_all_status, args = (status_list, collect_name))
+		t = threading.Thread(target = tweets_crawler.get_all_status, args = (user_list, collect_name))
 		t.start()
 		t.join()
 

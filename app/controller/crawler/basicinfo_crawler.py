@@ -102,7 +102,7 @@ class BasicinfoCrawler:
 					  table_name = "user_task",
 					  screen_name = None,
 					  include_entities = True):
-
+		
 		wrapper_func = handle_exception(self.get_user)
 		
 		user = wrapper_func(user_id = user_id, screen_name = screen_name, include_entities = include_entities)
@@ -192,7 +192,7 @@ class BasicinfoCrawler:
 			location = user.location.replace('\\','\\\\').replace("'","\\'").replace(':','\\:') if user.location else ''
 			description = user.description.replace('\\','\\\\').replace("'","\\'").replace(':','\\:') if user.description else ''
 
-			time_zone = user.time_zone if user.time_zone else ''
+			time_zone = user.time_zone.replace("'","\\'") if user.time_zone else ''
 			utc_offset = user.utc_offset if user.utc_offset else ''
 			profile_banner_url = user.profile_banner_url if user.profile_banner_url else ''
 

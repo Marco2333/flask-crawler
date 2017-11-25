@@ -314,10 +314,12 @@ def extract_tags(tweets, description = '', count = 36):
 
 	word_tags = preprocess_postag_label(description + text + description)
 	candidate_list = generate_candidate(word_tags)
-	
-	filter_set = set(["wish", "hope", "home", "tweet", "moment", "hour", "minute", "second", "eat", "kid", "call", "join", \
-	"play", "set", "fuck", "shit", "bitch", "laugh", "wow", "cool", "fun", "close", "appreciate", "dis", "bless", "bang", "talk", 
-	"luck", "boy", "morning", "evening", "afternoon", "move", "video"])
+
+	filter_set = set(["dis", "fuck", "hell", "damn", "shit", "bitch", "wow", "cool", "fun", "glad",
+		"luck", "laugh", "bless", "appreciate", "wish", "hope", "play", "set", "close", "talk",
+		"change", "join", "move", "watch", "meet", "post", "wait", "live", "deal", "eat", "call",
+		"pick", "start", "end", "kid", "boy", "home", "tweet", "video", "bang",
+		"year", "month", "hour", "minute", "second", "moment", "morning", "afternoon", "evening"])
 
 	candidate_tags = calc_tf_idf(candidate_list)
 	tfidf_tags = get_top_tags(candidate_tags, count, filter_set)

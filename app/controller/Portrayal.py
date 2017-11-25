@@ -53,7 +53,7 @@ def typical_character_list_detail():
 			data_length = item['value']
 
 		if item['name'] == 'iDisplayStart':
-			data_start = item['value'];      
+			data_start = item['value'];
 	
 	data_length = int(data_length)
 
@@ -102,8 +102,8 @@ def get_typical_friends(user_id):
 			data_length = item['value']
 
 		if item['name'] == 'iDisplayStart':
-			data_start = item['value'];      
-	
+			data_start = item['value']
+
 	data_length = int(data_length)
 	data_start = int(data_start)
 
@@ -146,8 +146,8 @@ def get_typical_followers(user_id):
 			data_length = item['value']
 
 		if item['name'] == 'iDisplayStart':
-			data_start = item['value'];      
-	
+			data_start = item['value']
+
 	data_length = int(data_length)
 	data_start = int(data_start)
 
@@ -189,8 +189,8 @@ def get_typical_dfans(user_id):
 			data_length = item['value']
 
 		if item['name'] == 'iDisplayStart':
-			data_start = item['value'];      
-	
+			data_start = item['value']
+
 	data_length = int(data_length)
 	data_start = int(data_start)
 
@@ -357,7 +357,7 @@ def typical_character_add():
 def typical_character_add_submit():
 	screen_name = request.form['screen_name']
 
-	if(screen_name == ''):
+	if screen_name == '':
 		return jsonify({'status': 0})
 
 	status = 1
@@ -558,8 +558,8 @@ def typical_character_newlist_detail():
 			data_length = item['value']
 
 		if item['name'] == 'iDisplayStart':
-			data_start = item['value'];      
-	
+			data_start = item['value']
+
 	data_length = int(data_length)
 	data_start = int(data_start)
 
@@ -594,6 +594,10 @@ def typical_character_newlist_detail():
 @verify
 def typical_character_newdelete():
 	user_id = request.form['user_id']
+
+	if not user_id:
+		return jsonify({'status': 0})
+
 	TypicalCharacter.query.filter(TypicalCharacter.user_id == user_id).delete()
 
 	db = MongoDB().connect()
