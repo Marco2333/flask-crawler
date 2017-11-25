@@ -61,14 +61,14 @@
                               <b>Protected</b> <a class="pull-right">{{ user.protected}}</a>
                          </li> 
                          <li class="list-group-item">
-                              <b>Utc Offset</b> <a class="pull-right">{{ user.utc_offset}}</a>
+                              <b>Utc Offset</b> <a class="pull-right">{{ user.utc_offset if user.utc_offset else ''}}</a>
                          </li>
                          <li class="list-group-item">
                               <b>Geo Enabled</b> <a class="pull-right">{{ user.geo_enabled}}</a>
                          </li>
                     </ul>
                     <strong><i class="fa fa-map-marker margin-r-5"></i>Time Zone</strong>
-                    <p class="text-muted">{{ user.time_zone }}</p>
+                    <p class="text-muted">{{ user.time_zone if user.time_zone else '' }}</p>
                     <hr>
                     <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
                     <p class="text-muted">{{ user.location }}</p>

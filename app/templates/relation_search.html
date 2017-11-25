@@ -8,113 +8,113 @@
 <div class="content-wrap">
 
 	<div class="alert alert-info fade in">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>关系查询：根据用户screen_name查询用户的人物关系信息或者确定两个用户之间的关系</strong>
-    </div>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>关系查询：根据用户screen_name查询用户的人物关系信息或者确定两个用户之间的关系</strong>
+	</div>
 
 	<div class="clearfix input-group">
 		<input id="input-one" class="form-control width-200" placeholder="请输入人物名称">
 		<input id="input-two" class="form-control width-150 hidden" placeholder="请输入人物名称" style="border-left:none">
 		<span class="input-group-btn fl">
-            <button id="search-button" class="btn btn-primary" type="button">查询</button>
-        </span>
+			<button id="search-button" class="btn btn-primary" type="button">查询</button>
+		</span>
 	</div>
 	
 	<ul id="realtion-tab" class="nav nav-tabs" style="margin-top: 20px"> 
-	    <li class="active">
-	        <a href="#friends" data-toggle="tab">他的朋友</a>
-	    </li>
-	    <li>
-	    	<a href="#followers" data-toggle="tab">他的粉丝</a>
-	    </li>
-	    <li>
-	    	<a href="#relation-confirm" data-toggle="tab">关系确认</a>
-	    </li>
+		<li class="active">
+			<a href="#friends" data-toggle="tab">他的朋友</a>
+		</li>
+		<li>
+			<a href="#followers" data-toggle="tab">他的粉丝</a>
+		</li>
+		<li>
+			<a href="#relation-confirm" data-toggle="tab">关系确认</a>
+		</li>
 	</ul>
 	<div class="tab-content">
-	    <div class="tab-pane active in fade" id="friends">
-	       <div class="table-wrap">
-   		        <table class="table table-bordered table-striped">
-   	        		<thead>
-   	        			<tr>
-   	        				<th>screen_name</th>
-   	        				<th>name</th>
-   	        				<th>加入日期</th>
-   	        				<th>简介</th>
-   	        				<th>粉丝数</th>
-   	        				<th>朋友数</th>
-   	        				<th>推文数</th>
-   	        				<th>语言</th>
-   	        				<th>操作</th>
-   	        			</tr>
-   	        			<tbody class="relation-body">
-   	        			</tbody>
-   	        		</thead>
-   	        	</table>
-   	    	</div>
+		<div class="tab-pane active in fade" id="friends">
+		   <div class="table-wrap">
+   				<table class="table table-bordered table-striped">
+   					<thead>
+   						<tr>
+   							<th>screen_name</th>
+   							<th>name</th>
+   							<th>加入日期</th>
+   							<th>简介</th>
+   							<th>粉丝数</th>
+   							<th>朋友数</th>
+   							<th>推文数</th>
+   							<th>语言</th>
+   							<th>操作</th>
+   						</tr>
+   						<tbody class="relation-body">
+   						</tbody>
+   					</thead>
+   				</table>
+   			</div>
    			<div class="view-more hidden"><a>查看更多朋友</a></div>
-	    </div>
-	    <div class="tab-pane fade" id="followers">
-	    	<div class="table-wrap">
-		        <table class="table table-bordered table-striped">
-	        		<thead>
-	        			<tr>
-	        				<th>screen_name</th>
-	        				<th>name</th>
-	        				<th>加入日期</th>
-	        				<th>简介</th>
-	        				<th>粉丝数</th>
-	        				<th>朋友数</th>
-	        				<th>推文数</th>
-	        				<th>语言</th>
-	        				<th>操作</th>
-	        			</tr>
-	        			<tbody class="relation-body">
-	        			</tbody>
-	        		</thead>
-	        	</table>
-	    	</div>
+		</div>
+		<div class="tab-pane fade" id="followers">
+			<div class="table-wrap">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>screen_name</th>
+							<th>name</th>
+							<th>加入日期</th>
+							<th>简介</th>
+							<th>粉丝数</th>
+							<th>朋友数</th>
+							<th>推文数</th>
+							<th>语言</th>
+							<th>操作</th>
+						</tr>
+						<tbody class="relation-body">
+						</tbody>
+					</thead>
+				</table>
+			</div>
 			<div class="view-more hidden"><a>查看更多粉丝</a></div>
-	    </div>
-        <div class="tab-pane fade" id="relation-confirm">
-        	<div class="table-wrap">
-    	        <table class="table table-bordered table-striped">
-    	        	<thead>
-    	        		<tr>
-    	        			<th colspan=2>source</th>
-    	        			<th colspan=2>target</th>
-    	        		</tr>
-    	        	</thead>
-            		<tbody>
-            			<tr>
-            				<td>ID</td>
-            				<td data-key="id_str"></td>
-            				<td>ID</td>
-            				<td data-key="id_str"></td>
-            			</tr>
-            			<tr>
-            				<td>screen_name</td>
-            				<td data-key="screen_name"></td>
-            				<td>screen_name</td>
-            				<td data-key="screen_name"></td>
-            			</tr>
-            			<tr>
-            				<td>followed_by</td>
-            				<td data-key="followed_by"></td>
-            				<td>followed_by</td>
-            				<td data-key="followed_by"></td>
-            			</tr>
-            			<tr>
-            				<td>following</td>
-            				<td data-key="following"></td>
-            				<td>following</td>
-            				<td data-key="following"></td>
-            			</tr>
-            		</tbody>
-            	</table>
-        	</div>
-    		<div class="view-more hidden"><a>查看更多粉丝</a></div>
-        </div>
+		</div>
+		<div class="tab-pane fade" id="relation-confirm">
+			<div class="table-wrap">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th colspan=2>source</th>
+							<th colspan=2>target</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>ID</td>
+							<td data-key="id_str"></td>
+							<td>ID</td>
+							<td data-key="id_str"></td>
+						</tr>
+						<tr>
+							<td>screen_name</td>
+							<td data-key="screen_name"></td>
+							<td>screen_name</td>
+							<td data-key="screen_name"></td>
+						</tr>
+						<tr>
+							<td>followed_by</td>
+							<td data-key="followed_by"></td>
+							<td>followed_by</td>
+							<td data-key="followed_by"></td>
+						</tr>
+						<tr>
+							<td>following</td>
+							<td data-key="following"></td>
+							<td>following</td>
+							<td data-key="following"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="view-more hidden"><a>查看更多粉丝</a></div>
+		</div>
 	</div>
 </div>
 

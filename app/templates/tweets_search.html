@@ -96,6 +96,10 @@
 				return;	
 			}
 
+			if(data[0] && $('tbody tr:last-child td:first-child').text() == data[0]['id']) {
+				data.shift();
+			}
+
 			$.each(data, function(i, val) {
 				dataToElement(val);
 			})

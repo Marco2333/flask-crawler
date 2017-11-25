@@ -8,85 +8,87 @@
 </style>
 <div class="content-wrap">
 	<div class="alert alert-warning fade in" style="line-height: 23px">
-	    <button type="button" class="close" data-dismiss="alert">&times;</button>
-	    <strong>文件上传：上传文件，创建任务后台抓取文件中所有用户的相关信息</strong><br/>
-	  	<span>文件格式为 <span class="label label-success">文本文件</span>（以 .txt 为后缀），文件中的每个用户以<strong>空格</strong>或者<strong>换行</strong>分隔</span> 
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>文件上传：上传文件，创建任务后台抓取文件中的相关信息</strong><br/>
+		<div>文件格式为 <span class="label label-success">文本文件</span> (以<strong>.txt</strong>为后缀)，文件中的标识以<strong>空格</strong>或<strong>换行</strong>分隔</span></div>
+		<div>文件中的标识可以为 <strong>用户 id、screen_name</strong> 或者 <strong>推文 id</strong></div>
+		<div>如果文件内容为用户<strong>id</strong>或<strong>screen_name</strong>，则需要选择要抓取的内容：<span class="label label-success">基础信息</span> 或 <span class="label label-success">推文信息</span></div>
 	</div>
 
 	<div class="panel panel-info">
-	    <div class="panel-heading">
-	        <h3 class="panel-title">任务添加</h3>
-	    </div>
-	    <div class="panel-body">
-	        <form class="form-horizontal" action="{{ url_for('file_upload_submit') }}" enctype="multipart/form-data" method="post" onsubmit="return onSubmit();">
+		<div class="panel-heading">
+			<h3 class="panel-title">任务添加</h3>
+		</div>
+		<div class="panel-body">
+			<form class="form-horizontal" action="{{ url_for('file_upload_submit') }}" enctype="multipart/form-data" method="post" onsubmit="return onSubmit();">
 				<div class="form-group">
-				    <label class="col-sm-2 control-label">任务名称</label>
-				    <div class="col-sm-10 max-width">
-				    	<input name="task_name" type="text" class="form-control" placeholder="任务名称">
-				    </div>
+					<label class="col-sm-2 control-label">任务名称</label>
+					<div class="col-sm-10 max-width">
+						<input name="task_name" type="text" class="form-control" placeholder="任务名称">
+					</div>
 				</div>
 				<div class="form-group">
-                    <label class="col-sm-2 control-label">上传用户列表</label>
-                    <div class="col-sm-10" style="padding-top: 8px">
-                        <input name="file" type="file" id="inputFile">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 25px">
-                    <label class="col-sm-2 control-label">文件内容</label>
-                    <div class="col-sm-10">
-                        <div>
-                            <input type="radio" name="content" value="1" checked>
-                            <label>用户 id</label>
-                        </div>
-                        <div>
-                            <input type="radio" name="content" value="2">
-                            <label>用户 screen_name</label>
-                        </div>
-                        <div>
-                            <input type="radio" name="content" value="3">
-                            <label>推文 id</label>
-                        </div>
-                    </div>
-                </div>
+					<label class="col-sm-2 control-label">上传用户列表</label>
+					<div class="col-sm-10" style="padding-top: 8px">
+						<input name="file" type="file" id="inputFile">
+					</div>
+				</div>
+				<div class="form-group" style="margin-top: 25px">
+					<label class="col-sm-2 control-label">文件内容</label>
+					<div class="col-sm-10">
+						<div>
+							<input type="radio" name="content" value="1" checked>
+							<label>用户 id</label>
+						</div>
+						<div>
+							<input type="radio" name="content" value="2">
+							<label>用户 screen_name</label>
+						</div>
+						<div>
+							<input type="radio" name="content" value="3">
+							<label>推文 id</label>
+						</div>
+					</div>
+				</div>
 				<div class="form-group" style="margin-top: 25px;">
-                    <label class="col-sm-2 control-label">抓取内容</label>
-                    <div class="col-sm-10">
-                        <div>
-                            <input type="checkbox" name="type" value="1" checked>
-                            <label>推文信息</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" name="type" value="4">
-                            <label>基础信息</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">线程数量</label>
-                    <div class="col-sm-10">
-                        <select name="thread" class="form-control width-260">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3" selected>3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputRemakes" class="col-sm-2 control-label">备注</label>
-                    <div class="col-sm-10">
-                        <textarea name="remark" value="1" class="form-control" placeholder="备注"></textarea>
-                    </div>
-                </div>
-                <hr/>
-                <div class="box-footer text-right">
-                    <button class="btn btn-default" type="reset">清空</button>&nbsp;&nbsp;&nbsp;
-                    <button id="submitBtn" class="btn btn-primary" type="submit">提交</button>
-                </div>
+					<label class="col-sm-2 control-label">抓取内容</label>
+					<div class="col-sm-10">
+						<div>
+							<input type="checkbox" name="type" value="1" checked>
+							<label>推文信息</label>
+						</div>
+						<div>
+							<input type="checkbox" name="type" value="4">
+							<label>基础信息</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">线程数量</label>
+					<div class="col-sm-10">
+						<select name="thread" class="form-control width-260">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3" selected>3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputRemakes" class="col-sm-2 control-label">备注</label>
+					<div class="col-sm-10">
+						<textarea name="remark" value="1" class="form-control" placeholder="备注"></textarea>
+					</div>
+				</div>
+				<hr/>
+				<div class="box-footer text-right">
+					<button class="btn btn-default" type="reset">清空</button>&nbsp;&nbsp;&nbsp;
+					<button id="submitBtn" class="btn btn-primary" type="submit">提交</button>
+				</div>
 			</form>
-	    </div>
+		</div>
 	</div>
 </div>
 <script>
@@ -112,18 +114,18 @@
 
 	function onSubmit() {
 		var task_name = $("input[name='task_name']").val(),
-		    remark = $("textarea").val();
+			remark = $("textarea").val();
 
 		if (task_name.trim() == '' || remark.trim() == '') {
-		    alert("信息填写不完整！");
-		    return false;
+			alert("信息填写不完整！");
+			return false;
 		}
 
 		var checkbox = $("input[type='checkbox']:checked");
 
 		if (checkbox.length == 0 && $("input[type='radio']:checked").val() != '3') {
-		    alert("请选择抓取内容");
-		    return false;
+			alert("请选择抓取内容");
+			return false;
 		}
 
 		if($("#inputFile").val() == "") {
