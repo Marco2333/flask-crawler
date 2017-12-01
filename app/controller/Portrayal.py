@@ -534,6 +534,51 @@ def relation_thread(user):
 			following = Relationship(friend_node, 'following', user_node)
 			graph.create(following)
 
+	sorted_list = sorted(user['category_score'].iteritems(), key = lambda asd:asd[1], reverse = True)
+
+	if sorted_list[0][1] > 2 * sorted_list[1][1] or sorted_list[0][1] - sorted_list[1][1] > 50:
+		return
+
+	score_differ = (2 * sorted_list[0][1] - sorted_list[1][1] - sorted_list[-1][1]) / 2
+
+	category_name = ['Politics', 'Religion', 'Military', 'Economy', 'Technology', 'Education', 'Agriculture', 'Entertainment', 'Sports']
+
+	relation_dict = {}
+	for name in category_name:
+		relation_dict[name] = 0
+
+	cql = '''MATCH(a{user_id:%s})-[:following]->(f) return distinct f.user_id as user_id, f.category as category''' % (user['_id'])
+	res = graph.data(cql)
+
+	for f in res:
+		relation_dict[f['category']] += 1
+
+	cql = '''MATCH(a{user_id:%s})<-[:following]-(f) return distinct f.user_id as user_id, f.category as category''' % (user['_id'])
+	res = graph.data(cql)
+
+	for f in res:
+		relation_dict[f['category']] += 1
+	
+	relation_total = 0
+
+	for ri in relation_dict:
+		relation_total += relation_dict[ri]
+
+	if relation_total < 10:
+		return
+
+	for ri in relation_dict:
+		user['category_score'][ri] += round(score_differ * relation_dict[ri] / relation_total, 2)
+	
+	db['typical'].update({'_id': user['_id']}, {"$set": {"category_score": user['category_score']}}) 
+
+	category_score = user['category_score']
+	max_category = max(category_score, key = lambda x: category_score[x])
+
+	node = selector.select("Typical", user_id = long(user['_id'])).first()
+	node['category'] = max_category
+	graph.push(node)
+
 
 '''
 新增典型人物列表页面
@@ -628,6 +673,11 @@ def modify_category():
 	collect = db['typical']
 
 	collect.update_one({'_id': long(user_id)}, {"$set": {"category": category}})
+
+	node = selector.select("Typical", user_id = long(user_id)).first()
+
+	node['category'] = category
+	graph.push(node)
 
 	return jsonify({'status': 1})
 
