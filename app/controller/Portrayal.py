@@ -570,10 +570,10 @@ def relation_thread(user):
 	for ri in relation_dict:
 		user['category_score'][ri] += round(score_differ * relation_dict[ri] / relation_total, 2)
 	
-	db['typical'].update({'_id': user['_id']}, {"$set": {"category_score": user['category_score']}}) 
-
 	category_score = user['category_score']
 	max_category = max(category_score, key = lambda x: category_score[x])
+
+	db['typical'].update({'_id': user['_id']}, {"$set": {"category_score": category_score, "category": max_category}}) 
 
 	node = selector.select("Typical", user_id = long(user['_id'])).first()
 	node['category'] = max_category
