@@ -1,7 +1,24 @@
-{% extends 'common/layout.html' %} {% block title %} 分类统计 {% endblock %} {% block body %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-transform" /> 
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title> 分类统计 </title>
+    <link rel="stylesheet" href="/static/plugin/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style/style.css">
+    <script src="/static/plugin/jquery-1.11.2.js"></script>
+    <script src="/static/plugin/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+    
 
 
-<link rel="stylesheet" href="{{ url_for('static', filename='plugin/DataTables-1.10.8/css/jquery.dataTables.css')}}">
+<link rel="stylesheet" href="/static/plugin/DataTables-1.10.8/css/jquery.dataTables.css">
 
 <style>
     p {margin-bottom: 6px;}
@@ -15,7 +32,7 @@
     .draw-cell {padding: 0!important}
     .category-histogram {height: 250px}
     .coordinate-table{width: 100%;}
-    .coordinate-table td{padding: 10px;background-color: #fff;width: 40%;color: #3c8dbc}
+    .coordinate-table td{padding: 15px 10px;background-color: #fff;width: 40%;color: #3c8dbc}
     .coordinate-table tbody tr:hover {background-color: #fff}
     .coordinate-table td:first-child {width: 20%;}
 </style>
@@ -29,38 +46,38 @@
                 <tbody>
                     <tr>
                         <td>用户总数</td>
-                        <td>1001</td>
+                        <td>1009</td>
                         <td>Top-3</td>
                         <td id="top-3"></td>
                     </tr>
                     <tr>
                         <td>平均召回率</td>
-                        <td>85.3146853147%</td>
+                        <td>88.899900892%</td>
                         <td>平均精确率</td>
-                        <td>86.1957710984%</td>
+                        <td>89.6444607879%</td>
                     </tr>
                     <tr>
                         <td>平均F-Score</td>
-                        <td>84.4300741692%</td>
+                        <td>88.9330584344%</td>
                         <td>平均准确率</td>
-                        <td>96.1391256097%</td>
+                        <td>97.0275449596%</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>854</td>
+                        <td>897</td>
                         <td>正确率</td>
-                        <td>85.3146853147%</td>
+                        <td>88.899900892%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>936</td>
+                        <td>972</td>
                         <td>多标签正确率</td>
-                        <td>93.5064935065%</td>
+                        <td>96.3330029732%</td>
                     </tr>
                     <tr>
                         <td>分类评价指标</td>
                         <td colspan=3>
-                            <div class="col-xs-12 col-sm-12 col-md-6">  
+                            <div class="col-xs-12 col-sm-12 col-md-5">  
                                 <table class="table-bordered coordinate-table">
                                     <tbody>
                                         <tr>
@@ -79,11 +96,13 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-sm-12 col-sm-12 col-md-6" style="text-align: left;color: #3c8dbc">
-                                <p>准确率(accuracy) A = (TP + TN) / (TP + FN + FP + TN)</p>
-                                <p>精确率(precision) P = TP / (TP + FP)</p>
+                            <div class="col-sm-12 col-sm-12 col-md-7" style="text-align: left;color: #3c8dbc">
+                                <p>TP(True Positive)：预测为正的正样本   &nbsp;&nbsp;&nbsp; FP(False Positive)：预测为正的负样本</p>
+                                <p>FN(False Negative)：预测为负的正样本  &nbsp;&nbsp; TN(True Negative)：预测为负的负样本</p>
+                                <p>精确率(precision) P = TP / (TP + FP) </p>
                                 <p>召回率(recall) R = TP / (TP + FN)</p>
                                 <p>F-Score = 2 × P × R / (P + R) </p>
+                                <p>准确率(accuracy) A = (TP + TN) / (TP + FN + FP + TN)</p>
                             </div>
                         </td>
                     </tr>
@@ -108,33 +127,33 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>162</td>
+                        <td>167</td>
                         <td>易错分类</td>
                         <td>Sports</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>150</td>
+                        <td>164</td>
                         <td>召回率</td>
-                        <td>92.5925925926%</td>
+                        <td>98.2035928144%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>175</td>
+                        <td>204</td>
                         <td>精确率</td>
-                        <td>85.7142857143%</td>
+                        <td>80.3921568627%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>96.3036963037%</td>
+                        <td>95.7383548067%</td>
                         <td>F-score</td>
-                        <td>89.0207715134%</td>
+                        <td>88.409703504%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>161</td>
+                        <td>167</td>
                         <td>多标签召回率</td>
-                        <td>99.3827160494%</td>
+                        <td>100.0%</td>
                     </tr>
                     <tr>
                         <td>Entertainment 错误分类分布直方图</td>
@@ -156,31 +175,31 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>14</td>
+                        <td>15</td>
                         <td>易错分类</td>
                         <td>Economy</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>10</td>
+                        <td>11</td>
                         <td>召回率</td>
-                        <td>71.4285714286%</td>
+                        <td>73.3333333333%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>16</td>
+                        <td>21</td>
                         <td>精确率</td>
-                        <td>62.5%</td>
+                        <td>52.380952381%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>99.000999001%</td>
+                        <td>98.6124876115%</td>
                         <td>F-score</td>
-                        <td>66.6666666667%</td>
+                        <td>61.1111111111%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>14</td>
+                        <td>15</td>
                         <td>多标签召回率</td>
                         <td>100.0%</td>
                     </tr>
@@ -204,31 +223,31 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>172</td>
+                        <td>173</td>
                         <td>易错分类</td>
                         <td>Entertainment</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>163</td>
+                        <td>151</td>
                         <td>召回率</td>
-                        <td>94.7674418605%</td>
+                        <td>87.2832369942%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>180</td>
+                        <td>154</td>
                         <td>精确率</td>
-                        <td>90.5555555556%</td>
+                        <td>98.0519480519%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>97.4025974026%</td>
+                        <td>97.5222993062%</td>
                         <td>F-score</td>
-                        <td>92.6136363636%</td>
+                        <td>92.3547400612%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>172</td>
+                        <td>173</td>
                         <td>多标签召回率</td>
                         <td>100.0%</td>
                     </tr>
@@ -252,33 +271,33 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>110</td>
+                        <td>111</td>
                         <td>易错分类</td>
                         <td>Politics</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>91</td>
+                        <td>103</td>
                         <td>召回率</td>
-                        <td>82.7272727273%</td>
+                        <td>92.7927927928%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>93</td>
+                        <td>108</td>
                         <td>精确率</td>
-                        <td>97.8494623656%</td>
+                        <td>95.3703703704%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>97.9020979021%</td>
+                        <td>98.7115956392%</td>
                         <td>F-score</td>
-                        <td>89.6551724138%</td>
+                        <td>94.0639269406%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>99</td>
+                        <td>107</td>
                         <td>多标签召回率</td>
-                        <td>90.0%</td>
+                        <td>96.3963963964%</td>
                     </tr>
                     <tr>
                         <td>Religion 错误分类分布直方图</td>
@@ -300,33 +319,33 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>180</td>
+                        <td>181</td>
                         <td>易错分类</td>
                         <td>Politics</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>169</td>
+                        <td>174</td>
                         <td>召回率</td>
-                        <td>93.8888888889%</td>
+                        <td>96.1325966851%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>179</td>
+                        <td>190</td>
                         <td>精确率</td>
-                        <td>94.4134078212%</td>
+                        <td>91.5789473684%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>97.9020979021%</td>
+                        <td>97.7205153617%</td>
                         <td>F-score</td>
-                        <td>94.1504178273%</td>
+                        <td>93.8005390836%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>176</td>
+                        <td>178</td>
                         <td>多标签召回率</td>
-                        <td>97.7777777778%</td>
+                        <td>98.3425414365%</td>
                     </tr>
                     <tr>
                         <td>Military 错误分类分布直方图</td>
@@ -348,33 +367,33 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>207</td>
+                        <td>205</td>
                         <td>易错分类</td>
                         <td>Military</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>184</td>
+                        <td>175</td>
                         <td>召回率</td>
-                        <td>88.8888888889%</td>
+                        <td>85.3658536585%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>243</td>
+                        <td>193</td>
                         <td>精确率</td>
-                        <td>75.7201646091%</td>
+                        <td>90.6735751295%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>91.8081918082%</td>
+                        <td>95.242814668%</td>
                         <td>F-score</td>
-                        <td>81.7777777778%</td>
+                        <td>87.9396984925%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>201</td>
+                        <td>197</td>
                         <td>多标签召回率</td>
-                        <td>97.1014492754%</td>
+                        <td>96.0975609756%</td>
                     </tr>
                     <tr>
                         <td>Politics 错误分类分布直方图</td>
@@ -396,33 +415,33 @@
                 <tbody>
                     <tr>
                         <td>样本总数</td>
-                        <td>48</td>
+                        <td>49</td>
                         <td>易错分类</td>
-                        <td>Politics</td>
+                        <td>Entertainment</td>
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>11</td>
+                        <td>41</td>
                         <td>召回率</td>
-                        <td>22.9166666667%</td>
+                        <td>83.6734693878%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>12</td>
+                        <td>41</td>
                         <td>精确率</td>
-                        <td>91.6666666667%</td>
+                        <td>100.0%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>96.2037962038%</td>
+                        <td>99.207135778%</td>
                         <td>F-score</td>
-                        <td>36.6666666667%</td>
+                        <td>91.1111111111%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>27</td>
+                        <td>43</td>
                         <td>多标签召回率</td>
-                        <td>56.25%</td>
+                        <td>87.7551020408%</td>
                     </tr>
                     <tr>
                         <td>Education 错误分类分布直方图</td>
@@ -450,21 +469,21 @@
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>43</td>
+                        <td>41</td>
                         <td>召回率</td>
-                        <td>82.6923076923%</td>
+                        <td>78.8461538462%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>62</td>
+                        <td>53</td>
                         <td>精确率</td>
-                        <td>69.3548387097%</td>
+                        <td>77.358490566%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>97.2027972028%</td>
+                        <td>97.7205153617%</td>
                         <td>F-score</td>
-                        <td>75.4385964912%</td>
+                        <td>78.0952380952%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
@@ -498,27 +517,27 @@
                     </tr>
                     <tr>
                         <td>正确分类数</td>
-                        <td>33</td>
+                        <td>37</td>
                         <td>召回率</td>
-                        <td>58.9285714286%</td>
+                        <td>66.0714285714%</td>
                     </tr>
                     <tr>
                         <td>分类为该类样本数</td>
-                        <td>41</td>
+                        <td>45</td>
                         <td>精确率</td>
-                        <td>80.487804878%</td>
+                        <td>82.2222222222%</td>
                     </tr>
                     <tr>
                         <td>准确率</td>
-                        <td>96.9030969031%</td>
+                        <td>97.3240832507%</td>
                         <td>F-score</td>
-                        <td>68.0412371134%</td>
+                        <td>73.2673267327%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
-                        <td>40</td>
+                        <td>46</td>
                         <td>多标签召回率</td>
-                        <td>71.4285714286%</td>
+                        <td>82.1428571429%</td>
                     </tr>
                     <tr>
                         <td>Economy 错误分类分布直方图</td>
@@ -532,7 +551,7 @@
     </div>
     
 </div>
-<script src="{{ url_for('static', filename='plugin/echarts.min.js') }}"></script>
+<script src="/static/plugin/echarts.min.js"></script>
 <script>
     $(function() {
         var classArr = ['panel-success', 'panel-warning', 'panel-info']
@@ -540,7 +559,7 @@
             $(this).addClass(classArr[index % 3]);
         })
 
-        var category = {'Entertainment': {'count': 162, 'error_distribution': {'Agriculture': 0, 'Sports': 8, 'Religion': 0, 'Military': 0, 'Politics': 3, 'Education': 0, 'Technology': 1, 'Economy': 0}, 'error_classified_count': 25, 'recall': 0.9259259259259259, 'easy_wrong_category': 'Sports', 'precision': 0.8571428571428571, 'f_score': 0.8902077151335311, 'sub_error_count': 1, 'error_count': 12, 'correct_count': 150, 'accuracy': 0.9630369630369631}, 'Agriculture': {'count': 14, 'error_distribution': {'Entertainment': 0, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Technology': 0, 'Economy': 3}, 'error_classified_count': 6, 'recall': 0.7142857142857143, 'easy_wrong_category': 'Economy', 'precision': 0.625, 'f_score': 0.6666666666666666, 'sub_error_count': 0, 'error_count': 4, 'correct_count': 10, 'accuracy': 0.99000999000999}, 'Sports': {'count': 172, 'error_distribution': {'Entertainment': 9, 'Agriculture': 0, 'Religion': 0, 'Military': 0, 'Politics': 0, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 17, 'recall': 0.9476744186046512, 'easy_wrong_category': 'Entertainment', 'precision': 0.9055555555555556, 'f_score': 0.9261363636363636, 'sub_error_count': 0, 'error_count': 9, 'correct_count': 163, 'accuracy': 0.974025974025974}, 'Religion': {'count': 110, 'error_distribution': {'Entertainment': 3, 'Agriculture': 0, 'Sports': 3, 'Military': 1, 'Politics': 12, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 2, 'recall': 0.8272727272727273, 'easy_wrong_category': 'Politics', 'precision': 0.978494623655914, 'f_score': 0.896551724137931, 'sub_error_count': 11, 'error_count': 19, 'correct_count': 91, 'accuracy': 0.9790209790209791}, 'Military': {'count': 180, 'error_distribution': {'Entertainment': 1, 'Agriculture': 1, 'Sports': 3, 'Religion': 0, 'Politics': 4, 'Education': 0, 'Technology': 1, 'Economy': 1}, 'error_classified_count': 10, 'recall': 0.9388888888888889, 'easy_wrong_category': 'Politics', 'precision': 0.9441340782122905, 'f_score': 0.9415041782729804, 'sub_error_count': 4, 'error_count': 11, 'correct_count': 169, 'accuracy': 0.9790209790209791}, 'Politics': {'count': 207, 'error_distribution': {'Entertainment': 1, 'Agriculture': 2, 'Sports': 1, 'Religion': 2, 'Military': 9, 'Education': 1, 'Technology': 3, 'Economy': 4}, 'error_classified_count': 59, 'recall': 0.8888888888888888, 'easy_wrong_category': 'Military', 'precision': 0.757201646090535, 'f_score': 0.8177777777777777, 'sub_error_count': 6, 'error_count': 23, 'correct_count': 184, 'accuracy': 0.9180819180819181}, 'Education': {'count': 48, 'error_distribution': {'Entertainment': 5, 'Agriculture': 0, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 28, 'Technology': 4, 'Economy': 0}, 'error_classified_count': 1, 'recall': 0.22916666666666666, 'easy_wrong_category': 'Politics', 'precision': 0.9166666666666666, 'f_score': 0.36666666666666664, 'sub_error_count': 21, 'error_count': 37, 'correct_count': 11, 'accuracy': 0.962037962037962}, 'Technology': {'count': 52, 'error_distribution': {'Entertainment': 5, 'Agriculture': 1, 'Sports': 2, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Economy': 0}, 'error_classified_count': 19, 'recall': 0.8269230769230769, 'easy_wrong_category': 'Entertainment', 'precision': 0.6935483870967742, 'f_score': 0.7543859649122807, 'sub_error_count': 6, 'error_count': 9, 'correct_count': 43, 'accuracy': 0.972027972027972}, 'Economy': {'count': 56, 'error_distribution': {'Entertainment': 1, 'Agriculture': 2, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 10, 'Education': 0, 'Technology': 10}, 'error_classified_count': 8, 'recall': 0.5892857142857143, 'easy_wrong_category': 'Politics', 'precision': 0.8048780487804879, 'f_score': 0.6804123711340206, 'sub_error_count': 16, 'error_count': 23, 'correct_count': 33, 'accuracy': 0.9690309690309691}};
+        var category = {'Entertainment': {'count': 167, 'error_distribution': {'Agriculture': 0, 'Sports': 2, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 40, 'recall': 0.9820359281437125, 'easy_wrong_category': 'Sports', 'precision': 0.803921568627451, 'f_score': 0.8840970350404312, 'sub_error_count': 0, 'error_count': 3, 'correct_count': 164, 'accuracy': 0.9573835480673935}, 'Agriculture': {'count': 15, 'error_distribution': {'Entertainment': 0, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Technology': 0, 'Economy': 3}, 'error_classified_count': 10, 'recall': 0.7333333333333333, 'easy_wrong_category': 'Economy', 'precision': 0.5238095238095238, 'f_score': 0.611111111111111, 'sub_error_count': 0, 'error_count': 4, 'correct_count': 11, 'accuracy': 0.9861248761149654}, 'Sports': {'count': 173, 'error_distribution': {'Entertainment': 22, 'Agriculture': 0, 'Religion': 0, 'Military': 0, 'Politics': 0, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 3, 'recall': 0.8728323699421965, 'easy_wrong_category': 'Entertainment', 'precision': 0.9805194805194806, 'f_score': 0.9235474006116208, 'sub_error_count': 0, 'error_count': 22, 'correct_count': 151, 'accuracy': 0.9752229930624381}, 'Religion': {'count': 111, 'error_distribution': {'Entertainment': 3, 'Agriculture': 0, 'Sports': 0, 'Military': 1, 'Politics': 4, 'Education': 0, 'Technology': 0, 'Economy': 0}, 'error_classified_count': 5, 'recall': 0.9279279279279279, 'easy_wrong_category': 'Politics', 'precision': 0.9537037037037037, 'f_score': 0.9406392694063928, 'sub_error_count': 4, 'error_count': 8, 'correct_count': 103, 'accuracy': 0.9871159563924677}, 'Military': {'count': 181, 'error_distribution': {'Entertainment': 0, 'Agriculture': 1, 'Sports': 0, 'Religion': 0, 'Politics': 3, 'Education': 0, 'Technology': 1, 'Economy': 2}, 'error_classified_count': 16, 'recall': 0.9613259668508287, 'easy_wrong_category': 'Politics', 'precision': 0.9157894736842105, 'f_score': 0.9380053908355795, 'sub_error_count': 3, 'error_count': 7, 'correct_count': 174, 'accuracy': 0.977205153617443}, 'Politics': {'count': 205, 'error_distribution': {'Entertainment': 2, 'Agriculture': 3, 'Sports': 1, 'Religion': 5, 'Military': 14, 'Education': 0, 'Technology': 2, 'Economy': 3}, 'error_classified_count': 18, 'recall': 0.8536585365853658, 'easy_wrong_category': 'Military', 'precision': 0.9067357512953368, 'f_score': 0.879396984924623, 'sub_error_count': 8, 'error_count': 30, 'correct_count': 175, 'accuracy': 0.9524281466798811}, 'Education': {'count': 49, 'error_distribution': {'Entertainment': 5, 'Agriculture': 1, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 0, 'Technology': 2, 'Economy': 0}, 'error_classified_count': 0, 'recall': 0.8367346938775511, 'easy_wrong_category': 'Entertainment', 'precision': 1.0, 'f_score': 0.9111111111111111, 'sub_error_count': 6, 'error_count': 8, 'correct_count': 41, 'accuracy': 0.9920713577799801}, 'Technology': {'count': 52, 'error_distribution': {'Entertainment': 7, 'Agriculture': 3, 'Sports': 0, 'Religion': 0, 'Military': 0, 'Politics': 1, 'Education': 0, 'Economy': 0}, 'error_classified_count': 12, 'recall': 0.7884615384615384, 'easy_wrong_category': 'Entertainment', 'precision': 0.7735849056603774, 'f_score': 0.780952380952381, 'sub_error_count': 6, 'error_count': 11, 'correct_count': 41, 'accuracy': 0.977205153617443}, 'Economy': {'count': 56, 'error_distribution': {'Entertainment': 1, 'Agriculture': 2, 'Sports': 0, 'Religion': 0, 'Military': 1, 'Politics': 8, 'Education': 0, 'Technology': 7}, 'error_classified_count': 8, 'recall': 0.6607142857142857, 'easy_wrong_category': 'Politics', 'precision': 0.8222222222222222, 'f_score': 0.7326732673267325, 'sub_error_count': 10, 'error_count': 19, 'correct_count': 37, 'accuracy': 0.9732408325074331}};
         var allKeys = [], allValues = [], top3 = [];
         $(".category-distribution .category-histogram").each(function() {
             var key = $(this).attr('data-key'),
@@ -611,4 +630,6 @@
         return option;
     }
 </script>
-{% endblock %}
+
+</body>
+</html>

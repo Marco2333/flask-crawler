@@ -178,12 +178,12 @@
                                             {{ user['activity'] }}
                                         </td>
                                     </tr>
-                                    <!-- <tr>
+                                    <tr>
                                         <td>心理状态一致度（相同时间差）</td>
                                         <td id="psy-accuracy1"></td>
                                         <td>心理状态一致度（相同推文数）</td>
                                         <td id="psy-accuracy2"></td>
-                                    </tr> -->
+                                    </tr>
                                     <tr>
                                         <td>人物分类得分</td>
                                         <td colspan=3>
@@ -406,7 +406,7 @@
                 }
                 return value * multiRate;
             }), seqArr2], ['分类器投票', '情感字典']);
-        // $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
+        $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
 
         myChart = echarts.init(document.getElementById('psy-with-count'));
@@ -426,7 +426,7 @@
             return value * multiRate;
         }), seqArr2], ['分类器投票', '情感字典']);
         myChart.setOption(option);
-        // $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
+        $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
 
         myChart = echarts.init(document.getElementById('activity-sequence'));
         seq = $("#activity-sequence").attr('data-seq');
