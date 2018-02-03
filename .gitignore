@@ -58,6 +58,3 @@ app/controller/portrayal/career_classify/data_processed
 app/controller/portrayal/career_classify/statistics
 app/controller/portrayal/sentiment_classify/data
 app/controller/portrayal/sentiment_classify/data1
-app/controller/portrayal/resource/tag_cloud
-app/controller/portrayal/resource/users_xml
-app/static/uploads

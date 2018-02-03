@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>APP Info</title>
+	<style>
+		body {
+			font-family: "Microsoft YaHei"
+		}
+		#desk-top {
+			margin-top: 20px;
+			margin-left: 10px;
+			color: #111;
+			font-size: 17px;
+			padding: 10px 20px;
+			font-weight: bold;
+		}
+		ul {
+			margin: 8px 0;
+			font-size: 15px;
+		}
+		li > span {
+			color: #111;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<div id="desk-top">Twitter开发者APP详细信息</div>
+	<div>
+		<ul>
+			{% for app in apps %}
+				<li>	
+					<p><strong>consumer_secret:</strong> {{ app['consumer_secret'] }}</p>
+					<p><strong>access_token_key:</strong> {{ app['access_token_key'] }}</p>
+					<p><strong>consumer_key:</strong> {{ app['consumer_key'] }}</p>
+					<p><strong>access_token_secret:</strong> {{ app['access_token_secret'] }}</p>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+</body>
+</html>
