@@ -49,6 +49,7 @@ app.add_url_rule('/typical_character_newdelete', 'typical_character_newdelete', 
 
 
 app.add_url_rule('/main', 'main', System.main)
+app.add_url_rule('/apps', 'apps', System.apps) 
 app.add_url_rule('/pass_change', 'pass_change', System.pass_change)
 app.add_url_rule('/system_help', 'system_help', System.system_help)
 app.add_url_rule('/pass_change_submit', 'pass_change_submit', System.pass_change_submit, methods = ['POST'])

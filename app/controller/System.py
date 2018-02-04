@@ -4,6 +4,7 @@ import hashlib
 
 from app.controller import verify
 from app.models import Admin
+from crawler.config import APP_INFO
 from flask import request, render_template, jsonify, session, redirect, url_for
 
 
@@ -58,6 +59,10 @@ def main():
 MD5加密
 '''
 def md5(str):
-    m = hashlib.md5()   
-    m.update(str)
-    return m.hexdigest()
+	m = hashlib.md5()
+	m.update(str)
+	return m.hexdigest()
+
+@verify
+def apps():
+	return render_template('apps.html', apps = APP_INFO)
