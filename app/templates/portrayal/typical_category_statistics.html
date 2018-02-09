@@ -49,13 +49,13 @@
                         <td>正确分类数</td>
                         <td>{{ total_count - error_count}}</td>
                         <td>正确率</td>
-                        <td>{{ (total_count - error_count) * 100.0 / total_count }}%</td>
+                        <td>{{ ((total_count - error_count) * 100.0 / total_count) | round(2) }}%</td>
                     </tr>
                     <tr>
                         <td>多标签正确分类数</td>
                         <td>{{ total_count - sub_error_count}}</td>
                         <td>多标签正确率</td>
-                        <td>{{ (total_count - sub_error_count) * 100.0 / total_count }}%</td>
+                        <td>{{ ((total_count - sub_error_count) * 100.0 / total_count) | round(2) }}%</td>
                     </tr>
                     <tr>
                         <td>分类评价指标</td>
@@ -136,7 +136,7 @@
                         <td>多标签正确分类数</td>
                         <td>{{ category[key]['count'] - category[key]['sub_error_count'] }}</td>
                         <td>多标签召回率</td>
-                        <td>{{ (category[key]['count'] - category[key]['sub_error_count']) * 100.0 / category[key]['count'] }}%</td>
+                        <td>{{ ((category[key]['count'] - category[key]['sub_error_count']) * 100.0 / category[key]['count']) | round(2) }}%</td>
                     </tr>
                     <tr>
                         <td>{{ key }} 错误分类分布直方图</td>

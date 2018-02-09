@@ -816,10 +816,10 @@ def typical_category_statistics():
 	for item in category:
 		correct_count = category[item]['count'] - category[item]['error_count']
 		category[item]['correct_count'] = correct_count
-		category[item]['recall'] = correct_count * 1.0 / category[item]['count']
-		category[item]['precision'] = correct_count * 1.0 / (correct_count + category[item]['error_classified_count'])
-		category[item]['f_score'] = 2 * category[item]['recall'] * category[item]['precision'] / (category[item]['recall'] + category[item]['precision'])
-		category[item]['accuracy'] = (correct_count + total_count - category[item]['count'] - category[item]['error_classified_count']) * 1.0 / total_count
+		category[item]['recall'] = round(correct_count * 1.0 / category[item]['count'], 4)
+		category[item]['precision'] = round(correct_count * 1.0 / (correct_count + category[item]['error_classified_count']), 4)
+		category[item]['f_score'] = round(2 * category[item]['recall'] * category[item]['precision'] / (category[item]['recall'] + category[item]['precision']), 4)
+		category[item]['accuracy'] = round((correct_count + total_count - category[item]['count'] - category[item]['error_classified_count']) * 1.0 / total_count, 4)
 		category[item]['easy_wrong_category'] = max(category[item]['error_distribution'], key = category[item]['error_distribution'].get)
 
 	average_recall = 0
@@ -835,4 +835,4 @@ def typical_category_statistics():
 
 
 	return render_template('portrayal/typical_category_statistics.html', category = category, total_count = total_count, error_count = error_count, \
-	average_accuracy = average_accuracy, sub_error_count = sub_error_count, average_recall = average_recall, average_precision = average_precision, average_fscore = average_fscore)
+	average_accuracy = round(average_accuracy, 4), sub_error_count = sub_error_count, average_recall = round(average_recall, 4), average_precision = round(average_precision, 4), average_fscore = round(average_fscore, 4))

@@ -144,7 +144,7 @@
                                     <tr>
                                         <td>影响力分数</td>
                                         <td>
-                                            {{ user['influence_score'] }}
+                                            {{ user['influence_score'] | round(4) }}
                                         </td>
                                         <td>影响力等级</td>
                                         <td>
@@ -175,7 +175,7 @@
                                         </td>
                                         <td>活跃度</td>
                                         <td>
-                                            {{ user['activity'] }}
+                                            {{ user['activity'] | round(4) }}
                                         </td>
                                     </tr>
                                     <!-- <tr>
@@ -405,7 +405,7 @@
                     differCount += 1;
                 }
                 return value * multiRate;
-            }), seqArr2], ['分类器投票', '情感字典']);
+            }), seqArr2], ['分类器投票', '情感字典'], '月');
         // $("#psy-accuracy1").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
         myChart.setOption(option);
 
@@ -424,13 +424,13 @@
                 differCount += 1;
             }
             return value * multiRate;
-        }), seqArr2], ['分类器投票', '情感字典']);
+        }), seqArr2], ['分类器投票', '情感字典'], '×60条');
         myChart.setOption(option);
         // $("#psy-accuracy2").text((1 - differCount * 1.0 / seqArr2.length) * 100 + "%");
 
         myChart = echarts.init(document.getElementById('activity-sequence'));
         seq = $("#activity-sequence").attr('data-seq');
-        option = getSequenceOption([seq.split(",")], ['活跃度'], true);
+        option = getSequenceOption([seq.split(",")], ['活跃度'], '月', true);
         myChart.setOption(option);
 
         myChart = echarts.init(document.getElementById('category-score'));
@@ -625,7 +625,7 @@
         return option;
     }
 
-    function getSequenceOption(dataArr, name, minYFlag) {
+    function getSequenceOption(dataArr, name, xAxisName, minYFlag) {
         var dataArrTemp = [];
         if(typeof dataArr[0] !== 'object') {
             dataArr = dataArrTemp.push(dataArr);
@@ -658,7 +658,11 @@
             xAxis: {
                 type: 'category',
                 boundaryGap: true,
-                data: xAxis
+                data: xAxis,
+                name: xAxisName,
+                nameTextStyle: {
+                    fontWeight: "bold"
+                }
             },
             yAxis: {
                 type: 'value',
