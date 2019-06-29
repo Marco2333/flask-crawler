@@ -59,10 +59,10 @@ li {
 }
 .shadow {
     padding: 0;
-    margin-bottom: 26px;
-    -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+    margin-bottom: -10px;
+    /* -webkit-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
     -moz-box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
-    box-shadow: 0 0 20px rgba(10, 94, 204, 0.76);
+    box-shadow: 0 0 10px rgba(10, 94, 204, 0.76); */
 }
 /*login*/
 #login-wrap {
@@ -189,7 +189,7 @@ li {
     z-index: 99;
 }
 .panel-heading {
-    padding: 14px
+    padding: 11px
 }
 .panel-primary > .panel-heading {
     background-color: rgba(0, 84, 183, 0.53);
@@ -202,7 +202,7 @@ li {
 }
 .table-wrap {
     font-size:15px;
-    margin-top: 23px;
+    margin-top: 15px;
 }
 .table a {
     cursor: pointer;
@@ -310,9 +310,6 @@ input[type='checkbox']:checked + label + .num_input {
 }
 
 /*typical_character_detail*/
-.profile-header {
-    height: 200px;
-}
 .profile-header-top {
     height: 50%;
     background-color: #5dc9e4;
@@ -324,13 +321,13 @@ input[type='checkbox']:checked + label + .num_input {
 /*typical_character_detail*/
 .profile-header {
     position: relative;
-    height: 266px;
+    height: 190px;
 }
 .profile-header-top {
     height: 50%;
     font-size: 25px;
     color: #111;
-    padding-top: 55px;
+    padding-top: 30px;
     padding-left: 20px;
     font-weight: bold;
     background-color: #666;
@@ -367,16 +364,16 @@ input[type='checkbox']:checked + label + .num_input {
      color: #5dc9e4;
 }
 .profile-header-rank {
-     position: absolute;
-     right: 20px;
-     top: 35px;
-     width: 230px;
-     height: 200px;
-     padding: 30px 6px 0 6px;
-     border: 1px solid #aaa;
-     border-radius: 5px;
-     border-top: none;
-     background-color: #fff;
+	position: absolute;
+    right: 20px;
+    top: 11px;
+    width: 230px;
+    height: 170px;
+    padding: 15px 6px 0 6px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    border-top: none;
+    background-color: #fff;
 }
 .rank-top {
      position: absolute;
@@ -445,7 +442,7 @@ input[type='checkbox']:checked + label + .num_input {
      width: 35%;
 }
 .psy-sequence {
-     height: 340px;
+     height: 180px;
 }
 .suggested-user-item {
      margin-bottom: 22px;
@@ -512,6 +509,10 @@ input[type='checkbox']:checked + label + .num_input {
     width: 100%;
     height: 300px;
     max-width: 1000px;
+}
+
+.nav-list-item .glyphicon-chevron-right {
+	transform: scale(0.8);
 }
 /*response*/
 @media (max-width: 768px) {

@@ -22,15 +22,18 @@
     .multiline {white-space: normal!important}
     .draw-cell {padding: 25px 0 0 0!important}
     #profile-color:hover{color: #{{ user['profile_background_color'] }};}
-    #sidebar-color:hover{color: #{{ user['profile_sidebar_fill_color'] }};}
+	#sidebar-color:hover{color: #{{ user['profile_sidebar_fill_color'] }};}
+	.panel-body {
+		padding: 11px 15px 0;
+	}
     @media screen and (min-width: 1100px) {.suggested-users{padding-left: 25px; max-width: 280px}}
 </style>
 <div class="content-wrap">
     <!-- Main content -->
     <section class="content">
         <div class="row">
-            <div class="col-md-9 col-lg-8" style="max-width: 1000px">
-                <div class="profile-header shadow">
+            <div class="col-md-12 col-lg-10" style="max-width: 1000px">
+                <div class="profile-header shadow" style="margin-bottom: -10px">
                     <div class="profile-header-top">
                         <div class="profile-header-portrait">
                             <img src="{{ url_for('static', filename='profile/%s.jpg' % user['screen_name'])}}"> {% if user['verified'] %}
@@ -40,12 +43,9 @@
                     </div>
                     <div class="profile-header-bottom">
                         <p><a href="http://twitter.com/{{ user['screen_name'] }}" target="_blank">@{{ user['screen_name'] }}</a> - joined at {{
-                            user['created_at'] }}</p>
+                            user['created_at'] }} &nbsp;&nbsp;&nbsp;<span>{% if user['location'] %}
+								<i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }} {% endif %}</span></p>
                         <p style="width: calc(100% - 270px)">{{ user['description'] }}</p>
-                        <p>
-                            {% if user['location'] %}
-                            <i class="glyphicon glyphicon-map-marker"></i> {{ user['location'] }} {% endif %}
-                        </p>
                     </div>
                     <div class="profile-header-rank">
                         <div class="rank-top">
@@ -63,9 +63,9 @@
 
                 <div class="profile-body">
                     <div class="shadow panel-success profile-basicinfo">
-                        <div class="panel-heading">
+                        <!-- <div class="panel-heading">
                             <h3 class="panel-title">基础信息</h3>
-                        </div>
+                        </div> -->
                         <div class="panel-body">
                             <table class="table table-bordered table-striped profile-table">
                                 <tbody>
@@ -111,21 +111,21 @@
                                         <td>抓取日期</td>
                                         <td>{{ user['crawler_date'] }}</td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>主页背景颜色</td>
                                         <td id="profile-color">#{{ user['profile_background_color'] }}</td>
                                         <td>侧边栏颜色</td>
                                         <td id="sidebar-color">#{{ user['profile_sidebar_fill_color'] }}</td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="panel-info shadow">
-                        <div class="panel-heading">
+                        <!-- <div class="panel-heading">
                             <h3 class="panel-title">人物画像</h3>
-                        </div>
+                        </div> -->
                         <div class="panel-body">
                             <table class="table table-bordered table-striped profile-table">
                                 <tbody>
@@ -158,7 +158,7 @@
                                         <td><a href="/download_interest_tags/{{ user['_id'] }}">兴趣标签</a></td>
                                         <td colspan=3 style="text-align: left;">{{ user['interest_tags'] | safe}}</td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>推文开始时间</td>
                                         <td>
                                             {{ user['tweets_start_time'] }}
@@ -167,9 +167,9 @@
                                         <td>
                                             {{ user['tweets_end_time'] }}
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                     <tr>
-                                        <td>抓取推文数</td>
+                                        <td>已采集推文数</td>
                                         <td>
                                             {{ user['tweets_count'] }}
                                         </td>
@@ -185,19 +185,19 @@
                                         <td id="psy-accuracy2"></td>
                                     </tr> -->
                                     <tr>
-                                        <td>人物分类得分</td>
+                                        <td>职业分类得分</td>
                                         <td colspan=3>
-                                            <div id="category-score" class="psy-sequence"></div>
+                                            <div id="category-score" class="psy-sequence" style="height: 200px"></div>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>心理状态变化（相同时间差）</td>
+                                    <tr class="none">
+                                        <td>心理状态变化</td>
                                         <td colspan=3 class="draw-cell">
                                             <div id="psy-with-time" data-seq1="{{ user['psy_with_time1'] }}" data-seq2="{{ user['psy_with_time2'] }}" class="psy-sequence"></div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>心理状态变化(相同推文数)</td>
+                                        <td>心理状态变</td>
                                         <td colspan=3 class="draw-cell">
                                             <div id="psy-with-count" data-seq1="{{ user['psy_with_count1'] }}" data-seq2="{{ user['psy_with_count2'] }}" class="psy-sequence">
                                             </div>
@@ -216,11 +216,11 @@
                     </div>
 
                     <div class="panel-warning shadow">
-                        <div class="panel-heading">
+                        <!-- <div class="panel-heading">
                             <h3 class="panel-title">人物关系</h3>
-                        </div>
+                        </div> -->
                         <div class="panel-body">
-                            <ul id="realtion-tab" class="nav nav-tabs" style="margin-top: 20px">
+                            <ul id="realtion-tab" class="nav nav-tabs">
                                 <li class="active">
                                     <a href="#friends" data-toggle="tab">朋友</a>
                                 </li>
@@ -430,7 +430,7 @@
 
         myChart = echarts.init(document.getElementById('activity-sequence'));
         seq = $("#activity-sequence").attr('data-seq');
-        option = getSequenceOption([seq.split(",")], ['活跃度'], '月', true);
+        option = getSequenceOption([seq.split(",")], ['活跃度'], '月', true, true);
         myChart.setOption(option);
 
         myChart = echarts.init(document.getElementById('category-score'));
@@ -560,14 +560,14 @@
         });
         
         var option = {
-            title: {
-                text: ['职业领域分类得分'],
-                left:"center",
-                textStyle:{
-                    color: '#3c8dbc',
-                    fontSize: 15
-                }
-            },
+            // title: {
+            //     text: ['职业领域分类得分'],
+            //     left:"center",
+            //     textStyle:{
+            //         color: '#3c8dbc',
+            //         fontSize: 15
+            //     }
+            // },
             color: ['#3398DB'],
             tooltip : {
                 trigger: 'axis',
@@ -582,9 +582,10 @@
                 }
             },
             grid: {
+                top: 14,
                 left: '3%',
                 right: '4%',
-                bottom: '3%',
+                bottom: '1%',
                 containLabel: true
             },
             xAxis : [{
@@ -625,7 +626,7 @@
         return option;
     }
 
-    function getSequenceOption(dataArr, name, xAxisName, minYFlag) {
+    function getSequenceOption(dataArr, name, xAxisName, minYFlag, topFlag) {
         var dataArrTemp = [];
         if(typeof dataArr[0] !== 'object') {
             dataArr = dataArrTemp.push(dataArr);
@@ -644,16 +645,27 @@
                     minV = +v;
                 }
             })
-
+			
             minV = Math.floor(minV);
-        }
+		}
+
+		if(xAxisName != '月') {
+			xAxisName = ''
+		}
 
         var option = {
             tooltip: {
                 trigger: 'axis'
             },
-            legend: {
-                data: name
+            // legend: {
+            //     data: name
+            // },
+            grid: {
+                top: 4,
+                left: '3%',
+                right: '3.4%',
+                bottom: '3%',
+                containLabel: true
             },
             xAxis: {
                 type: 'category',

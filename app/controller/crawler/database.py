@@ -10,6 +10,7 @@ from config import MYSQL, MONGO_DB, NEO4J
 class Mysql:
 	def connect(self):
 		db = MySQLdb.connect(MYSQL['DB_HOST'], MYSQL['DB_USER'], MYSQL['DB_PASSWORD'], MYSQL['DB_DATABASE'])
+
 		cursor = db.cursor()
 		self.cursor = cursor
 		self.db = db
